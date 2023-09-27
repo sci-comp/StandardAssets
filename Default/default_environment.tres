@@ -1,6 +1,7 @@
 [gd_resource type="Environment" load_steps=2 format=3 uid="uid://e6ygi335shhf"]
 
-[ext_resource type="Sky" uid="uid://slork6er5f8u" path="res://addons/StandardAssets/Default/DefaultSky.tres" id="1_hbajo"]
+[ext_resource type="Sky" uid="uid://slork6er5f8u" path="res://addons/StandardAssets/Default/default_sky.tres" id="1_hbajo"]
+
 
 [resource]
 background_mode = 2
