@@ -7,25 +7,20 @@ public partial class Singleton<T> : Node where T : Node
     public static T Instance
     {
         get
-        {
+        {        
             return instance;
         }
     }
 
-    public override void _Ready()
+    public Singleton()
     {
-        base._Ready();
-
-        if (instance != null)
-        {
-            QueueFree();
-            return;
-        }
-
-        if (this is T)
+        if (instance == null)
         {
             instance = this as T;
-            GetTree().Root.AddChild(this);
+        }
+        else if (instance != this)
+        {
+            QueueFree();
         }
     }
 }

@@ -13,11 +13,20 @@ public partial class SoundGroup : Node
 
     public override void _Ready()
     {
-        foreach (AudioStreamPlayer3D child in GetChildren().Cast<AudioStreamPlayer3D>())
+        foreach (AudioStreamPlayer3D audioStreamPlayer3D in GetChildren().Cast<AudioStreamPlayer3D>())
         {
-            child.Connect("finished", new Callable(this, nameof(OnAudioFinished)));
-            AvailableSources.Enqueue(child);
+            audioStreamPlayer3D.Finished += () => OnAudioFinished(audioStreamPlayer3D);
+            AvailableSources.Enqueue(audioStreamPlayer3D);
         }
+        GD.Print("Available sources: " + AvailableSources.Count);
+    }
+
+    public void OnAudioFinished(AudioStreamPlayer3D src)
+    {
+        GD.Print("On audio finished playing.");
+        ActiveSources.Remove(src);
+        AvailableSources.Enqueue(src);
+        SoundManager.Instance.HandleAudioSourceStopped(this, src);
     }
 
     public void Stop(AudioStreamPlayer3D src)
@@ -34,12 +43,13 @@ public partial class SoundGroup : Node
 
         if (AvailableSources.Count > 0)
         {
+            GD.Print("AvailableSources.Count: " + AvailableSources.Count);
             src = AvailableSources.Dequeue();
-            src.Playing = true;
             ActiveSources.Add(src);
         }
         else if (ActiveSources.Count > 0)
         {
+            GD.Print("ActiveSources.Count: " + ActiveSources.Count);
             src = ActiveSources[0];
             src.Stop();
             SoundManager.Instance.HandleAudioSourceStopped(this, src);
@@ -57,14 +67,5 @@ public partial class SoundGroup : Node
 
         return (src, this);
     }
-
-    private void OnAudioFinished(AudioStreamPlayer3D src)
-    {
-        src.Playing = false;
-        ActiveSources.Remove(src);
-        AvailableSources.Enqueue(src);
-        SoundManager.Instance.HandleAudioSourceStopped(this, src);
-    }
-
 }
 

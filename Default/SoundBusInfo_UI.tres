@@ -4,6 +4,6 @@
 
 [resource]
 script = ExtResource("1_5seoh")
-SoundBus = 0
+SoundBus = 3
 Volume = 1.0
 VoiceLimit = 5
