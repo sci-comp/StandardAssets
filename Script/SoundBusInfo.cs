@@ -13,7 +13,6 @@ public enum SoundBUS
 public partial class SoundBusInfo : Resource
 {
     [Export] public SoundBUS SoundBus;
-    [Export] public AudioBusLayout AudioBusLayout;
     [Export] public float Volume = 1.0f;
     [Export] public int VoiceLimit;
 

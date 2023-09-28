@@ -1,0 +1,9 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://bhygtshr3l285"]
+
+[ext_resource type="Script" path="res://addons/StandardAssets/Script/SoundBusInfo.cs" id="1_2c1os"]
+
+[resource]
+script = ExtResource("1_2c1os")
+SoundBus = 2
+Volume = 1.0
+VoiceLimit = 12

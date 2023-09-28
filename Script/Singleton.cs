@@ -1,10 +1,10 @@
 using Godot;
 
-public partial class Singleton : Node
+public partial class Singleton<T> : Node where T : Node
 {
-    private static Singleton instance = null;
+    private static T instance = null;
 
-    public static Singleton Instance
+    public static T Instance
     {
         get
         {
@@ -14,12 +14,18 @@ public partial class Singleton : Node
 
     public override void _Ready()
     {
+        base._Ready();
+
         if (instance != null)
         {
             QueueFree();
             return;
         }
-        instance = this;
-        GetTree().Root.AddChild(this);
+
+        if (this is T)
+        {
+            instance = this as T;
+            GetTree().Root.AddChild(this);
+        }
     }
 }
