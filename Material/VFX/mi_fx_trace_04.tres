@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://cpd0oafr2tg36"]
+
+[ext_resource type="Texture2D" uid="uid://c1qyrgd65m8lj" path="res://addons/StandardAssets/Texture/VFX/t_fx_trace_04.png" id="1_23ay7"]
+
+[resource]
+transparency = 1
+albedo_texture = ExtResource("1_23ay7")

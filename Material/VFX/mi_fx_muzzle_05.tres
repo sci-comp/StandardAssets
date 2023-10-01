@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://bbpa5pd2bxenv"]
+
+[ext_resource type="Texture2D" uid="uid://cyxfqblm3iubk" path="res://addons/StandardAssets/Texture/VFX/t_fx_muzzle_05.png" id="1_kk13b"]
+
+[resource]
+transparency = 1
+albedo_texture = ExtResource("1_kk13b")

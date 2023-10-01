@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://psf7kdohqwlt"]
+
+[ext_resource type="Texture2D" uid="uid://d1x8pv1gbtf2v" path="res://addons/StandardAssets/Texture/VFX/t_fx_scratch_01.png" id="1_debop"]
+
+[resource]
+transparency = 1
+albedo_texture = ExtResource("1_debop")
