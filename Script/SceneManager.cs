@@ -42,6 +42,12 @@ public partial class SceneManager : Node
 
     public async Task ChangeScene(string path)
     {
+        if (path == null)
+        {
+            GD.PrintErr("Scene path is null");
+            return;
+        }
+
         lock (sceneChangeLock)
         {
             if (IsTransitioning || (currentScene != null && currentScene.SceneFilePath == path))
@@ -52,19 +58,12 @@ public partial class SceneManager : Node
             IsTransitioning = true;
         }
 
-        if (path == null)
-        {
-            GD.PrintErr("Scene path is null");
-            return;
-        }
-
         if (ResourceLoader.Load(path, "PackedScene", 0) is not PackedScene nextScene)
         {
             GD.PrintErr("Invalid scene path");
+            IsTransitioning = false;
             return;
         }
-
-        IsTransitioning = true;
 
         EmitSignal(nameof(BeginUnloadingScene));
 
