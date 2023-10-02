@@ -1,7 +1,7 @@
 using Godot;
 using System.Threading.Tasks;
 
-public partial class SceneManager2 : Node
+public partial class SceneManager : Node
 {
     [Export] public int Speed = 2;
     [Export] public Color ShaderColor = new("#000000");
@@ -14,53 +14,68 @@ public partial class SceneManager2 : Node
     [Signal] public delegate void BeginUnloadingSceneEventHandler();
     [Signal] public delegate void FadeInCompleteEventHandler();
     [Signal] public delegate void FadeOutCompleteEventHandler();
-    [Signal] public delegate void TransitionFinishedEventHandler();
 
     public bool IsTransitioning { get; set; } = false;
 
-    private SceneTree _tree;
-    private Node _root;
-    private Node _currentScene;
-    private AnimationPlayer _animationPlayer;
-    private ColorRect _shaderBlendRect;
+    private SceneTree sceneTree;
+    private Node sceneTreeRoot;
+    private Node currentScene;
+    private AnimationPlayer animationPlayer;
+    private ColorRect shaderBlendRect;
 
     public override void _Ready()
     {
-        _tree = GetTree();
-        _root = _tree.Root;
-        _currentScene = _tree.CurrentScene;
-        _animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
-        _shaderBlendRect = GetNode<ColorRect>("CanvasLayer/ColorRect");
+        sceneTree = GetTree();
+        sceneTreeRoot = sceneTree.Root;
+        currentScene = sceneTree.CurrentScene;
+
+        animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
+        shaderBlendRect = GetNode<ColorRect>("CanvasLayer/ColorRect");
+
+        ((ShaderMaterial)shaderBlendRect.Material).SetShaderParameter("dissolve_texture", Pattern);
+        ((ShaderMaterial)shaderBlendRect.Material).SetShaderParameter("fade_color", ShaderColor);
+
         EmitSignal(nameof(SceneLoaded));
     }
 
-    public async void ChangeScene(string path)
+    private object sceneChangeLock = new object();
+
+    public async Task ChangeScene(string path)
     {
+        lock (sceneChangeLock)
+        {
+            if (IsTransitioning || (currentScene != null && currentScene.SceneFilePath == path))
+            {
+                return;
+            }
+
+            IsTransitioning = true;
+        }
+
         if (path == null)
         {
             GD.PrintErr("Scene path is null");
             return;
         }
 
-        var nextScene = (PackedScene)ResourceLoader.Load(path, "PackedScene", 0);
-
-        if (nextScene == null)
+        if (ResourceLoader.Load(path, "PackedScene", 0) is not PackedScene nextScene)
         {
             GD.PrintErr("Invalid scene path");
             return;
         }
 
+
         IsTransitioning = true;
 
         EmitSignal(nameof(BeginUnloadingScene));
 
-        _currentScene?.QueueFree();
+        currentScene?.QueueFree();
 
         await FadeOut();
 
-        _currentScene = nextScene.Instantiate();  // Synchronous
-        _root.AddChild(_currentScene);
-        _tree.CurrentScene = _currentScene;
+        currentScene = nextScene.Instantiate();  // Synchronous
+        sceneTreeRoot.AddChild(currentScene);
+        sceneTree.CurrentScene = currentScene;
 
         EmitSignal(nameof(SceneLoadedEventHandler));
 
@@ -71,34 +86,30 @@ public partial class SceneManager2 : Node
 
     public async Task FadeOut()
     {
-        _animationPlayer.SpeedScale = Speed;
+        animationPlayer.SpeedScale = Speed;
 
-        ((ShaderMaterial)_shaderBlendRect.Material).SetShaderParameter("dissolve_texture", Pattern);
-        ((ShaderMaterial)_shaderBlendRect.Material).SetShaderParameter("fade_color", ShaderColor);
-        ((ShaderMaterial)_shaderBlendRect.Material).SetShaderParameter("inverted", false);
+        ((ShaderMaterial)shaderBlendRect.Material).SetShaderParameter("inverted", false);
 
-        var animation = _animationPlayer.GetAnimation("ShaderFade");
+        var animation = animationPlayer.GetAnimation("ShaderFade");
         animation.TrackSetKeyTransition(0, 0, Ease);
 
-        _animationPlayer.Play("ShaderFade");
-        await ToSignal(_animationPlayer, "animation_finished");
+        animationPlayer.Play("ShaderFade");
+        await ToSignal(animationPlayer, "animation_finished");
 
         EmitSignal(nameof(FadeOutCompleteEventHandler));
     }
 
     public async Task FadeIn()
     {
-        _animationPlayer.SpeedScale = Speed;
+        animationPlayer.SpeedScale = Speed;
 
-        ((ShaderMaterial) _shaderBlendRect.Material).SetShaderParameter("dissolve_texture", Pattern);
-        ((ShaderMaterial) _shaderBlendRect.Material).SetShaderParameter("fade_color", ShaderColor);
-        ((ShaderMaterial) _shaderBlendRect.Material).SetShaderParameter("inverted", true);
+        ((ShaderMaterial) shaderBlendRect.Material).SetShaderParameter("inverted", true);
 
-        var animation = _animationPlayer.GetAnimation("ShaderFade");
+        var animation = animationPlayer.GetAnimation("ShaderFade");
         animation.TrackSetKeyTransition(0, 0, Ease);
 
-        _animationPlayer.PlayBackwards("ShaderFade");
-        await ToSignal(_animationPlayer, "animation_finished");
+        animationPlayer.PlayBackwards("ShaderFade");
+        await ToSignal(animationPlayer, "animation_finished");
 
         EmitSignal(nameof(FadeInCompleteEventHandler));
     }
