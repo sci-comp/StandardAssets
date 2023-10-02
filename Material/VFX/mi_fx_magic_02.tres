@@ -5,3 +5,4 @@
 [resource]
 transparency = 1
 albedo_texture = ExtResource("1_u6shj")
+billboard_mode = 1
