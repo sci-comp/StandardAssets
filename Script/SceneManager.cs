@@ -10,18 +10,20 @@ public partial class SceneManager : Node
     [Export] public bool InvertOnLeave = true;
     [Export] public float Ease = 1.0f;
 
+    private AnimationPlayer animationPlayer;
+    private ColorRect shaderBlendRect;
+    private Node sceneTreeRoot;
+    private Node currentScene;
+    private SceneTree sceneTree;
+
+    private readonly object sceneChangeLock = new();
+
+    public bool IsTransitioning { get; set; } = false;
+
     [Signal] public delegate void SceneLoadedEventHandler();
     [Signal] public delegate void BeginUnloadingSceneEventHandler();
     [Signal] public delegate void FadeInCompleteEventHandler();
     [Signal] public delegate void FadeOutCompleteEventHandler();
-
-    public bool IsTransitioning { get; set; } = false;
-
-    private SceneTree sceneTree;
-    private Node sceneTreeRoot;
-    private Node currentScene;
-    private AnimationPlayer animationPlayer;
-    private ColorRect shaderBlendRect;
 
     public override void _Ready()
     {
@@ -37,8 +39,6 @@ public partial class SceneManager : Node
 
         EmitSignal(nameof(SceneLoaded));
     }
-
-    private object sceneChangeLock = new object();
 
     public async Task ChangeScene(string path)
     {
@@ -63,7 +63,6 @@ public partial class SceneManager : Node
             GD.PrintErr("Invalid scene path");
             return;
         }
-
 
         IsTransitioning = true;
 
