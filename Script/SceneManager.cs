@@ -40,7 +40,13 @@ public partial class SceneManager : Node
         EmitSignal(nameof(SceneLoaded));
     }
 
-    public async Task ChangeScene(string path)
+    public void ChangeScene(string path)
+    {
+        // Wait until the end of the frame
+        CallDeferred(nameof(ChangeSceneNow), path);
+    }
+
+    public async Task ChangeSceneNow(string path)
     {
         if (path == null)
         {
