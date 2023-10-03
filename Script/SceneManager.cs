@@ -1,7 +1,7 @@
 using Godot;
 using System.Threading.Tasks;
 
-public partial class SceneManager : Node
+public partial class SceneManager : Singleton<SceneManager>
 {
     [Export] public int Speed = 2;
     [Export] public Color ShaderColor = new("#000000");
@@ -9,6 +9,8 @@ public partial class SceneManager : Node
     [Export] public float WaitTime = 0.5f;
     [Export] public bool InvertOnLeave = true;
     [Export] public float Ease = 1.0f;
+
+    public string previousSceneName { get; set; } = "";
 
     private AnimationPlayer animationPlayer;
     private ColorRect shaderBlendRect;
@@ -20,7 +22,7 @@ public partial class SceneManager : Node
 
     public bool IsTransitioning { get; set; } = false;
 
-    [Signal] public delegate void SceneLoadedEventHandler();
+    [Signal] public delegate void SceneLoadedEventHandler(string sceneName);
     [Signal] public delegate void BeginUnloadingSceneEventHandler();
     [Signal] public delegate void FadeInCompleteEventHandler();
     [Signal] public delegate void FadeOutCompleteEventHandler();
@@ -77,11 +79,12 @@ public partial class SceneManager : Node
 
         await FadeOut();
 
+        previousSceneName = currentScene.Name;
         currentScene = nextScene.Instantiate();  // Synchronous
         sceneTreeRoot.AddChild(currentScene);
         sceneTree.CurrentScene = currentScene;
 
-        EmitSignal(nameof(SceneLoadedEventHandler));
+        EmitSignal(nameof(SceneLoadedEventHandler), currentScene.Name);
 
         await FadeIn();
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://doyvpjbsqj2q1"
-path="res://.godot/imported/t_gradient_vegetation_01.png-6c11670f720f659368bae73eabc5f6e3.ctex"
+uid="uid://dydl2nnrkcnsp"
+path="res://.godot/imported/t_gradient_black2white.png-b51a7d396c2d64ee43815f8c43f2ad4a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/StandardAssets/Texture/t_gradient_vegetation_01.png"
-dest_files=["res://.godot/imported/t_gradient_vegetation_01.png-6c11670f720f659368bae73eabc5f6e3.ctex"]
+source_file="res://addons/StandardAssets/Texture/Gradient/t_gradient_black2white.png"
+dest_files=["res://.godot/imported/t_gradient_black2white.png-b51a7d396c2d64ee43815f8c43f2ad4a.ctex"]
 
 [params]
 
