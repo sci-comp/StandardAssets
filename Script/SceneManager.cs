@@ -10,7 +10,7 @@ public partial class SceneManager : Singleton<SceneManager>
     [Export] public bool InvertOnLeave = true;
     [Export] public float Ease = 1.0f;
 
-    public string previousSceneName { get; set; } = "";
+    public string PreviousSceneName { get; set; } = "";
 
     private AnimationPlayer animationPlayer;
     private ColorRect shaderBlendRect;
@@ -79,7 +79,7 @@ public partial class SceneManager : Singleton<SceneManager>
 
         await FadeOut();
 
-        previousSceneName = currentScene.Name;
+        PreviousSceneName = currentScene.Name;
         currentScene = nextScene.Instantiate();  // Synchronous
         sceneTreeRoot.AddChild(currentScene);
         sceneTree.CurrentScene = currentScene;
