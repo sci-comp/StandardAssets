@@ -3,11 +3,11 @@ using Godot;
 public partial class Debug : CanvasGroup
 {
     [Export] public Label label;
+    [Export] public SceneManager sceneManager;
 
     public override void _Ready()
     {
-        GetTree().TreeChanged += OnTreeChanged;
-
+        sceneManager.SceneLoaded += OnSceneLoaded;
     }
 
     public override void _Input(InputEvent inputEvent)
@@ -21,9 +21,9 @@ public partial class Debug : CanvasGroup
         }
     }
 
-    private void OnTreeChanged()
+    private void OnSceneLoaded()
     {
-        label.Text = "Current scene: " + GetTree().CurrentScene.Name;
+        label.Text = "Current scene: " + sceneManager.CurrentSceneName;
     }
 
 }

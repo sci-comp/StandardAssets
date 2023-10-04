@@ -10,28 +10,30 @@ public partial class SceneManager : Singleton<SceneManager>
     [Export] public bool InvertOnLeave = true;
     [Export] public float Ease = 1.0f;
 
+    public Node CurrentScene { get; set; }
+    public string CurrentSceneName => CurrentScene.Name;
+
     public string PreviousSceneName { get; set; } = "";
 
     private AnimationPlayer animationPlayer;
     private ColorRect shaderBlendRect;
-    private Node sceneTreeRoot;
-    private Node currentScene;
-    private SceneTree sceneTree;
-
+    public Node sceneTreeRoot;
+    
     private readonly object sceneChangeLock = new();
 
     public bool IsTransitioning { get; set; } = false;
 
-    [Signal] public delegate void SceneLoadedEventHandler(string sceneName);
+    [Signal] public delegate void SceneLoadedEventHandler();
     [Signal] public delegate void BeginUnloadingSceneEventHandler();
     [Signal] public delegate void FadeInCompleteEventHandler();
     [Signal] public delegate void FadeOutCompleteEventHandler();
 
+    public Node SceneTree { get; set; }
     public override void _Ready()
     {
-        sceneTree = GetTree();
-        sceneTreeRoot = sceneTree.Root;
-        currentScene = sceneTree.CurrentScene;
+        var SceneTree = GetTree();
+        sceneTreeRoot = SceneTree.Root;
+        CurrentScene = SceneTree.CurrentScene;
 
         animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
         shaderBlendRect = GetNode<ColorRect>("CanvasLayer/ColorRect");
@@ -45,25 +47,27 @@ public partial class SceneManager : Singleton<SceneManager>
     public void ChangeScene(string path)
     {
         // Wait until the end of the frame
+        IsTransitioning = true;  // Must set this here since ChangeSceneNow is async
         CallDeferred(nameof(ChangeSceneNow), path);
     }
 
-    public async Task ChangeSceneNow(string path)
+    public async void ChangeSceneNow(string path)
     {
         if (path == null)
         {
             GD.PrintErr("Scene path is null");
+            IsTransitioning = false;
             return;
         }
 
         lock (sceneChangeLock)
         {
-            if (IsTransitioning || (currentScene != null && currentScene.SceneFilePath == path))
+            if (CurrentScene != null && CurrentScene.SceneFilePath == path)
             {
                 return;
             }
 
-            IsTransitioning = true;
+            IsTransitioning = true;  // Should already be true
         }
 
         if (ResourceLoader.Load(path, "PackedScene", 0) is not PackedScene nextScene)
@@ -75,16 +79,15 @@ public partial class SceneManager : Singleton<SceneManager>
 
         EmitSignal(nameof(BeginUnloadingScene));
 
-        currentScene?.QueueFree();
+        PreviousSceneName = CurrentScene.Name;
+        CurrentScene?.QueueFree();
 
         await FadeOut();
-
-        PreviousSceneName = currentScene.Name;
-        currentScene = nextScene.Instantiate();  // Synchronous
-        sceneTreeRoot.AddChild(currentScene);
-        sceneTree.CurrentScene = currentScene;
-
-        EmitSignal(nameof(SceneLoadedEventHandler), currentScene.Name);
+        
+        CurrentScene = nextScene.Instantiate();  // Synchronous
+        sceneTreeRoot.AddChild(CurrentScene);
+        
+        EmitSignal(nameof(SceneLoaded));
 
         await FadeIn();
 
@@ -94,31 +97,23 @@ public partial class SceneManager : Singleton<SceneManager>
     public async Task FadeOut()
     {
         animationPlayer.SpeedScale = Speed;
-
         ((ShaderMaterial)shaderBlendRect.Material).SetShaderParameter("inverted", false);
-
         var animation = animationPlayer.GetAnimation("ShaderFade");
         animation.TrackSetKeyTransition(0, 0, Ease);
-
         animationPlayer.Play("ShaderFade");
         await ToSignal(animationPlayer, "animation_finished");
-
-        EmitSignal(nameof(FadeOutCompleteEventHandler));
+        EmitSignal(nameof(FadeOutComplete));
     }
 
     public async Task FadeIn()
     {
         animationPlayer.SpeedScale = Speed;
-
         ((ShaderMaterial) shaderBlendRect.Material).SetShaderParameter("inverted", true);
-
         var animation = animationPlayer.GetAnimation("ShaderFade");
         animation.TrackSetKeyTransition(0, 0, Ease);
-
         animationPlayer.PlayBackwards("ShaderFade");
         await ToSignal(animationPlayer, "animation_finished");
-
-        EmitSignal(nameof(FadeInCompleteEventHandler));
+        EmitSignal(nameof(FadeInComplete));
     }
 
 }

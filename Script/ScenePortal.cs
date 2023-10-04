@@ -11,7 +11,8 @@ public partial class ScenePortal : Area3D
 
     public void OnPlayerEnter(Node body)
     {
-        if (!SceneManager.Instance.IsTransitioning && body.IsInGroup("Player"))
+        GD.Print("Portal entered");
+        if (!SceneManager.Instance.IsTransitioning && body.IsInGroup("player"))
         {
             SceneManager.Instance.ChangeScene(SceneToLoad);
         }

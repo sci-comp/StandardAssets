@@ -1,0 +1,101 @@
+[gd_scene load_steps=11 format=3 uid="uid://ff0o6fvqdthy"]
+
+[ext_resource type="Script" path="res://addons/StandardAssets/Script/Game.cs" id="1_31kq7"]
+[ext_resource type="Script" path="res://addons/StandardAssets/Script/Debug.cs" id="2_mrlra"]
+[ext_resource type="Script" path="res://addons/StandardAssets/Script/SceneManager.cs" id="3_h4e85"]
+[ext_resource type="Texture2D" uid="uid://7ypismovx1sv" path="res://addons/StandardAssets/Texture/Gradient/horizontal.png" id="4_yarav"]
+[ext_resource type="Shader" path="res://addons/StandardAssets/Shader/Dissolve2d.gdshader" id="5_lj1ff"]
+[ext_resource type="Animation" uid="uid://dxr1r78uxitcq" path="res://addons/StandardAssets/Shader/ShaderFade.tres" id="6_ypi24"]
+[ext_resource type="Script" path="res://addons/StandardAssets/Script/PlayerSpawner.cs" id="7_axbye"]
+[ext_resource type="PackedScene" uid="uid://c0vnqt6uyxaoa" path="res://addons/CharacterController/player/Player.tscn" id="8_0c4r5"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5mrsu"]
+shader = ExtResource("5_lj1ff")
+shader_parameter/dissolve_amount = 0.0
+shader_parameter/fade_color = Color(0, 0, 0, 1)
+shader_parameter/fade = false
+shader_parameter/inverted = false
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_2j4fm"]
+_data = {
+"ShaderFade": ExtResource("6_ypi24")
+}
+
+[node name="Game" type="Node"]
+script = ExtResource("1_31kq7")
+
+[node name="Debug" type="CanvasGroup" parent="." node_paths=PackedStringArray("label", "sceneManager")]
+visible = false
+script = ExtResource("2_mrlra")
+label = NodePath("Panel/MarginContainer/InnerPanel/InnerMarginContainer/VBoxContainer/CurrentScene")
+sceneManager = NodePath("../SceneManager")
+
+[node name="Panel" type="Panel" parent="Debug"]
+offset_right = 360.0
+offset_bottom = 600.0
+
+[node name="Title" type="Label" parent="Debug/Panel"]
+layout_mode = 2
+offset_left = 8.0
+offset_top = 25.0
+offset_right = 352.0
+offset_bottom = 51.0
+theme_override_colors/font_color = Color(0.564706, 0.933333, 0.564706, 1)
+text = "Debug"
+horizontal_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="Debug/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="InnerPanel" type="Panel" parent="Debug/Panel/MarginContainer"]
+layout_mode = 2
+
+[node name="InnerMarginContainer" type="MarginContainer" parent="Debug/Panel/MarginContainer/InnerPanel"]
+layout_mode = 2
+offset_right = 344.0
+offset_bottom = 524.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Debug/Panel/MarginContainer/InnerPanel/InnerMarginContainer"]
+layout_mode = 2
+
+[node name="CurrentScene" type="Label" parent="Debug/Panel/MarginContainer/InnerPanel/InnerMarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Current scene: default_text_here"
+
+[node name="SceneManager" type="Node2D" parent="."]
+script = ExtResource("3_h4e85")
+Speed = 1
+Pattern = ExtResource("4_yarav")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="SceneManager"]
+layer = 3
+
+[node name="ColorRect" type="ColorRect" parent="SceneManager/CanvasLayer"]
+material = SubResource("ShaderMaterial_5mrsu")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="SceneManager"]
+libraries = {
+"": SubResource("AnimationLibrary_2j4fm")
+}
+
+[node name="PlayerSpawner" type="Node" parent="."]
+script = ExtResource("7_axbye")
+Player = ExtResource("8_0c4r5")
