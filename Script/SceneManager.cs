@@ -80,10 +80,11 @@ public partial class SceneManager : Singleton<SceneManager>
         EmitSignal(nameof(BeginUnloadingScene));
 
         PreviousSceneName = CurrentScene.Name;
-        CurrentScene?.QueueFree();
 
-        await FadeOut();
         
+        await FadeOut();
+
+        CurrentScene?.QueueFree();
         CurrentScene = nextScene.Instantiate();  // Synchronous
         sceneTreeRoot.AddChild(CurrentScene);
         
