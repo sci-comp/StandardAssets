@@ -9,7 +9,7 @@ public partial class SceneManager : Singleton<SceneManager>
     [Export] public float WaitTime = 0.5f;
     [Export] public bool InvertOnLeave = true;
     [Export] public float Ease = 1.0f;
-
+    [Export] public string SceneSpecificInformationCollectionPath = "res://Game/Data/SceneSpecificInformationCollection.tres";
     public Node CurrentScene { get; set; }
     public string CurrentSceneName => CurrentScene.Name;
 
@@ -29,11 +29,25 @@ public partial class SceneManager : Singleton<SceneManager>
     [Signal] public delegate void FadeOutCompleteEventHandler();
 
     public Node SceneTree { get; set; }
+
+    public SceneSpecificInformationCollection SceneInfoCollection { get; private set; }
+
+    public SceneSpecificInformation CurrentSceneInfo
+    {
+        get
+        {
+            return SceneInfoCollection.SceneInfo[CurrentSceneName];
+        }
+    }
+
     public override void _Ready()
     {
         var SceneTree = GetTree();
         sceneTreeRoot = SceneTree.Root;
         CurrentScene = SceneTree.CurrentScene;
+
+        var _resource = (Resource)GD.Load(SceneSpecificInformationCollectionPath);
+        SceneInfoCollection = (SceneSpecificInformationCollection)_resource.Duplicate();
 
         animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
         shaderBlendRect = GetNode<ColorRect>("CanvasLayer/ColorRect");
@@ -44,11 +58,13 @@ public partial class SceneManager : Singleton<SceneManager>
         EmitSignal(nameof(SceneLoaded));
     }
 
-    public void ChangeScene(string path)
+    public void ChangeScene(string sceneName)
     {
+        SceneSpecificInformation _info = SceneInfoCollection.SceneInfo[sceneName];
+
         // Wait until the end of the frame
         IsTransitioning = true;  // Must set this here since ChangeSceneNow is async
-        CallDeferred(nameof(ChangeSceneNow), path);
+        CallDeferred(nameof(ChangeSceneNow), _info.Path);
     }
 
     public async void ChangeSceneNow(string path)
@@ -81,13 +97,13 @@ public partial class SceneManager : Singleton<SceneManager>
 
         PreviousSceneName = CurrentScene.Name;
 
-        
         await FadeOut();
 
-        CurrentScene?.QueueFree();
-        CurrentScene = nextScene.Instantiate();  // Synchronous
+        CurrentScene?.CallDeferred("queue_free");
+        await ToSignal(CurrentScene, "tree_exited");
+        CurrentScene = nextScene.Instantiate();
         sceneTreeRoot.AddChild(CurrentScene);
-        
+
         EmitSignal(nameof(SceneLoaded));
 
         await FadeIn();

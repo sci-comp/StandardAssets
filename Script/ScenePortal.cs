@@ -6,14 +6,15 @@ public partial class ScenePortal : Area3D
 
     public override void _Ready()
     {
-        BodyEntered += OnPlayerEnter;
+        BodyEntered += OnBodyEnter;
     }
 
-    public void OnPlayerEnter(Node body)
+    public void OnBodyEnter(Node body)
     {
-        GD.Print("Portal entered");
+        GD.Print("Portal Collision");
         if (!SceneManager.Instance.IsTransitioning && body.IsInGroup("player"))
         {
+            GD.Print("Player entered portal");
             SceneManager.Instance.ChangeScene(SceneToLoad);
         }
     }

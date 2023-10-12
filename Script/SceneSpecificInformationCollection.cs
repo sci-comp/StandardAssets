@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public partial class SceneSpecificInformationCollection : Resource
 {
-    [Export] public Godot.Collections.Array SceneInfoList = new();
+    [Export] public Godot.Collections.Array<SceneSpecificInformation> SceneInfoList = new();
 
     private Dictionary<string, SceneSpecificInformation> sceneInfo;
 
@@ -16,7 +16,7 @@ public partial class SceneSpecificInformationCollection : Resource
                 sceneInfo = new Dictionary<string, SceneSpecificInformation>();
                 for (int i = 0; i < SceneInfoList.Count; ++i)
                 {
-                    SceneSpecificInformation _sceneInfo = (SceneSpecificInformation)SceneInfoList[i];
+                    SceneSpecificInformation _sceneInfo = SceneInfoList[i];
                     if (!sceneInfo.TryAdd(_sceneInfo.SceneName, _sceneInfo))
                     {
                         GD.PrintErr("Duplicate scene name found: " + _sceneInfo.SceneName);
@@ -27,5 +27,6 @@ public partial class SceneSpecificInformationCollection : Resource
             return sceneInfo;
         }
     }
-}
+} 
+
 
