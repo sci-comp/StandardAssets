@@ -2,13 +2,14 @@ using Godot;
 
 public partial class PlayerSpawner : Node
 {
-    [Export] public string PlayerPath = "res://Game/Data/Player.tscn";
-    private PackedScene Player;
+    [Export] public PackedScene Player;
+    //[Export] public string PlayerPath = "res://Game/Data/Player.tscn";
+    //private PackedScene Player;
 
     public override void _Ready()
     {
         SceneManager.Instance.SceneLoaded += OnSceneLoaded;
-        Player = GD.Load<PackedScene>(PlayerPath);
+        //Player = GD.Load<PackedScene>(PlayerPath);
     }
 
     private void OnSceneLoaded()
