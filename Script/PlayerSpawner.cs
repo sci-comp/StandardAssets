@@ -2,29 +2,30 @@ using Godot;
 
 public partial class PlayerSpawner : Node
 {
-    [Export] public PackedScene Player;
-    //[Export] public string PlayerPath = "res://Game/Data/Player.tscn";
-    //private PackedScene Player;
+    //[Export] public PackedScene Player;
+    [Export] public string PlayerPath = "res://Game/Scene/player.tscn";
+    private PackedScene Player;
 
     public override void _Ready()
     {
-        SceneManager.Instance.SceneLoaded += OnSceneLoaded;
-        //Player = GD.Load<PackedScene>(PlayerPath);
+        LevelManager.Instance.LevelLoaded += OnLevelLoaded;
+        Player = GD.Load<PackedScene>(PlayerPath);
     }
 
-    private void OnSceneLoaded()
+    private void OnLevelLoaded()
     {
-        GD.Print("Scene loaded: " + SceneManager.Instance.CurrentSceneName);
+        GD.Print("Level loaded: " + LevelManager.Instance.CurrentLevelInfo.Path);
 
-        if (SceneManager.Instance.CurrentSceneInfo.PlayerExistsInScene)
+        if (LevelManager.Instance.CurrentLevelInfo.PlayerExistsInLevel)
         {
-            string spFromPreviousScene = "SP_From_" + SceneManager.Instance.PreviousSceneName;
-            Node3D _spawnpoint = (Node3D)SceneManager.Instance.CurrentScene.FindChild(spFromPreviousScene);
+            string spFromPreviousLevel = "SP_From_" + LevelManager.Instance.PreviousLevelName;
+            Node3D _spawnpoint = (Node3D) LevelManager.Instance.CurrentLevel.FindChild(spFromPreviousLevel);
 
             if (_spawnpoint == null)
             {
-                string spCurrentScene = "SP_" + SceneManager.Instance.CurrentSceneName;
-                _spawnpoint = (Node3D)SceneManager.Instance.CurrentScene.FindChild(spCurrentScene);
+                string spCurrentLevel = "SP_" + LevelManager.Instance.CurrentLevelName;
+                GD.Print("spCurrent: " + spCurrentLevel);
+                _spawnpoint = (Node3D) LevelManager.Instance.CurrentLevel.FindChild(spCurrentLevel);
             }
 
             if (_spawnpoint == null)
@@ -32,8 +33,8 @@ public partial class PlayerSpawner : Node
                 GD.PrintErr("Spawn point not found.");
             }
 
-            Node3D playerInstance = (Node3D)Player.Instantiate();
-            SceneManager.Instance.CurrentScene.AddChild(playerInstance);
+            Node3D playerInstance = (Node3D) Player.Instantiate();
+            LevelManager.Instance.CurrentLevel.AddChild(playerInstance);
             playerInstance.GlobalPosition = _spawnpoint.GlobalPosition;
         }
     }
