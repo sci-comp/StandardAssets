@@ -29,13 +29,10 @@ public partial class Debug : CanvasGroup
 
     public override void _Process(double _delta)
     {
-        float delta = (float) _delta;
-
         float fps = (float) Engine.GetFramesPerSecond();
 
         float mspf = 1000.0f / fps;
         int totalObjects = (int) RenderingServer.GetRenderingInfo(RenderingServer.RenderingInfo.TotalObjectsInFrame);
-
         float totalPrimitives = RenderingServer.GetRenderingInfo(RenderingServer.RenderingInfo.TotalPrimitivesInFrame) * 0.001f;
         int totalDrawCalls = (int) RenderingServer.GetRenderingInfo(RenderingServer.RenderingInfo.TotalDrawCallsInFrame);
 

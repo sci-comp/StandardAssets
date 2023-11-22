@@ -12,10 +12,10 @@ public partial class LevelPortal : Area3D
     public void OnBodyEnter(Node body)
     {
         GD.Print("Portal Collision");
-        if (!LevelManager.Instance.IsTransitioning && body.IsInGroup("player"))
+        if (!LevelManager.Inst.IsTransitioning && body.IsInGroup("player"))
         {
             GD.Print("Player entered portal");
-            LevelManager.Instance.ChangeLevel(LevelToLoad);
+            LevelManager.Inst.ChangeLevel(LevelToLoad);
         }
     }
 

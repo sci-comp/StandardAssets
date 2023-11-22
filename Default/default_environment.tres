@@ -2,12 +2,12 @@
 
 [ext_resource type="Sky" uid="uid://slork6er5f8u" path="res://addons/StandardAssets/Default/default_sky.tres" id="1_hbajo"]
 
-
 [resource]
 background_mode = 2
 sky = ExtResource("1_hbajo")
-fog_light_color = Color(0.596078, 0.85098, 1, 1)
-fog_light_energy = 0.1
-fog_density = 0.001
-fog_sky_affect = 0.579
-fog_height_density = -0.0794
+ambient_light_color = Color(0.501961, 0.501961, 0.501961, 1)
+fog_enabled = true
+fog_light_color = Color(0.882353, 1, 1, 1)
+fog_sun_scatter = 0.3
+fog_density = 0.0002
+fog_aerial_perspective = 0.5

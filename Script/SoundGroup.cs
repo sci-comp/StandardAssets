@@ -26,7 +26,7 @@ public partial class SoundGroup : Node
         GD.Print("On audio finished playing.");
         ActiveSources.Remove(src);
         AvailableSources.Enqueue(src);
-        SoundManager.Instance.HandleAudioSourceStopped(this, src);
+        SoundManager.Inst.HandleAudioSourceStopped(this, src);
     }
 
     public void Stop(AudioStreamPlayer3D src)
@@ -34,7 +34,7 @@ public partial class SoundGroup : Node
         src.Stop();
         ActiveSources.Remove(src);
         AvailableSources.Enqueue(src);
-        SoundManager.Instance.HandleAudioSourceStopped(this, src);
+        SoundManager.Inst.HandleAudioSourceStopped(this, src);
     }
 
     public (AudioStreamPlayer3D, SoundGroup) GetAvailableSource()
@@ -52,7 +52,7 @@ public partial class SoundGroup : Node
             GD.Print("ActiveSources.Count: " + ActiveSources.Count);
             src = ActiveSources[0];
             src.Stop();
-            SoundManager.Instance.HandleAudioSourceStopped(this, src);
+            SoundManager.Inst.HandleAudioSourceStopped(this, src);
             ActiveSources.RemoveAt(0);
             ActiveSources.Add(src);
         }

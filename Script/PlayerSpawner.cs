@@ -8,24 +8,24 @@ public partial class PlayerSpawner : Node
 
     public override void _Ready()
     {
-        LevelManager.Instance.LevelLoaded += OnLevelLoaded;
+        LevelManager.Inst.LevelLoaded += OnLevelLoaded;
         Player = GD.Load<PackedScene>(PlayerPath);
     }
 
     private void OnLevelLoaded()
     {
-        GD.Print("Level loaded: " + LevelManager.Instance.CurrentLevelInfo.Path);
+        GD.Print("Level loaded: " + LevelManager.Inst.CurrentLevelInfo.Path);
 
-        if (LevelManager.Instance.CurrentLevelInfo.PlayerExistsInLevel)
+        if (LevelManager.Inst.CurrentLevelInfo.PlayerExistsInLevel)
         {
-            string spFromPreviousLevel = "SP_From_" + LevelManager.Instance.PreviousLevelName;
-            Node3D _spawnpoint = (Node3D) LevelManager.Instance.CurrentLevel.FindChild(spFromPreviousLevel);
+            string spFromPreviousLevel = "SP_From_" + LevelManager.Inst.PreviousLevelName;
+            Node3D _spawnpoint = (Node3D) LevelManager.Inst.CurrentLevel.FindChild(spFromPreviousLevel);
 
             if (_spawnpoint == null)
             {
-                string spCurrentLevel = "SP_" + LevelManager.Instance.CurrentLevelName;
+                string spCurrentLevel = "SP_" + LevelManager.Inst.CurrentLevelName;
                 GD.Print("spCurrent: " + spCurrentLevel);
-                _spawnpoint = (Node3D) LevelManager.Instance.CurrentLevel.FindChild(spCurrentLevel);
+                _spawnpoint = (Node3D) LevelManager.Inst.CurrentLevel.FindChild(spCurrentLevel);
             }
 
             if (_spawnpoint == null)
@@ -34,7 +34,7 @@ public partial class PlayerSpawner : Node
             }
 
             Node3D playerInstance = (Node3D) Player.Instantiate();
-            LevelManager.Instance.CurrentLevel.AddChild(playerInstance);
+            LevelManager.Inst.CurrentLevel.AddChild(playerInstance);
             playerInstance.GlobalPosition = _spawnpoint.GlobalPosition;
         }
     }

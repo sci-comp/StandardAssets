@@ -17,7 +17,7 @@ public partial class SoundManagerTest : Node
 
     public override void _Process(double delta)
     {
-        SoundBusInfo sfxBusInfo = SoundManager.Instance.AllBusInfo[SoundBUS.SFX];
+        SoundBusInfo sfxBusInfo = SoundManager.Inst.AllBusInfo[SoundBUS.SFX];
         sfxInfoText.Text = $"Bus: SFX\n" +
                         $"Active Voices: {sfxBusInfo.ActiveSources.Count}/{sfxBusInfo.VoiceLimit}\n" +
                         $"Volume: {sfxBusInfo.Volume}";
@@ -35,12 +35,12 @@ public partial class SoundManagerTest : Node
     private static void PlayBubbles()
     {
         GD.Print("Playing bubbles..");
-        SoundManager.Instance.PlaySound("sfx_bubbles", new Vector3(0,0,0));
+        SoundManager.Inst.PlaySound("sfx_bubbles", new Vector3(0,0,0));
     }
 
     private static void PlayVelcro()
     {
-        SoundManager.Instance.PlaySound("sfx_velcro", new Vector3(0, 0, 0));
+        SoundManager.Inst.PlaySound("sfx_velcro", new Vector3(0, 0, 0));
     }
 
 }

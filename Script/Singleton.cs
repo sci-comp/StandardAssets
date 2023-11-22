@@ -2,23 +2,23 @@ using Godot;
 
 public partial class Singleton<T> : Node where T : Node
 {
-    private static T instance = null;
+    private static T inst = null;
 
-    public static T Instance
+    public static T Inst
     {
         get
         {        
-            return instance;
+            return inst;
         }
     }
 
     public Singleton()
     {
-        if (instance == null)
+        if (inst == null)
         {
-            instance = this as T;
+            inst = this as T;
         }
-        else if (instance != this)
+        else if (inst != this)
         {
             QueueFree();
         }
