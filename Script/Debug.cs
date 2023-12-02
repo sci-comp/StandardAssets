@@ -2,13 +2,12 @@ using Godot;
 
 public partial class Debug : CanvasGroup
 {
-    [Export] public Label CurrentSceneLabel;
+    [Export] public Label CurrentLevelLabel;
     [Export] public Label PerformanceLabel;
-    [Export] public LevelManager LevelManager;
 
     public override void _Ready()
     {
-        LevelManager.LevelLoaded += OnSceneLoaded;
+        LevelManager.Inst.LevelLoaded += OnLevelLoaded;
     }
 
     public override void _Input(InputEvent inputEvent)
@@ -22,9 +21,9 @@ public partial class Debug : CanvasGroup
         }
     }
 
-    private void OnSceneLoaded()
+    private void OnLevelLoaded()
     {
-        CurrentSceneLabel.Text = "Current scene: " + LevelManager.CurrentLevelName;
+        CurrentLevelLabel.Text = "Current level: " + LevelManager.Inst.CurrentLevelName;
     }
 
     public override void _Process(double _delta)

@@ -1,6 +1,6 @@
 [gd_scene load_steps=13 format=3 uid="uid://bd80cjtqo8yoi"]
 
-[ext_resource type="Script" path="res://addons/StandardAssets/Script/ScenePortal.cs" id="1_k065a"]
+[ext_resource type="Script" path="res://addons/StandardAssets/Script/LevelPortal.cs" id="1_k065a"]
 [ext_resource type="Material" uid="uid://bi7wgokmickb4" path="res://addons/StandardAssets/Material/VFX/mi_fx_magic_05.tres" id="2_wobva"]
 [ext_resource type="Shape3D" uid="uid://ur6ddorx667f" path="res://addons/StandardAssets/Primitive/Shapes/sphere_shape_3d.tres" id="3_x3j45"]
 
@@ -47,11 +47,10 @@ material = ExtResource("2_wobva")
 
 [sub_resource type="Skin" id="Skin_j5jd2"]
 
-[node name="PF_Scene_Portal" type="Area3D"]
+[node name="PF_Level_Portal" type="Area3D"]
 transform = Transform3D(5.01035, 0, 0, 0, 5.01035, 0, 0, 0, 5.01035, -5.04807, 2.69043, -1.90597)
 collision_mask = 2
 script = ExtResource("1_k065a")
-SceneToLoad = "res://Game/Scene/Cavernode.tscn"
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="."]
 transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0)
