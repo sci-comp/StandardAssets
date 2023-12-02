@@ -18,6 +18,10 @@ public partial class Debug : CanvasGroup
             {
                 Visible = !Visible;
             }
+            else if (eventKey.Keycode == Key.P)
+            {
+                GetTree().Quit();
+            }
         }
     }
 

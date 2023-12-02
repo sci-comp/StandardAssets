@@ -5,9 +5,11 @@
 [resource]
 background_mode = 2
 sky = ExtResource("1_hbajo")
-ambient_light_color = Color(0.501961, 0.501961, 0.501961, 1)
-fog_enabled = true
+ambient_light_source = 3
+reflected_light_source = 2
 fog_light_color = Color(0.882353, 1, 1, 1)
 fog_sun_scatter = 0.3
-fog_density = 0.0002
-fog_aerial_perspective = 0.5
+fog_density = 0.005
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.03
+volumetric_fog_emission = Color(0.572549, 0.686275, 0.819608, 1)
