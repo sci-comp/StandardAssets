@@ -25,7 +25,7 @@ public partial class LevelManager : Singleton<LevelManager>
     public bool IsTransitioning { get; set; } = false;
 
     [Signal] public delegate void LevelLoadedEventHandler();
-    [Signal] public delegate void BeginUnloadingSceneEventHandler();
+    [Signal] public delegate void BeginUnloadingLevelEventHandler();
     [Signal] public delegate void FadeInCompleteEventHandler();
     [Signal] public delegate void FadeOutCompleteEventHandler();
 
@@ -56,6 +56,7 @@ public partial class LevelManager : Singleton<LevelManager>
         ((ShaderMaterial)shaderBlendRect.Material).SetShaderParameter("dissolve_texture", Pattern);
         ((ShaderMaterial)shaderBlendRect.Material).SetShaderParameter("fade_color", ShaderColor);
 
+        GD.Print("Level loaded: " + CurrentLevel.Name);
         EmitSignal(nameof(LevelLoaded));
     }
 
@@ -87,14 +88,15 @@ public partial class LevelManager : Singleton<LevelManager>
             IsTransitioning = true;  // Should already be true
         }
 
-        if (ResourceLoader.Load(path, "PackedScene", 0) is not PackedScene nextScene)
+        if (ResourceLoader.Load(path, "PackedScene", 0) is not PackedScene nextLevel)
         {
-            GD.PrintErr("Invalid scene path");
+            GD.PrintErr("Invalid level path");
             IsTransitioning = false;
             return;
         }
 
-        EmitSignal(nameof(BeginUnloadingScene));
+        GD.Print("Unloading level: " + CurrentLevel.Name);
+        EmitSignal(nameof(BeginUnloadingLevel));
 
         PreviousLevelName = CurrentLevel.Name;
 
@@ -102,9 +104,10 @@ public partial class LevelManager : Singleton<LevelManager>
 
         CurrentLevel?.CallDeferred("queue_free");
         await ToSignal(CurrentLevel, "tree_exited");
-        CurrentLevel = nextScene.Instantiate();
+        CurrentLevel = nextLevel.Instantiate();
         sceneTreeRoot.AddChild(CurrentLevel);
 
+        GD.Print("Level loaded: " + CurrentLevel.Name);
         EmitSignal(nameof(LevelLoaded));
 
         await FadeIn();

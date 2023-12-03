@@ -2,7 +2,6 @@ using Godot;
 
 public partial class PlayerSpawner : Node
 {
-    //[Export] public PackedScene Player;
     [Export] public string PlayerPath = "res://Game/Scene/player.tscn";
     private PackedScene Player;
 
@@ -14,8 +13,6 @@ public partial class PlayerSpawner : Node
 
     private void OnLevelLoaded()
     {
-        GD.Print("Level loaded: " + LevelManager.Inst.CurrentLevelInfo.Path);
-
         if (LevelManager.Inst.CurrentLevelInfo.PlayerExistsInLevel)
         {
             string spFromPreviousLevel = "SP_From_" + LevelManager.Inst.PreviousLevelName;
