@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b3ec1vsemvtac"
-path.s3tc="res://.godot/imported/T_Stump_n.png-7a0dd61a6c3e2f89fcfbf32005bd7ec2.s3tc.ctex"
+uid="uid://cuv3byx5qfupy"
+path.s3tc="res://.godot/imported/T_Branch_Pine.png-50f6046f40ab0fc3f373fa52444a0d44.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://addons/StandardAssets/Texture/Common/T_Stump_n.png"
-dest_files=["res://.godot/imported/T_Stump_n.png-7a0dd61a6c3e2f89fcfbf32005bd7ec2.s3tc.ctex"]
+source_file="res://addons/StandardAssets/Texture/Nature/T_Branch_Pine.png"
+dest_files=["res://.godot/imported/T_Branch_Pine.png-50f6046f40ab0fc3f373fa52444a0d44.s3tc.ctex"]
 
 [params]
 
@@ -20,12 +20,12 @@ compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/hdr_compression=1
-compress/normal_map=1
+compress/normal_map=0
 compress/channel_pack=0
 mipmaps/generate=true
 mipmaps/limit=-1
-roughness/mode=1
-roughness/src_normal="res://Test/T_Stump_n.png"
+roughness/mode=0
+roughness/src_normal=""
 process/fix_alpha_border=true
 process/premult_alpha=false
 process/normal_map_invert_y=false

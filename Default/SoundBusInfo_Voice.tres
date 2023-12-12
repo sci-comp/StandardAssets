@@ -1,9 +1,0 @@
-[gd_resource type="Resource" load_steps=2 format=3 uid="uid://dj62v86qvildg"]
-
-[ext_resource type="Script" path="res://addons/StandardAssets/Script/SoundBusInfo.cs" id="1_p5x54"]
-
-[resource]
-script = ExtResource("1_p5x54")
-SoundBus = 4
-Volume = 1.0
-VoiceLimit = 3

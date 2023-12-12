@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://d21nakek20uny"
-path.s3tc="res://.godot/imported/T_Bark_n.png-eb1224a9f464c76add40dd09a46a9990.s3tc.ctex"
+path.s3tc="res://.godot/imported/T_Bark_Pine_n.png-b82724755832142c2e40cade654e3d19.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://addons/StandardAssets/Texture/Common/T_Bark_n.png"
-dest_files=["res://.godot/imported/T_Bark_n.png-eb1224a9f464c76add40dd09a46a9990.s3tc.ctex"]
+source_file="res://addons/StandardAssets/Texture/Nature/T_Bark_Pine_n.png"
+dest_files=["res://.godot/imported/T_Bark_Pine_n.png-b82724755832142c2e40cade654e3d19.s3tc.ctex"]
 
 [params]
 
