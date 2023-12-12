@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://ff0o6fvqdthy"]
 
-[ext_resource type="Script" path="res://addons/StandardAssets/Script/Utility/Debug.cs" id="2_mrlra"]
+[ext_resource type="Script" path="res://addons/StandardAssets/Script/Utility/StandardDebug.cs" id="2_mrlra"]
 [ext_resource type="Script" path="res://addons/StandardAssets/Script/Level/LevelManager.cs" id="3_h4e85"]
 [ext_resource type="Script" path="res://addons/StandardAssets/Script/Level/PlayerSpawner.cs" id="3_ol5x0"]
 [ext_resource type="Texture2D" uid="uid://7ypismovx1sv" path="res://addons/StandardAssets/Texture/Gradient/horizontal.png" id="4_yarav"]

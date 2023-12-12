@@ -1,6 +1,6 @@
 using Godot;
 
-public partial class Debug : CanvasGroup
+public partial class StandardDebug : CanvasGroup
 {
     [Export] public Label CurrentLevelLabel;
     [Export] public Label PerformanceLabel;
