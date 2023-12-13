@@ -1,8 +1,8 @@
 public interface IInspectable
 {
-    string Name { get; }
-    string Details { get; }
-    void Inspect();
-    void Select();
-    void Deselect();
+    public string Name { get; }
+    public string Details { get; }
+    public void Inspect();
+    public void Select();
+    public void Deselect();
 }

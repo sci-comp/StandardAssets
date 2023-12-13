@@ -1,9 +1,11 @@
 using Godot;
 
-public class MovableRock : IInteractable
+public partial class MovableRock : RigidBody3D, IInteractable
 {
     [Export] string name = "Rock";
     [Export] string details = "Push";
+
+    private bool alreadyPushed = false;
 
     public string Name => name;
     public string Details => details;
@@ -26,6 +28,12 @@ public class MovableRock : IInteractable
     public void Interact()
     {
         GD.Print("Movable rock interacted with.");
+        if (!alreadyPushed)
+        {
+            Freeze = false;
+            alreadyPushed = true;
+        }
+        
     }
 
 }

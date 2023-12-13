@@ -1,6 +1,6 @@
 using Godot;
 
-public class SignPost : IInspectable
+public partial class SignPost : Node3D, IInspectable
 {
     [Export] string name = "Sign Post";
     [Export] string details = "This is a sign post.";
