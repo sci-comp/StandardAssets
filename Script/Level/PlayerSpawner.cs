@@ -2,17 +2,27 @@ using Godot;
 
 public partial class PlayerSpawner : Node
 {
-    [Export] public string PlayerPath = "res://Game/Scene/player.tscn";
-    private PackedScene Player;
+    [Export] public string PlayerPath = "res://Prefab/player.tscn";
+
+    private PackedScene player;
 
     public override void _Ready()
     {
         LevelManager.Inst.LevelLoaded += OnLevelLoaded;
-        Player = GD.Load<PackedScene>(PlayerPath);
+        player = GD.Load<PackedScene>(PlayerPath);
+        if (player != null)
+        {
+            GD.Print("PlayerSpawner: Player loaded.");
+        }
+        else
+        {
+            GD.PrintErr("PlayerSpawner: Player not loaded.");
+        }   
     }
 
     private void OnLevelLoaded()
     {
+        GD.Print("PlayerSpawner: OnLevelLoaded");
         if (LevelManager.Inst.CurrentLevelInfo.PlayerExistsInLevel)
         {
             string spFromPreviousLevel = "SP_From_" + LevelManager.Inst.PreviousLevelName;
@@ -30,7 +40,7 @@ public partial class PlayerSpawner : Node
                 GD.PrintErr("Spawn point not found.");
             }
 
-            Node3D playerInstance = (Node3D) Player.Instantiate();
+            Node3D playerInstance = (Node3D) player.Instantiate();
             LevelManager.Inst.CurrentLevel.AddChild(playerInstance);
             playerInstance.GlobalPosition = _spawnpoint.GlobalPosition;
         }

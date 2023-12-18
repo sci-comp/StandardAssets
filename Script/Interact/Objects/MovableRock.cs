@@ -2,12 +2,12 @@ using Godot;
 
 public partial class MovableRock : RigidBody3D, IInteractable
 {
-    [Export] string name = "Rock";
+    [Export] string title = "Rock";
     [Export] string details = "Push";
 
     private bool alreadyPushed = false;
 
-    public string Name => name;
+    public string Title => title;
     public string Details => details;
 
     public void Select()

@@ -2,10 +2,10 @@ using Godot;
 
 public partial class SignPost : Node3D, IInspectable
 {
-    [Export] string name = "Sign Post";
+    [Export] string title = "Sign Post";
     [Export] string details = "This is a sign post.";
 
-    public string Name => name;
+    public string Title => title;
     public string Details => details;
 
     public void Select()

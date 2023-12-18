@@ -24,9 +24,9 @@ public partial class ProximityDetector : Area3D
             inspectable.Select();
             currentSelection = inspectable;
 
-            GD.Print("Selecting: " + inspectable.Name);
+            GD.Print("Selecting: " + inspectable.Title);
 
-            EnableUI(inspectable.Name, inspectable.Details);
+            EnableUI(inspectable.Title, inspectable.Details);
         }
         else
         {
@@ -46,7 +46,7 @@ public partial class ProximityDetector : Area3D
                 currentSelection = null;
 
                 DisableUI();
-
+                    
                 var bodies = GetOverlappingBodies();
                 foreach (var next_body in bodies)
                 {
@@ -54,7 +54,7 @@ public partial class ProximityDetector : Area3D
                     {
                         next_inspectable.Select();
 
-                        EnableUI(inspectable.Name, inspectable.Details);
+                        EnableUI(inspectable.Title, inspectable.Details);
                     }
                 }
             }

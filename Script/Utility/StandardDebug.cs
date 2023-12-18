@@ -12,11 +12,11 @@ public partial class StandardDebug : CanvasGroup
 
     public override void _Input(InputEvent inputEvent)
     {
-        if (inputEvent.IsActionPressed("Debug"))
+        if (inputEvent.IsActionPressed("debug"))
         {
             Visible = !Visible;
         }
-        else if (inputEvent.IsActionPressed("Exit"))
+        else if (inputEvent.IsActionPressed("exit"))
         {
             GetTree().Quit();
         }
