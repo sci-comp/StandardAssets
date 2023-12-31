@@ -19,7 +19,7 @@ _data = {
 "ShaderFade": ExtResource("6_ypi24")
 }
 
-[node name="Game" type="Node"]
+[node name="Test_Game_Manager" type="Node"]
 
 [node name="Debug" type="CanvasGroup" parent="."]
 visible = false
