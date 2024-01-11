@@ -16,10 +16,6 @@ public partial class StandardDebug : CanvasGroup
         {
             Visible = !Visible;
         }
-        else if (inputEvent.IsActionPressed("exit"))
-        {
-            GetTree().Quit();
-        }
     }
 
     private void OnLevelLoaded()
