@@ -17,6 +17,8 @@ uniform float FresnelStrength : hint_range(-2.0, 2.0) = 0.5;
 uniform float FresnelBlend : hint_range(-1.0, 1.0) = 1.0;
 uniform bool DeactivateGlobalVariation;
 
+uniform vec4 backlight : source_color = vec4(0.0, 0.0, 0.0, 1.0);
+
 uniform sampler2D WiggleNoise : hint_default_black;
 uniform float WiggleFrequency = 3.0;
 uniform float WiggleStrength = 0.1;
@@ -92,4 +94,5 @@ void fragment()
 	ALPHA = alpha;
 	EMISSION = fres_col;
 	ALPHA_SCISSOR_THRESHOLD = 0.3;
+	BACKLIGHT = backlight.rgb;
 }
