@@ -37,7 +37,14 @@ public partial class LevelManager : Singleton<LevelManager>
     {
         get
         {
-            return LevelInfoCollection.LevelInfo[CurrentLevelName];
+            if (LevelInfoCollection.LevelInfo.ContainsKey(CurrentLevelName))
+            {
+                return LevelInfoCollection.LevelInfo[CurrentLevelName];
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 

@@ -23,7 +23,7 @@ public partial class PlayerSpawner : Node
     private void OnLevelLoaded()
     {
         GD.Print("PlayerSpawner: OnLevelLoaded");
-        if (LevelManager.Inst.CurrentLevelInfo.PlayerExistsInLevel)
+        if (LevelManager.Inst.CurrentLevelInfo != null && LevelManager.Inst.CurrentLevelInfo.PlayerExistsInLevel)
         {
             string spFromPreviousLevel = "SP_From_" + LevelManager.Inst.PreviousLevelName;
             Node3D _spawnpoint = (Node3D) LevelManager.Inst.CurrentLevel.FindChild(spFromPreviousLevel);
