@@ -89,6 +89,7 @@ public partial class LevelManager : Singleton<LevelManager>
         {
             if (CurrentLevel != null && CurrentLevel.SceneFilePath == path)
             {
+                GD.Print("We are trying to transition to the same scene. Does that make sense?");
                 return;
             }
 

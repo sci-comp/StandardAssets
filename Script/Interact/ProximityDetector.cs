@@ -1,5 +1,4 @@
 using Godot;
-using System.Xml.Linq;
 
 public partial class ProximityDetector : Area3D
 {
@@ -10,6 +9,8 @@ public partial class ProximityDetector : Area3D
 
     public override void _Ready()
     {
+        DisableUI();
+
         BodyEntered += OnBodyEntered;
         BodyExited += OnBodyExited;
     }
@@ -85,7 +86,7 @@ public partial class ProximityDetector : Area3D
     {
         if (currentSelection is IInteractable _interactable) 
         {
-            if (@event.IsActionPressed("Interact"))
+            if (@event.IsActionPressed("jump"))
             {
                 _interactable.Interact();
             }

@@ -1,7 +1,7 @@
 [gd_scene load_steps=13 format=3 uid="uid://cpbxu2g60vnq"]
 
 [ext_resource type="Script" path="res://addons/StandardAssets/Script/Level/LevelPortal.cs" id="1_k065a"]
-[ext_resource type="Material" uid="uid://bi7wgokmickb4" path="res://addons/StandardAssets/Material/VFX/mi_fx_magic_05.tres" id="2_wobva"]
+[ext_resource type="Material" uid="uid://oyqe4ms1s27x" path="res://addons/StandardAssets/Material/VFX/mi_fx_star_04.tres" id="2_8ugvs"]
 
 [sub_resource type="Curve" id="Curve_i6e0p"]
 _data = [Vector2(0, 360), 0.0, 0.0, 0, 0, Vector2(1e-05, 1), 0.0, 0.0, 0, 0, Vector2(0.99999, 0), 0.0, 0.0, 0, 0, Vector2(1, -360), 0.0, 0.0, 0, 0]
@@ -42,7 +42,7 @@ color_ramp = SubResource("GradientTexture1D_j6776")
 turbulence_noise_speed = Vector3(0, 6.48, 0)
 
 [sub_resource type="QuadMesh" id="QuadMesh_0xrto"]
-material = ExtResource("2_wobva")
+material = ExtResource("2_8ugvs")
 
 [sub_resource type="Skin" id="Skin_j5jd2"]
 
