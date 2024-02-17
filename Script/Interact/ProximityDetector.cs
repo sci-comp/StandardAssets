@@ -4,11 +4,14 @@ public partial class ProximityDetector : Area3D
 {
     private IInspectable currentSelection;
 
-    [Export] private Label labelTitle;
-    [Export] private Label labelDetails;
+    private Label labelTitle;
+    private Label labelDetails;
 
     public override void _Ready()
     {
+        labelTitle = GetNode<Label>("../../HUD/Title");
+        labelDetails = GetNode<Label>("../../HUD/Details");
+
         DisableUI();
 
         BodyEntered += OnBodyEntered;

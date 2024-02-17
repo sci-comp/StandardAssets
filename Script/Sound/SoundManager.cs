@@ -1,66 +1,46 @@
 using Godot;
 using System.Collections.Generic;
 
-public enum SoundBUS
-{
-    Ambient,
-    Environment,
-    SFX,
-    UI,
-    Voice
-}
-
-public  class SoundBusInfo
-{
-    public SoundBUS SoundBus;
-    public float Volume = 1.0f;
-    public int VoiceLimit;
-    public List<AudioStreamPlayer3D> ActiveSources = new();
-    public List<SoundGroup> ActiveSourcesSoundGroup = new();
-
-    public SoundBusInfo(SoundBUS _soundBus, int _voiceLimit = 1, float _volume = 1.0f)
-    {
-        Volume = _volume;
-        VoiceLimit = _voiceLimit;
-        ActiveSources = new();
-        ActiveSourcesSoundGroup = new();
-    }
-}
-
 public partial class SoundManager : Singleton<SoundManager>
 {
-    [Export] public Godot.Collections.Array<SoundGroup> SoundGroupsArraySFX;
-    [Export] public Godot.Collections.Array<SoundGroup> SoundGroupsArrayUI;
-    [Export] public Godot.Collections.Array<SoundGroup> SoundGroupsArrayVoice;
+    private Game game;
+
+    public float MasterVolume { get; set; } = 0.7f;
+
+    private Godot.Collections.Array<SoundGroup> SoundGroupsSFX;
+    private Godot.Collections.Array<SoundGroup> SoundGroupsUI;
+    private Godot.Collections.Array<SoundGroup> SoundGroupsVoice;
+    private PossibleSounds possibleSounds;
 
     public readonly Dictionary<SoundBUS, SoundBusInfo> AllBusInfo = new();
-
-    private readonly Dictionary<string, SoundGroup> SoundGroups = new();
+    public Dictionary<string, SoundGroup> SoundGroups = new();
 
     public override void _Ready()
     {
+        game = GetNode<Game>("..");
 
-        AllBusInfo[SoundBUS.SFX] = new SoundBusInfo(SoundBUS.SFX, 12);
-        AllBusInfo[SoundBUS.UI] = new SoundBusInfo(SoundBUS.UI, 3);
-        AllBusInfo[SoundBUS.Voice] = new SoundBusInfo(SoundBUS.Voice, 4);
+        possibleSounds = GetNode<PossibleSounds>("Display/PossibleSounds");
 
-        List<SoundGroup> allSoundGroups = new();
-        allSoundGroups.AddRange(SoundGroupsArraySFX);
-        allSoundGroups.AddRange(SoundGroupsArrayUI);
-        allSoundGroups.AddRange(SoundGroupsArrayVoice);
+        AllBusInfo[SoundBUS.Ambient] = new SoundBusInfo(8, game.Preferences.AmbientVolume);
+        AllBusInfo[SoundBUS.Environment] = new SoundBusInfo(2, game.Preferences.EnvironmentVolume);
+        AllBusInfo[SoundBUS.Music] = new SoundBusInfo(12, game.Preferences.MusicVolume);
+        AllBusInfo[SoundBUS.SFX] = new SoundBusInfo(12, game.Preferences.SFXVolume);
+        AllBusInfo[SoundBUS.UI] = new SoundBusInfo(3, game.Preferences.UIVolume);
+        AllBusInfo[SoundBUS.Voice] = new SoundBusInfo(4, game.Preferences.VoiceVolume);
 
-        foreach (var soundGroup in allSoundGroups)
-        {
-            GD.Print("adding soundGroup, soundGroup.SoundBus: " + soundGroup.SoundBus);
-
-            SoundGroups[soundGroup.Name] = soundGroup;
-        }
-
-        GD.Print("Total number of sound groups: " + SoundGroups.Count);
+        SoundGroups = possibleSounds.GetSoundGroups();
     }
 
     public void HandleAudioSourceStopped(SoundGroup soundGroup, AudioStreamPlayer3D src)
     {
+        GD.Print("TODO: redraw relevant display labels");
+
+        // if (display is open)
+        // {
+        // redraw: relevant bus group
+        // redraw: relevant sound group
+        // }
+
         SoundBusInfo busInfo = AllBusInfo[soundGroup.SoundBus];
 
         if (busInfo.ActiveSources.Count > 0)
@@ -76,7 +56,7 @@ public partial class SoundManager : Singleton<SoundManager>
         {
             SoundBusInfo busInfo = AllBusInfo[soundGroup.SoundBus];
 
-            GD.Print("Playing a new sound for bus: " + busInfo.SoundBus);
+            //GD.Print("Playing a new sound for bus: " + busInfo);
             GD.Print("Active Sources / Voice Limit: " + busInfo.ActiveSources.Count + " / " + busInfo.VoiceLimit);
 
             if (busInfo.ActiveSources.Count >= busInfo.VoiceLimit && busInfo.ActiveSources.Count > 0)
@@ -101,3 +81,4 @@ public partial class SoundManager : Singleton<SoundManager>
     }
 
 }
+

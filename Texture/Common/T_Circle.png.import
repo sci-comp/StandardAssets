@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bgcid7fyjtd30"
-path.s3tc="res://.godot/imported/scribbles.png-0e6dc1559eb75d68da48c025ac183eaa.s3tc.ctex"
+uid="uid://d04j7lt4m55bf"
+path.s3tc="res://.godot/imported/T_Circle.png-9ca289ca6b15cbb3643f4ec1aae9c804.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://addons/StandardAssets/Texture/Gradient/scribbles.png"
-dest_files=["res://.godot/imported/scribbles.png-0e6dc1559eb75d68da48c025ac183eaa.s3tc.ctex"]
+source_file="res://addons/StandardAssets/Texture/Common/T_Circle.png"
+dest_files=["res://.godot/imported/T_Circle.png-9ca289ca6b15cbb3643f4ec1aae9c804.s3tc.ctex"]
 
 [params]
 
@@ -26,7 +26,7 @@ mipmaps/generate=true
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
-process/fix_alpha_border=true
+process/fix_alpha_border=false
 process/premult_alpha=false
 process/normal_map_invert_y=false
 process/hdr_as_srgb=false

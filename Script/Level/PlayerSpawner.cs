@@ -6,18 +6,13 @@ public partial class PlayerSpawner : Node
 
     private PackedScene player;
 
+    public Game Game;
+
     public override void _Ready()
     {
         LevelManager.Inst.LevelLoaded += OnLevelLoaded;
         player = GD.Load<PackedScene>(PlayerPath);
-        if (player != null)
-        {
-            GD.Print("PlayerSpawner: Player loaded.");
-        }
-        else
-        {
-            GD.PrintErr("PlayerSpawner: Player not loaded.");
-        }   
+        Game = GetNode<Game>("..");
     }
 
     private void OnLevelLoaded()
@@ -40,9 +35,13 @@ public partial class PlayerSpawner : Node
                 GD.PrintErr("Spawn point not found.");
             }
 
-            Node3D playerInstance = (Node3D) player.Instantiate();
+            Node playerInstance = player.Instantiate();
+            Menu _menu = playerInstance.GetNode<Menu>("Menu");
+            _menu.Initialize(Game);
             LevelManager.Inst.CurrentLevel.AddChild(playerInstance);
-            playerInstance.GlobalPosition = _spawnpoint.GlobalPosition;
+
+            // TODO
+            GD.Print("TODO: set player position to _spawnpoint.GlobalPosition");
         }
     }
 }
