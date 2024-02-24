@@ -1,4 +1,3 @@
-using Godot;
 using System;
 using System.Collections.Generic;
 
@@ -9,7 +8,7 @@ using System.Collections.Generic;
 /// accessing the current and previous states.
 /// 
 /// </summary>
-public partial class StateMachine<T> : Node
+public class StateMachine<T>
 {
     public T Current { get; private set; }
     public T Previous { get; private set; }
@@ -33,5 +32,6 @@ public partial class StateMachine<T> : Node
         Current = newState;
         OnStateChange?.Invoke();
     }
+
 }
 

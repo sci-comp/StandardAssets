@@ -12,3 +12,4 @@ public partial class PreferencesResource : Resource
     [Export] public float UIVolume = 0.7f;
     [Export] public float VoiceVolume = 0.7f;
 }
+

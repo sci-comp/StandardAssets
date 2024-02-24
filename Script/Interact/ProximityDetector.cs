@@ -3,25 +3,22 @@ using Godot;
 public partial class ProximityDetector : Area3D
 {
     private IInspectable currentSelection;
-
     private Label labelTitle;
     private Label labelDetails;
 
     public override void _Ready()
     {
-        labelTitle = GetNode<Label>("../../HUD/Title");
-        labelDetails = GetNode<Label>("../../HUD/Details");
-
-        DisableUI();
+        labelTitle = GetNode<Label>("Title");
+        labelDetails = GetNode<Label>("Details");
 
         BodyEntered += OnBodyEntered;
         BodyExited += OnBodyExited;
+
+        DisableUI();
     }
 
     private void OnBodyEntered(Node3D body)
     {
-        GD.Print("We've bumped into: " + body.Name);
-
         if (body is IInspectable inspectable)
         {
             inspectable.Inspect();
@@ -40,8 +37,6 @@ public partial class ProximityDetector : Area3D
 
     private void OnBodyExited(Node3D body)
     {
-        GD.Print("We've exited area: " + body.Name);
-
         if (body is IInspectable inspectable)
         {
             if (inspectable == currentSelection)

@@ -1,7 +1,7 @@
 using Godot;
 using System.Threading.Tasks;
 
-public partial class LevelManager : Singleton<LevelManager>
+public partial class LevelManager : Node
 {
     [Export] public int Speed = 2;
     [Export] public Color ShaderColor = new("#000000");
@@ -10,36 +10,30 @@ public partial class LevelManager : Singleton<LevelManager>
     [Export] public bool InvertOnLeave = true;
     [Export] public float Ease = 1.0f;
     [Export] public string LevelInfoCollectionPath = "res://Game/Data/LevelInfoCollectionPath.tres";
-
-    public Node CurrentLevel { get; set; }
-    public string CurrentLevelName => CurrentLevel.Name;
-
-    public string PreviousLevelName { get; set; } = "";
-
+        
     private AnimationPlayer animationPlayer;
     private ColorRect shaderBlendRect;
-    public Node sceneTreeRoot;
-    
     private readonly object levelChangeLock = new();
 
     public bool IsTransitioning { get; set; } = false;
+    public string PreviousLevelName { get; set; } = "";
+    public LevelInfoCollection LevelInfoCollection { get; private set; }
+    public Node CurrentLevel { get; set; }
+    public Node SceneTree { get; set; }
+    public Node SceneTreeRoot { get; set; }
 
     [Signal] public delegate void LevelLoadedEventHandler();
     [Signal] public delegate void BeginUnloadingLevelEventHandler();
     [Signal] public delegate void FadeInCompleteEventHandler();
     [Signal] public delegate void FadeOutCompleteEventHandler();
 
-    public Node SceneTree { get; set; }
-
-    public LevelInfoCollection LevelInfoCollection { get; private set; }
-
     public LevelInfo CurrentLevelInfo
     {
         get
         {
-            if (LevelInfoCollection.LevelInfo.ContainsKey(CurrentLevelName))
+            if (LevelInfoCollection.LevelInfo.ContainsKey(CurrentLevel.Name))
             {
-                return LevelInfoCollection.LevelInfo[CurrentLevelName];
+                return LevelInfoCollection.LevelInfo[CurrentLevel.Name];
             }
             else
             {
@@ -51,7 +45,7 @@ public partial class LevelManager : Singleton<LevelManager>
     public override void _Ready()
     {
         var SceneTree = GetTree();
-        sceneTreeRoot = SceneTree.Root;
+        SceneTreeRoot = SceneTree.Root;
         CurrentLevel = SceneTree.CurrentScene;
 
         var _resource = (Resource)GD.Load(LevelInfoCollectionPath);
@@ -113,7 +107,7 @@ public partial class LevelManager : Singleton<LevelManager>
         CurrentLevel?.CallDeferred("queue_free");
         await ToSignal(CurrentLevel, "tree_exited");
         CurrentLevel = nextLevel.Instantiate();
-        sceneTreeRoot.AddChild(CurrentLevel);
+        SceneTreeRoot.AddChild(CurrentLevel);
 
         GD.Print("Level loaded: " + CurrentLevel.Name);
         EmitSignal(nameof(LevelLoaded));

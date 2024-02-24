@@ -6,3 +6,4 @@ public interface IInspectable
     public void Select();
     public void Deselect();
 }
+

@@ -27,6 +27,6 @@ public partial class LevelInfoCollection : Resource
             return levelInfo;
         }
     }
-} 
 
+} 
 

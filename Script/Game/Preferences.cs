@@ -1,6 +1,6 @@
 using Godot;
 
-public partial class Preferences : Singleton<Preferences>
+public partial class Preferences : Node
 {
     private readonly string savePath = "user://preferences.tres";
 
@@ -8,7 +8,7 @@ public partial class Preferences : Singleton<Preferences>
 
     public override void _Ready()
     {
-        Input.MouseMode = Input.MouseModeEnum.Captured;
+        //Input.MouseMode = Input.MouseModeEnum.Captured;
 
         if (ResourceLoader.Exists(savePath))
         {
@@ -30,9 +30,8 @@ public partial class Preferences : Singleton<Preferences>
         }
     }
 
-    public void SavePreferences(PreferencesResource _preferences)
+    public void SavePreferences()
     {
-        Data = _preferences;
         ResourceSaver.Save(Data, savePath);
         GD.Print("Saved player preferences to: " + savePath);
     }

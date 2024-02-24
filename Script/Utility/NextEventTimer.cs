@@ -11,19 +11,20 @@ using System;
 /// </summary>
 public partial class NextEventTimer : Node
 {
-    public event Action EventTriggered;
+    [Export] public bool alreadyTriggeredEvent = false;
+    [Export] public bool loop = false;
+    [Export] public float t_next_min = 3.0f;
+    [Export] public float t_next_max = 12.0f;
+    [Export] public float t_next_average = 5.0f;
 
-    [Export] public float t_next_min = 0.05f;
-    [Export] public float t_next_max = 3.0f;
-    [Export] public float t_next_average = 2.0f;
-    [Export] public bool loop = true;
-
-    public bool alreadyTriggeredEvent = false;
-
-    private float t_current = 0.0f;
-    private float t_next = 0.0f;
     private float u_min = 0.0f;
     private float u_max = 0.0f;
+    private float t_current = 0.0f;
+    private float t_next = 0.0f;
+
+    public event Action EventTriggered;
+
+    public float Remaining => t_next - t_current;
 
     public override void _Ready()
     {
@@ -35,8 +36,10 @@ public partial class NextEventTimer : Node
         t_next = Mathf.Clamp(t_next, t_next_min, t_next_max);
     }
 
-    public void _Process(float delta)
+    public override void _Process(double _delta)
     {
+        float delta = (float)_delta;
+
         if (loop || !alreadyTriggeredEvent)
         {
             if (t_current > t_next)
@@ -45,7 +48,6 @@ public partial class NextEventTimer : Node
                 alreadyTriggeredEvent = true;
                 t_next = -t_next_average * Mathf.Log(GD.Randf() * (u_max - u_min) + u_min);
                 t_next = Mathf.Clamp(t_next, t_next_min, t_next_max);
-
                 EventTriggered?.Invoke();
             }
             else
@@ -63,4 +65,6 @@ public partial class NextEventTimer : Node
         t_next = -t_next_average * Mathf.Log(GD.Randf() * (u_max - u_min) + u_min);
         t_next = Mathf.Clamp(t_next, t_next_min, t_next_max);
     }
+
 }
+

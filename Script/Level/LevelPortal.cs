@@ -4,18 +4,21 @@ public partial class LevelPortal : Area3D
 {
     [Export] public string LevelToLoad;
 
+    private LevelManager levelManager;
+
     public override void _Ready()
     {
+        levelManager = GetNode<LevelManager>("/root/LevelManager");
+
         BodyEntered += OnBodyEnter;
     }
 
     public void OnBodyEnter(Node body)
     {
-        GD.Print("Portal Collision");
-        if (!LevelManager.Inst.IsTransitioning)
+        if (!levelManager.IsTransitioning)
         {
-            GD.Print("Player entered portal");
-            LevelManager.Inst.ChangeLevel(LevelToLoad);
+            GD.Print("Level portal triggered");
+            levelManager.ChangeLevel(LevelToLoad);
         }
     }
 

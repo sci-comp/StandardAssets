@@ -2,47 +2,56 @@ using Godot;
 
 public partial class PlayerSpawner : Node
 {
-    [Export] public string PlayerPath = "res://Prefab/player.tscn";
+    [Export] public string PlayerPath = "res://Prefab/Player.tscn";
 
+    private LevelManager levelManager;
     private PackedScene player;
-
-    public Game Game;
 
     public override void _Ready()
     {
-        LevelManager.Inst.LevelLoaded += OnLevelLoaded;
+        levelManager = GetNode<LevelManager>("/root/LevelManager");
+
+        levelManager.LevelLoaded += OnLevelLoaded;
         player = GD.Load<PackedScene>(PlayerPath);
-        Game = GetNode<Game>("..");
+
+        if (player == null)
+        {
+            GD.Print("player is null");
+        }
+
+        if (levelManager == null)
+        {
+            GD.Print("levelManager is null");
+        }
     }
 
     private void OnLevelLoaded()
     {
-        GD.Print("PlayerSpawner: OnLevelLoaded");
-        if (LevelManager.Inst.CurrentLevelInfo != null && LevelManager.Inst.CurrentLevelInfo.PlayerExistsInLevel)
+        if (levelManager.CurrentLevelInfo != null && levelManager.CurrentLevelInfo.PlayerExistsInLevel)
         {
-            string spFromPreviousLevel = "SP_From_" + LevelManager.Inst.PreviousLevelName;
-            Node3D _spawnpoint = (Node3D) LevelManager.Inst.CurrentLevel.FindChild(spFromPreviousLevel);
-
+            // Find spawnpoint
+            string spFromPreviousLevel = "SP_From_" + levelManager.PreviousLevelName;
+            Node3D _spawnpoint = (Node3D) levelManager.CurrentLevel.FindChild(spFromPreviousLevel);
             if (_spawnpoint == null)
             {
-                string spCurrentLevel = "SP_" + LevelManager.Inst.CurrentLevelName;
-                GD.Print("spCurrent: " + spCurrentLevel);
-                _spawnpoint = (Node3D) LevelManager.Inst.CurrentLevel.FindChild(spCurrentLevel);
+                string spCurrentLevel = "SP_" + levelManager.CurrentLevel.Name;
+                _spawnpoint = (Node3D) levelManager.CurrentLevel.FindChild(spCurrentLevel);
             }
 
+            // Instantiate player
             if (_spawnpoint == null)
             {
-                GD.PrintErr("Spawn point not found.");
+                GD.PrintErr("No spawnpoint found in level: " + levelManager.CurrentLevel.Name);
             }
-
-            Node playerInstance = player.Instantiate();
-            Menu _menu = playerInstance.GetNode<Menu>("Menu");
-            _menu.Initialize(Game);
-            LevelManager.Inst.CurrentLevel.AddChild(playerInstance);
-
-            // TODO
-            GD.Print("TODO: set player position to _spawnpoint.GlobalPosition");
+            else
+            {
+                GD.Print("Instantiating player at spawnpoint: " + _spawnpoint.Name);
+                CharacterBody3D playerInstance = (CharacterBody3D)player.Instantiate();
+                levelManager.CurrentLevel.AddChild(playerInstance);
+                playerInstance.Position = _spawnpoint.Position;
+            }
         }
     }
+
 }
 
