@@ -1,4 +1,5 @@
 using Godot;
+using System;
 using System.Collections.Generic;
 
 public partial class SFXPlayer3D : Node
@@ -24,6 +25,8 @@ public partial class SFXPlayer3D : Node
         possibleSounds.Initialize(this);
         SoundGroups = possibleSounds.GetSoundGroups();
         audioDisplay.Initialize(this);
+
+        GD.Print(String.Format("3D sfx player ready with {0} sound groups", SoundGroups.Count));
     }
 
     public void PlaySound(string soundGroupName, Vector3 location)

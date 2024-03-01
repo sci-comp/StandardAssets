@@ -2,15 +2,13 @@ using Godot;
 using System.Collections.Generic;
 
 /// <summary>
-/// Manages a pool of particle systems, allowing for efficient reuse of the systems by
-/// activating and deactivating them as needed. The pool is populated with pre-configured
-/// particle systems, and provides a method to trigger a particle system at a specified position.
+/// When TriggerParticleSystemAt is called, the first GpuParticles3D in line is,
+/// dequeued, stopped, started, then enqueued.
 /// </summary>
 public partial class ParticleSystemPool : Node
 {
-    [Export] public GpuParticles3D[] Pool;
-
-    private readonly Queue<GpuParticles3D> particleSystemsQueue = new();
+    private Queue<GpuParticles3D> particleSystemsQueue = new();
+    private GpuParticles3D[] Pool;
 
     public override void _Ready()
     {

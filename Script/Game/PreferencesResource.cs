@@ -4,6 +4,9 @@ public partial class PreferencesResource : Resource
 {
     [Export] public bool UseGamepad = false;
 
+    [Export] public bool EnableAudio = true;
+    [Export] public bool EnableMusic = true;
+
     [Export] public float MasterVolume = 0.7f;
     [Export] public float AmbientVolume = 0.7f;
     [Export] public float EnvironmentVolume = 0.7f;

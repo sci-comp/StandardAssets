@@ -66,5 +66,11 @@ public partial class NextEventTimer : Node
         t_next = Mathf.Clamp(t_next, t_next_min, t_next_max);
     }
 
+    public void Halt()
+    {
+        alreadyTriggeredEvent = true;
+        loop = false;
+    }
+
 }
 

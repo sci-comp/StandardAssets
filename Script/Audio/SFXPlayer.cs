@@ -31,6 +31,8 @@ public partial class SFXPlayer : Node
         };
 
         display.Initialize(this);
+
+        GD.Print(string.Format("Sfx player ready with {0} sound groups", Players.Count));
     }
 
     public void PlaySound(string soundGroupName)

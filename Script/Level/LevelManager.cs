@@ -57,7 +57,7 @@ public partial class LevelManager : Node
         ((ShaderMaterial)shaderBlendRect.Material).SetShaderParameter("dissolve_texture", Pattern);
         ((ShaderMaterial)shaderBlendRect.Material).SetShaderParameter("fade_color", ShaderColor);
 
-        GD.Print("Level loaded: " + CurrentLevel.Name);
+        GD.Print("Level manager ready, loaded: " + CurrentLevel.Name);
         EmitSignal(nameof(LevelLoaded));
     }
 
