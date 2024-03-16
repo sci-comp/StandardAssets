@@ -1,7 +1,0 @@
-[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://b31y134j8dh2g"]
-
-[ext_resource type="Texture2D" uid="uid://cgxvy8o2ntfsq" path="res://addons/StandardAssets/Texture/VFX/t_fx_smoke_04.png" id="1_ntcsj"]
-
-[resource]
-transparency = 1
-albedo_texture = ExtResource("1_ntcsj")
