@@ -11,6 +11,11 @@ public partial class ProximityDetector : Area3D
         labelTitle = GetNode<Label>("Title");
         labelDetails = GetNode<Label>("Details");
 
+        if (labelTitle == null ||  labelDetails == null)
+        {
+            GD.PrintErr("A label reference is null in ProximityDetector");
+        }
+
         BodyEntered += OnBodyEntered;
         BodyExited += OnBodyExited;
 
@@ -25,13 +30,11 @@ public partial class ProximityDetector : Area3D
             inspectable.Select();
             currentSelection = inspectable;
 
-            GD.Print("Selecting: " + inspectable.Title);
-
             EnableUI(inspectable.Title, inspectable.Details);
         }
         else
         {
-            GD.Print("An unfiltered object entered the proximity detection area.");
+            GD.Print("An unfiltered object entered the proximity detection area: " + body.Name);
         }
     }
 
@@ -60,7 +63,7 @@ public partial class ProximityDetector : Area3D
         }
         else
         {
-            GD.Print("An unfiltered object exited the proximity detection area.");
+            GD.Print("An unfiltered object exited the proximity detection area: " + body.Name);
         }
     }
 

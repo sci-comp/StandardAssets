@@ -21,10 +21,12 @@ public partial class SFXPlayer3D : Node
         {
             GD.PrintErr("Null reference to a child node in SFXPlayer3D");
         }
-
-        possibleSounds.Initialize(this);
-        SoundGroups = possibleSounds.GetSoundGroups();
-        audioDisplay.Initialize(this);
+        else
+        {
+            possibleSounds.Initialize(this);
+            SoundGroups = possibleSounds.GetSoundGroups();
+            audioDisplay.Initialize(this);
+        }
 
         GD.Print(String.Format("3D sfx player ready with {0} sound groups", SoundGroups.Count));
     }
