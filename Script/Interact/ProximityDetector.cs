@@ -6,6 +6,8 @@ public partial class ProximityDetector : Area3D
     private Label labelTitle;
     private Label labelDetails;
 
+    public bool SelectionExists => currentSelection != null;
+
     public override void _Ready()
     {
         labelTitle = GetNode<Label>("Title");
