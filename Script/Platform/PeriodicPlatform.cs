@@ -2,9 +2,9 @@ using Godot;
 
 public partial class PeriodicPlatform : AnimatableBody3D
 {
-    [Export] float restDuration = 1.0f;
+    [Export] float restDuration = 3.0f;
     [Export] Vector3 moveDistance = new(0, 1, 0);
-    [Export] float moveDuration = 1.0f;
+    [Export] float moveDuration = 7.0f;
 
     private Vector3 initialPos;
     private Vector3 dest;
@@ -18,9 +18,19 @@ public partial class PeriodicPlatform : AnimatableBody3D
         tween = CreateTween();
 
         tween.TweenProperty(this, "position", dest, moveDuration);
-        tween.TweenInterval(restDuration);
+
+        if (!Mathf.IsZeroApprox(restDuration))
+        {
+            tween.TweenInterval(restDuration);
+        }
+
         tween.TweenProperty(this, "position", initialPos, moveDuration);
-        tween.TweenInterval(restDuration);
+
+        if (!Mathf.IsZeroApprox(restDuration))
+        {
+            tween.TweenInterval(restDuration);
+        }
+
         tween.SetLoops(0);
         tween.Play(); 
     }

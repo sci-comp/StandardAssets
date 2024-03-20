@@ -1,63 +1,32 @@
 using Godot;
-using System.Threading.Tasks;
 
 public partial class Gateway : Area3D
 {
-    [Export] Gateway otherGateway;
-    
-    private bool timedOut = false;
-    private float timeoutDuration = 1.0f;
+    private Vector3 SpawnPosition;
+    private Gateway otherGateway;
 
-    private float t_current = 0.0f;
-    private float checkEvery = 0.15f;
-    private bool checkAgain = false;
-    private Vector3 spawnPosition;
+    public bool WaitingOnPlayerToExitPlatform = false;
 
-    public Vector3 SpawnPosition => spawnPosition;
-
-    public override void _Ready()
+    public void Initialize(Gateway _otherGateway)
     {
-        spawnPosition.X = Position.X;
-        spawnPosition.Y = Position.Y + 1.5f;
-        spawnPosition.Z = Position.Z;
+        SpawnPosition = new Vector3(Position.X, Position.Y + 1f, Position.Z);
+        otherGateway = _otherGateway;
+
+        BodyExited += OnBodyExit;
     }
 
-    public override void _Process(double _dt)
+    public void ActivateGateway(CharacterBody3D character)
     {
-        float dt = (float)_dt;
-
-        if (t_current < checkEvery)
+        if (otherGateway != null && character != null)
         {
-            t_current += dt;
-        }
-        else
-        {
-            t_current = 0.0f;
-
-            if (!timedOut && HasOverlappingBodies())
-            {
-                Node3D other = GetOverlappingBodies()[0];
-
-                if (other is CharacterBody3D character)
-                {
-                    if (Mathf.IsZeroApprox(character.Velocity.Length()))
-                    {
-                        _ = otherGateway.TimeOut();
-                        character.Position = otherGateway.SpawnPosition;
-                    }
-                }
-            }
+            otherGateway.WaitingOnPlayerToExitPlatform = true;
+            character.Position = otherGateway.SpawnPosition;
         }
     }
 
-    public async Task TimeOut()
+    private void OnBodyExit(Node3D body)
     {
-        if (!timedOut)
-        {
-            timedOut = true;
-            await ToSignal(GetTree().CreateTimer(timeoutDuration), "timeout");
-            timedOut = false;
-        }
+        WaitingOnPlayerToExitPlatform = false;
     }
 
 }
