@@ -8,10 +8,11 @@ public partial class Compass : Camera3D
     private TextureRect southIndicator;
     private TextureRect westIndicator;
 
-    // Using TextureRect for lineContainer to utilize Size
     private Control lineContainer;
     private Camera3D playerCamera;
     private const int MaxPOIs = 32;
+
+    private List<PointOfInterest> listOfPointsOfInterest = new List<PointOfInterest>();
 
     public override void _Ready()
     {
@@ -24,26 +25,15 @@ public partial class Compass : Camera3D
 
         lineContainer = GetNode<Control>("Compass");
 
-        if (lineContainer == null)
-        {
-            GD.Print("null lineContainer");
-        }
+        PointOfInterest.POISpawned += OnPOISpawned;
+        PointOfInterest.POIDestroyed += OnPOIDestroyed;
 
-        // Register POIs by finding all nodes in the "POI" group
         var pois = GetTree().GetNodesInGroup("POI");
         foreach (Node poiNode in pois)
         {
             if (poiNode is PointOfInterest poi && poi.IconTexture != null)
             {
-                var poiIcon = new TextureRect
-                {
-                    Texture = poi.IconTexture,
-                    Name = poi.Name + "_Icon",
-                    Visible = false,
-                    StretchMode = TextureRect.StretchModeEnum.KeepAspect
-                };
-                lineContainer.AddChild(poiIcon);
-                poi.IconRepresentation = poiIcon;
+                AddPOIToCompass(poi);
             }
         }
     }
@@ -61,11 +51,10 @@ public partial class Compass : Camera3D
         UpdateIndicatorPosition(southIndicator, playerOrientation, Mathf.Pi);
         UpdateIndicatorPosition(eastIndicator, playerOrientation, 3 * Mathf.Pi / 2);
 
-        var pois = GetTree().GetNodesInGroup("POI");
         int count = 0;
-        foreach (Node poiNode in pois)
+        foreach (PointOfInterest poi in listOfPointsOfInterest)
         {
-            if (poiNode is PointOfInterest poi && count < MaxPOIs)
+            if (count < MaxPOIs)
             {
                 Vector3 directionToPOI = (poi.GlobalTransform.Origin - playerCamera.GlobalTransform.Origin).Normalized();
                 float poiDirectionAngle = Mathf.Atan2(directionToPOI.X, directionToPOI.Z) + Mathf.Pi;
@@ -75,7 +64,6 @@ public partial class Compass : Camera3D
             }
         }
     }
-
 
     private void UpdateIndicatorPosition(TextureRect indicator, float playerOrientation, float directionAngle)
     {
@@ -95,6 +83,40 @@ public partial class Compass : Camera3D
         {
             indicator.Visible = false;
         }
+    }
+
+    public override void _ExitTree()
+    {
+        PointOfInterest.POISpawned -= OnPOISpawned;
+        PointOfInterest.POIDestroyed -= OnPOIDestroyed;
+    }
+
+    private void OnPOISpawned(PointOfInterest poi)
+    {
+        AddPOIToCompass(poi);
+    }
+
+    private void OnPOIDestroyed(PointOfInterest poi)
+    {
+        if (listOfPointsOfInterest.Contains(poi))
+        {
+            listOfPointsOfInterest.Remove(poi);
+            poi.IconRepresentation?.QueueFree();
+        }
+    }
+
+    private void AddPOIToCompass(PointOfInterest poi)
+    {
+        var poiIcon = new TextureRect
+        {
+            Texture = poi.IconTexture,
+            Name = poi.Name + "_Icon",
+            Visible = false,
+            StretchMode = TextureRect.StretchModeEnum.KeepAspect
+        };
+        lineContainer.AddChild(poiIcon);
+        poi.IconRepresentation = poiIcon;
+        listOfPointsOfInterest.Add(poi);
     }
 
 }
