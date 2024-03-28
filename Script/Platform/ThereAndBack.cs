@@ -1,16 +1,13 @@
 using Godot;
 using System;
 
-public partial class ThereAndBack : AnimatableBody3D, ITriggeredPlatform
+public partial class ThereAndBack : PathFollow3D, ITriggeredPlatform
 {
     [Export] public float RestDuration = 1.0f;
-    [Export] public Vector3 MoveDistance = new(0, 1, 0);
-    [Export] public float MoveDuration = 1.0f;
+    [Export] public float MoveDuration = 11.0f;
 
     private bool canBeTriggered = true;
     private bool enabled = false;
-    private Vector3 initialPos;
-    private Vector3 dest;
     private Tween tween;
 
     public bool CanBeTriggered() { return canBeTriggered; }
@@ -18,14 +15,13 @@ public partial class ThereAndBack : AnimatableBody3D, ITriggeredPlatform
 
     public override void _Ready()
     {
-        initialPos = Position;
-        dest = initialPos + MoveDistance;
-
         tween = CreateTween();
-        tween.TweenProperty(this, "position", dest, MoveDuration);
+        tween.TweenProperty(this, "progress_ratio", 1, MoveDuration);
         tween.TweenInterval(RestDuration);
-        tween.TweenProperty(this, "position", initialPos, MoveDuration);
-        tween.TweenCallback(new Callable(this, nameof(OnIdle)));
+        tween.TweenProperty(this, "progress_ratio", 0, MoveDuration);
+        tween.SetLoops();
+        tween.LoopFinished += OnIdle;
+        tween.Pause();
     }
 
     public void Disable()
@@ -44,14 +40,13 @@ public partial class ThereAndBack : AnimatableBody3D, ITriggeredPlatform
         {
             return;
         }
-
         canBeTriggered = false;
         tween.Play();
     }
 
-    private void OnIdle()
+    private void OnIdle(long _loopCount)
     {
-        GD.Print("On idle");
+        tween.Pause();
         canBeTriggered = true;
     }
 

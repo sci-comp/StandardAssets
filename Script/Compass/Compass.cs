@@ -74,7 +74,7 @@ public partial class Compass : Camera3D
 
         if (isInFrontOfPlayer)
         {
-            float normalizedPosition = angleDifference / (Mathf.Pi / 2);
+            float normalizedPosition = -1.0f * angleDifference / (Mathf.Pi / 2);
             float positionX = normalizedPosition * (lineContainer.Size.X / 2) + (lineContainer.Size.X / 2) - (indicator.Size.X / 2);
             indicator.Position = new Vector2(positionX, indicator.Position.Y);
             indicator.Visible = true;

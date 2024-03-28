@@ -1,9 +1,10 @@
 using Godot;
 using System;
 
-public partial class PointOfInterest : Area3D
+public partial class PointOfInterest : Node3D
 {
     [Export] public Texture2D IconTexture;
+    //[Export] public bool DestroyWhenFound = false;
 
     public TextureRect IconRepresentation { get; set; }
 
@@ -14,14 +15,17 @@ public partial class PointOfInterest : Area3D
     {
         AddToGroup("POI");
         POISpawned?.Invoke(this);
-        BodyEntered += OnBodyEntered;
+        //BodyEntered += OnBodyEntered;
     }
 
-    private void OnBodyEntered(Node3D other)
+    /*private void OnBodyEntered(Node3D other)
     {
-        POIDestroyed?.Invoke(this);
-        QueueFree();
-    }
+        if (DestroyWhenFound)
+        {
+            POIDestroyed?.Invoke(this);
+            QueueFree();
+        }
+    }*/
 
 }
 

@@ -1,68 +1,56 @@
+// 2022 Kasper Arnklit Frandsen - Public Domain - No Rights Reserved
+
+// WORLD NORMAL MIX SHADER
+// This shader can  be used to mix two PBR materials based on a world normal. This is useful for
+// effects such as snow on top of an object, or grass growing on top of an object.
+
+// COMMENTS:
+// LINE 43 - We unpack the background normal map.
+// LINE 44 - Recalculate z-component of the normal map with the Pythagorean theorem.
+// LINE 45 - Apply the tangent-space normal map to the view-space normals.
+// LINE 46 - Convert the world up vector into view-space with a matrix multiplication.
+// LINE 47 - Compare the up vector to the surface with the normal map applied using the dot product.
+// LINE 48 - Remap the dot-product to a clamped mask using the smoothstep function.
+// LINE 50 - Mix the various textures and apply them, using the mask.
+
 shader_type spatial;
-render_mode diffuse_burley, specular_schlick_ggx;
 
-uniform sampler2D tex_1_albedo: source_color;
-uniform sampler2D tex_1_normal : hint_normal;
-uniform sampler2D tex_2_albedo: source_color;
-uniform sampler2D tex_2_normal : hint_normal;
-uniform float blend_smoothness : hint_range(0.1, 1.0, 0.01) = 0.2;
-uniform float threshold : hint_range(0.1, 1.0, 0.01) = 0.0;
-uniform bool use_world_direction = false;
-uniform vec3 world_direction = vec3(0.0, 1.0, 0.0);
+uniform float offset : hint_range(-1.0, 1.0) = 0.5;
+uniform float fade : hint_range(0.0, 1.0) = 0.1;
 
-uniform vec2 tex_scale = vec2(1.0, 1.0);
+uniform vec3 uv_scale_fg = vec3(1.0);
+uniform vec3 uv_scale_bg = vec3(1.0);
 
-void fragment()
-{
-    vec4 worldPos = INV_VIEW_MATRIX * vec4(VERTEX, 1.0);
-    
-    vec4 albedo1;
-    vec4 albedo2;
-    vec3 normal1;
-    vec3 normal2;
-    float mix_factor = 0.0;
+uniform sampler2D albedo_texture_fg : hint_default_white;
+uniform sampler2D orm_texture_fg : hint_default_white;
+uniform sampler2D normal_texture_fg : hint_normal;
 
-    // Triplanar mapping
-    vec3 norm = abs(normalize(NORMAL));
-    vec3 triplanarWeights = abs(norm);
-    triplanarWeights /= dot(triplanarWeights, vec3(1.0));
+uniform sampler2D albedo_texture_bg : hint_default_white;
+uniform sampler2D orm_texture_bg : hint_default_white;
+uniform sampler2D normal_texture_bg : hint_normal;
 
-    vec2 uvX = worldPos.zy * tex_scale;
-    vec2 uvY = worldPos.xz * tex_scale;
-    vec2 uvZ = worldPos.xy * tex_scale;
+void fragment() {
+	vec2 fg_uv = UV * uv_scale_fg.xy;
+	vec2 bg_uv = UV * uv_scale_bg.xy;
+	vec3 albedo_tex_fg = texture(albedo_texture_fg, fg_uv).rgb;
+	vec3 orm_tex_fg = texture(orm_texture_fg, fg_uv).rgb;
+	vec3 normal_tex_fg = texture(normal_texture_fg, fg_uv).rgb;
+	
+	vec3 albedo_tex_bg = texture(albedo_texture_bg, bg_uv).rgb;
+	vec3 orm_tex_bg = texture(orm_texture_bg, bg_uv).rgb;
+	vec3 normal_tex_bg = texture(normal_texture_bg, bg_uv).rgb;
+	
+	vec3 bg_normal = normal_tex_bg * 2.0 - 1.0;
+	bg_normal.z = sqrt(1.0 - bg_normal.x * bg_normal.x - bg_normal.y * bg_normal.y);
+	vec3 normal_applied = bg_normal.x * TANGENT + bg_normal.y * BINORMAL + bg_normal.z * NORMAL;
+	vec3 up_vector_viewspace = mat3(VIEW_MATRIX) * vec3(0.0, 1.0, 0.0);
+	float dot_product = dot(up_vector_viewspace, normal_applied);
+	float mask = smoothstep(offset - fade, offset + fade, dot_product);
 
-    albedo1 = texture(tex_1_albedo, uvX) * triplanarWeights.x + 
-              texture(tex_1_albedo, uvY) * triplanarWeights.y + 
-              texture(tex_1_albedo, uvZ) * triplanarWeights.z;
-
-    albedo2 = texture(tex_2_albedo, uvX) * triplanarWeights.x + 
-              texture(tex_2_albedo, uvY) * triplanarWeights.y + 
-              texture(tex_2_albedo, uvZ) * triplanarWeights.z;
-
-    normal1 = texture(tex_1_normal, uvX).rgb * triplanarWeights.x + 
-              texture(tex_1_normal, uvY).rgb * triplanarWeights.y + 
-              texture(tex_1_normal, uvZ).rgb * triplanarWeights.z;
-
-    normal2 = texture(tex_2_normal, uvX).rgb * triplanarWeights.x + 
-              texture(tex_2_normal, uvY).rgb * triplanarWeights.y + 
-              texture(tex_2_normal, uvZ).rgb * triplanarWeights.z;
-
-    if (use_world_direction)
-    {
-        vec3 unpacked_normal = normal1 * 2.0 - vec3(1.0);
-        unpacked_normal.z = sqrt(max(0.0, 1.0 - dot(unpacked_normal.xy, unpacked_normal.xy)));
-
-        vec3 world_tangent = (VIEW_MATRIX * vec4(TANGENT, 0.0)).xyz;
-        vec3 world_binormal = (VIEW_MATRIX * vec4(BINORMAL, 0.0)).xyz;
-        vec3 world_normal = (INV_VIEW_MATRIX * vec4(NORMAL, 0.0)).xyz;
-
-        vec3 normalmap_normal = normalize(unpacked_normal.y * world_tangent + unpacked_normal.x * world_binormal + world_normal * unpacked_normal.z);
-
-        mix_factor += clamp(dot(normalmap_normal, world_direction), 0.0, 1.0);
-    }
-
-    mix_factor = smoothstep(0.0, blend_smoothness, mix_factor - threshold);
-
-    NORMAL = mix(normal1, normal2, mix_factor);
-    ALBEDO = clamp(mix(albedo1, albedo2, mix_factor).rgb, vec3(0.0), vec3(1.0));
+	ALBEDO = mix(albedo_tex_bg, albedo_tex_fg, mask);
+	vec3 mixed_orm = mix(orm_tex_bg, orm_tex_fg, mask);
+	AO = mixed_orm.r;
+	ROUGHNESS = mixed_orm.g;
+	METALLIC = mixed_orm.b;
+	NORMAL_MAP = mix(normal_tex_bg, normal_tex_fg, mask);
 }
