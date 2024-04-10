@@ -9,7 +9,7 @@ public partial class LevelManager : Node
     [Export] public float WaitTime = 0.5f;
     [Export] public bool InvertOnLeave = true;
     [Export] public float Ease = 1.0f;
-    [Export] public string LevelInfoCollectionPath = "res://Game/Data/LevelInfoCollectionPath.tres";
+    [Export] public string LevelInfoCollectionPath = "res://Game/Data/Level_Information.tres";
         
     private AnimationPlayer animationPlayer;
     private ColorRect shaderBlendRect;
