@@ -16,9 +16,9 @@ public partial class SoundGroup3D : Node
 
     public int TotalVariations => ActiveSources.Count + AvailableSources.Count;
 
-    public override void _Ready()
+    public void Initialize(SFXPlayer3D _sfxPlayer3D)
     {
-        sfxPlayer3D = GetNode<SFXPlayer3D>("/root/SFXPlayer3D");
+        sfxPlayer3D = _sfxPlayer3D;
 
         foreach (AudioStreamPlayer3D audioStreamPlayer3D in GetChildren().Cast<AudioStreamPlayer3D>())
         {
@@ -40,15 +40,17 @@ public partial class SoundGroup3D : Node
     {
         GD.Print("On audio finished playing.");
         ActiveSources.Remove(src);
-        AvailableSources.Append(src);
+        AvailableSources.Add(src);
         sfxPlayer3D.UpdateSoundGroupDisplay(this);
+        //GD.Print("AvailableSources.Count: ", AvailableSources.Count +
+                       //", ActiveSources.Count: ", ActiveSources.Count);
     }
 
     public void Stop(AudioStreamPlayer3D src)
     {
         src.Stop();
         ActiveSources.Remove(src);
-        AvailableSources.Append(src);
+        AvailableSources.Add(src);
         sfxPlayer3D.UpdateSoundGroupDisplay(this);
     }
 
@@ -64,11 +66,15 @@ public partial class SoundGroup3D : Node
             Stop(src);
         }
 
-        src = AvailableSources[rnd.RandiRange(0, AvailableSources.Count)];
+        int idx = rnd.RandiRange(0, AvailableSources.Count - 1);
+        src = AvailableSources[idx];
         src.PitchScale = (float)GD.RandRange(VaryPitch.X, VaryPitch.Y);
         src.VolumeDb = (float)GD.RandRange(VaryVolume.X, VaryVolume.Y);
 
+        AvailableSources.RemoveAt(idx);
         ActiveSources.Add(src);
+
+        sfxPlayer3D.UpdateSoundGroupDisplay(this);
 
         return (src, this);
     }

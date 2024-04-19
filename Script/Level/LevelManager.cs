@@ -1,4 +1,5 @@
 using Godot;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public partial class LevelManager : Node
@@ -16,6 +17,7 @@ public partial class LevelManager : Node
     private readonly object levelChangeLock = new();
 
     public bool IsTransitioning { get; set; } = false;
+    public string DesiredSpawnpoint { get; set; } = "";
     public string PreviousLevelName { get; set; } = "";
     public LevelInfoCollection LevelInfoCollection { get; private set; }
     public Node CurrentLevel { get; set; }
@@ -61,8 +63,10 @@ public partial class LevelManager : Node
         EmitSignal(nameof(LevelLoaded));
     }
 
-    public void ChangeLevel(string levelName)
+    public void ChangeLevel(string levelName, string spawnpoint = "")
     {
+        DesiredSpawnpoint = spawnpoint;
+
         LevelInfo _info = LevelInfoCollection.LevelInfo[levelName];
 
         // Wait until the end of the frame
@@ -92,7 +96,7 @@ public partial class LevelManager : Node
 
         if (ResourceLoader.Load(path, "PackedScene", 0) is not PackedScene nextLevel)
         {
-            GD.PrintErr("Invalid level path");
+            GD.PrintErr("Invalid level path: ", path);
             IsTransitioning = false;
             return;
         }

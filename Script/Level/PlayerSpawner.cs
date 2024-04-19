@@ -29,22 +29,31 @@ public partial class PlayerSpawner : Node
     {
         if (levelManager.CurrentLevelInfo != null && levelManager.CurrentLevelInfo.PlayerExistsInLevel)
         {
-            // Find spawnpoint
-            string spFromPreviousLevel = "SP_From_" + levelManager.PreviousLevelName;
-            Node3D _spawnpoint = (Node3D) levelManager.CurrentLevel.FindChild(spFromPreviousLevel);
-            if (_spawnpoint == null)
+            Node3D _spawnpoint = null;
+
+            if (levelManager.DesiredSpawnpoint == "")
             {
-                string spCurrentLevel = "SP_" + levelManager.CurrentLevel.Name;
-                _spawnpoint = (Node3D) levelManager.CurrentLevel.FindChild(spCurrentLevel);
+                GD.Print("No desired spawnpoint was set, using the default spawnpoint");
+            }
+            else
+            {
+                _spawnpoint = (Node3D)levelManager.CurrentLevel.FindChild(levelManager.DesiredSpawnpoint);
+
+                if (_spawnpoint == null)
+                {
+                    GD.PrintErr("Desired spawnpoint was not found: " + levelManager.DesiredSpawnpoint);
+                }
             }
 
-            // Instantiate player
+            _spawnpoint ??= (Node3D)levelManager.CurrentLevel.FindChild("SP_" + levelManager.CurrentLevel.Name);
+
             if (_spawnpoint == null)
             {
                 GD.PrintErr("No spawnpoint found in level: " + levelManager.CurrentLevel.Name);
             }
             else
             {
+                // Instantiate player
                 GD.Print("Instantiating player at spawnpoint: " + _spawnpoint.Name);
                 CharacterBody3D playerInstance = (CharacterBody3D)player.Instantiate();
                 levelManager.CurrentLevel.AddChild(playerInstance);

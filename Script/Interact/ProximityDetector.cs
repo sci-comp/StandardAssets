@@ -18,10 +18,22 @@ public partial class ProximityDetector : Area3D
             GD.PrintErr("A label reference is null in ProximityDetector");
         }
 
+        AreaEntered += OnAreaEntered;
+        AreaExited += OnAreaExited;
         BodyEntered += OnBodyEntered;
         BodyExited += OnBodyExited;
 
         DisableUI();
+    }
+
+    private void OnAreaEntered(Node3D body)
+    {
+        OnBodyEntered(body);
+    }
+
+    private void OnAreaExited(Node3D body)
+    {
+        OnBodyExited(body);
     }
 
     private void OnBodyEntered(Node3D body)

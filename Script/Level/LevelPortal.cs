@@ -3,6 +3,7 @@ using Godot;
 public partial class LevelPortal : Area3D
 {
     [Export] public string LevelToLoad;
+    [Export] public string PortalEnteredSFX = "portal";
 
     private LevelManager levelManager;
 

@@ -25,6 +25,10 @@ public partial class SFXPlayer3D : Node
         {
             possibleSounds.Initialize(this);
             SoundGroups = possibleSounds.GetSoundGroups();
+            foreach (SoundGroup3D soundGroup in SoundGroups.Values)
+            {
+                soundGroup.Initialize(this);
+            }
             audioDisplay.Initialize(this);
         }
 
@@ -35,12 +39,13 @@ public partial class SFXPlayer3D : Node
     {
         if (SoundGroups.TryGetValue(soundGroupName, out SoundGroup3D soundGroup))
         {
-
             (AudioStreamPlayer3D source, SoundGroup3D sourceSoundGroup) = soundGroup.GetAvailableSource();
 
             if (source != null)
             {
                 GD.Print("Playing: " + soundGroupName);
+                //GD.Print("AvailableSources.Count: ", sourceSoundGroup.AvailableSources.Count + 
+                //       ", ActiveSources.Count: ", sourceSoundGroup.ActiveSources.Count);
                 source.Position = location;
                 source.Play();
             }
