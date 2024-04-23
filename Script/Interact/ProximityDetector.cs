@@ -2,6 +2,8 @@ using Godot;
 
 public partial class ProximityDetector : Area3D
 {
+    [Export] public string InteractButton = "button_a";
+
     private IInspectable currentSelection;
     private Label labelTitle;
     private Label labelDetails;
@@ -101,7 +103,7 @@ public partial class ProximityDetector : Area3D
     {
         if (currentSelection is IInteractable _interactable) 
         {
-            if (@event.IsActionPressed("jump"))
+            if (@event.IsActionPressed(InteractButton))
             {
                 _interactable.Interact();
             }
