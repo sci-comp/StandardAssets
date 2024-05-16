@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 public partial class SFXPlayer3D : Node
 {
-    private PossibleSFX3D possibleSounds;
     private Preferences prefs;
     private SFXPlayer3DDisplay audioDisplay;
 
@@ -15,16 +14,16 @@ public partial class SFXPlayer3D : Node
     {
         audioDisplay = GetNode<SFXPlayer3DDisplay>("Display");
         prefs = GetNode<Preferences>("/root/Preferences");
-        possibleSounds = GetNode<PossibleSFX3D>("Display/SoundGroups/PossibleSounds");
-
-        if (audioDisplay == null || prefs == null || possibleSounds == null)
+        
+        if (audioDisplay == null || prefs == null)
         {
             GD.PrintErr("Null reference to a child node in SFXPlayer3D");
         }
         else
         {
-            possibleSounds.Initialize(this);
-            SoundGroups = possibleSounds.GetSoundGroups();
+            PossibleSFX3D possibleSFX3D = new();
+            possibleSFX3D.Initialize(this);
+            SoundGroups = possibleSFX3D.GetSoundGroups();
             foreach (SoundGroup3D soundGroup in SoundGroups.Values)
             {
                 soundGroup.Initialize(this);
@@ -44,8 +43,6 @@ public partial class SFXPlayer3D : Node
             if (source != null)
             {
                 GD.Print("Playing: " + soundGroupName);
-                //GD.Print("AvailableSources.Count: ", sourceSoundGroup.AvailableSources.Count + 
-                //       ", ActiveSources.Count: ", sourceSoundGroup.ActiveSources.Count);
                 source.Position = location;
                 source.Play();
             }

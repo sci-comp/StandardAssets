@@ -1,5 +1,4 @@
 using Godot;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public partial class LevelManager : Node
@@ -10,7 +9,7 @@ public partial class LevelManager : Node
     [Export] public float WaitTime = 0.5f;
     [Export] public bool InvertOnLeave = true;
     [Export] public float Ease = 1.0f;
-    [Export] public string LevelInfoCollectionPath = "res://Game/Data/Level_Information.tres";
+    [Export] public string LevelInfoCollectionPath = "res://Data/LevelInfoCollection.tres";
         
     private AnimationPlayer animationPlayer;
     private ColorRect shaderBlendRect;
@@ -50,8 +49,21 @@ public partial class LevelManager : Node
         SceneTreeRoot = SceneTree.Root;
         CurrentLevel = SceneTree.CurrentScene;
 
-        var _resource = (Resource)GD.Load(LevelInfoCollectionPath);
-        LevelInfoCollection = (LevelInfoCollection)_resource.Duplicate();
+        if (ResourceLoader.Exists(LevelInfoCollectionPath))
+        {
+            var _resource = ResourceLoader.Load(LevelInfoCollectionPath);
+            LevelInfoCollection = (LevelInfoCollection)_resource.Duplicate();
+            if (LevelInfoCollection == null)
+            {
+                GD.PrintErr("LevelInfoCollection is null?");
+                return;
+            }
+        }
+        else
+        {
+            GD.PrintErr("LevelInfoCollection not found at location: ", LevelInfoCollectionPath);
+            return;
+        }
 
         animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
         shaderBlendRect = GetNode<ColorRect>("CanvasLayer/ColorRect");

@@ -42,8 +42,6 @@ public partial class SoundGroup3D : Node
         ActiveSources.Remove(src);
         AvailableSources.Add(src);
         sfxPlayer3D.UpdateSoundGroupDisplay(this);
-        //GD.Print("AvailableSources.Count: ", AvailableSources.Count +
-                       //", ActiveSources.Count: ", ActiveSources.Count);
     }
 
     public void Stop(AudioStreamPlayer3D src)

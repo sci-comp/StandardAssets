@@ -3,41 +3,24 @@ using System.Collections.Generic;
 
 public partial class SFXPlayer : Node
 {
-    private AudioStreamPlayer uiBack;
-    private AudioStreamPlayer uiError;
-    private AudioStreamPlayer uiLight;
-    private AudioStreamPlayer uiNegative;
-    private AudioStreamPlayer uiPositive;
-    private SFXPlayerDisplay display;
-
-    public Dictionary<string, AudioStreamPlayer> Players;
+    public Dictionary<string, AudioStreamPlayer> SoundGroups = new();
 
     public override void _Ready()
     {
-        uiBack = GetNode<AudioStreamPlayer>("UIBack");
-        uiError = GetNode<AudioStreamPlayer>("UIError");
-        uiLight = GetNode<AudioStreamPlayer>("UILight");
-        uiNegative = GetNode<AudioStreamPlayer>("UINegative");
-        uiPositive = GetNode<AudioStreamPlayer>("UIPositive");
-        display = GetNode<SFXPlayerDisplay>("Display");
-
-        Players = new()
+        foreach (Node child in GetChildren())
         {
-            { "ui_back", uiBack },
-            { "ui_error", uiError },
-            { "ui_light", uiLight },
-            { "ui_negative", uiNegative },
-            { "ui_positive", uiPositive }
-        };
+            if (child is AudioStreamPlayer)
+            {
+                SoundGroups[child.Name] = child as AudioStreamPlayer;
+            }
+        }
 
-        display.Initialize(this);
-
-        GD.Print(string.Format("Sfx player ready with {0} sound groups", Players.Count));
+        GD.Print(string.Format("Sfx player ready with {0} sound groups", SoundGroups.Count));
     }
 
     public void PlaySound(string soundGroupName)
     {
-        if (Players.TryGetValue(soundGroupName, out AudioStreamPlayer player))
+        if (SoundGroups.TryGetValue(soundGroupName, out AudioStreamPlayer player))
         {
             if (player != null)
             {
