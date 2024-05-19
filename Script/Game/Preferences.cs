@@ -28,7 +28,7 @@ public partial class Preferences : Node
 
     public override void _Input(InputEvent inputEvent)
     {
-        if (inputEvent.IsActionPressed("exit"))
+        if (inputEvent.IsActionPressed("exit_program"))
         {
             GetTree().Quit();
         }
