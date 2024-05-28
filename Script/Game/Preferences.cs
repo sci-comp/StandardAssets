@@ -5,41 +5,39 @@ public partial class Preferences : Node
 {
     private readonly string savePath = "user://preferences.tres";
 
-    public PreferencesResource Data { get; set; } = new();
+    public PreferencesResource Data;
 
     public event Action PreferencesUpdated;
 
     public override void _Ready()
     {
-        Input.MouseMode = Input.MouseModeEnum.Captured;
-
         if (ResourceLoader.Exists(savePath))
         {
             Data = (PreferencesResource)ResourceLoader.Load(savePath);
-            UpdateAudioPreferences();
-            PreferencesUpdated?.Invoke();
-            GD.Print("Preferences loaded");
         }
         else
         {
+            Data = new();
             GD.Print("Preferences not found, using defaults");
         }
-    }
 
-    public override void _Input(InputEvent inputEvent)
-    {
-        if (inputEvent.IsActionPressed("exit_program"))
-        {
-            GetTree().Quit();
-        }
+        UpdateAudioPreferences();
+        PreferencesUpdated?.Invoke();
+        GD.Print("Preferences loaded");
     }
 
     public void SavePreferences()
     {
-        ResourceSaver.Save(Data, savePath);
-        UpdateAudioPreferences();
-        PreferencesUpdated.Invoke();
-        GD.Print("Saved player preferences to: " + savePath);
+        Error result = ResourceSaver.Save(Data, savePath);
+
+        if (result != Error.Ok)
+        {
+            GD.PrintErr("Failed to save preferences to location: " + savePath);
+        }
+        else
+        {
+            GD.Print("Saved player preferences to: " + savePath);
+        }
     }
 
     private void UpdateAudioPreferences()
@@ -69,6 +67,8 @@ public partial class Preferences : Node
         AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("SFX"), Data.SFXVolume);
         AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("UI"), Data.UIVolume);
         AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("Voice"), Data.VoiceVolume);
+
+        GD.Print("Audio settings restored from preferences");
     }
 
 }

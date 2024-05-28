@@ -22,6 +22,7 @@ public partial class LevelManager : Node
     public Node CurrentLevel { get; set; }
     public Node SceneTree { get; set; }
     public Node SceneTreeRoot { get; set; }
+    public string CurrentLevelName => CurrentLevel.Name;
 
     [Signal] public delegate void LevelLoadedEventHandler();
     [Signal] public delegate void BeginUnloadingLevelEventHandler();
