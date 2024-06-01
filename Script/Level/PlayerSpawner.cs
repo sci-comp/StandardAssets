@@ -25,6 +25,11 @@ public partial class PlayerSpawner : Node
         }
 
         GD.Print("[Player Spawner] Ready");
+
+        if (levelManager.CurrentLevelName != null && levelManager.CurrentLevelName != "")
+        {
+            OnLevelLoaded();
+        }
     }
 
     private void OnLevelLoaded()
