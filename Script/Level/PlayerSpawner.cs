@@ -16,13 +16,15 @@ public partial class PlayerSpawner : Node
 
         if (player == null)
         {
-            GD.Print("player is null");
+            GD.Print("[Player Spawner] Player is null");
         }
 
         if (levelManager == null)
         {
-            GD.Print("levelManager is null");
+            GD.Print("[Player Spawner] levelManager is null");
         }
+
+        GD.Print("[Player Spawner] Ready");
     }
 
     private void OnLevelLoaded()
@@ -31,17 +33,17 @@ public partial class PlayerSpawner : Node
         {
             Node3D _spawnpoint = null;
 
-            if (levelManager.DesiredSpawnpoint == "")
+            if (levelManager.RequestedSpawnpoint != "")
             {
-                GD.Print("No desired spawnpoint was set, using the default spawnpoint");
-            }
-            else
-            {
-                _spawnpoint = (Node3D)levelManager.CurrentLevel.FindChild(levelManager.DesiredSpawnpoint);
+                _spawnpoint = (Node3D)levelManager.CurrentLevel.FindChild(levelManager.RequestedSpawnpoint);
 
                 if (_spawnpoint == null)
                 {
-                    GD.PrintErr("Desired spawnpoint was not found: " + levelManager.DesiredSpawnpoint);
+                    GD.PrintErr("[Player Spawner] Requested spawnpoint not found: " + levelManager.RequestedSpawnpoint);
+                }
+                else
+                {
+                    GD.Print("[Player Spawner] Requested spawnpoint found");
                 }
             }
 
@@ -49,16 +51,19 @@ public partial class PlayerSpawner : Node
 
             if (_spawnpoint == null)
             {
-                GD.PrintErr("No spawnpoint found in level: " + levelManager.CurrentLevel.Name);
+                GD.PrintErr("[Player Spawner] No spawnpoint found in level: " + levelManager.CurrentLevel.Name);
+                return;
             }
             else
             {
-                // Instantiate player
-                GD.Print("Instantiating player at spawnpoint: " + _spawnpoint.Name);
-                CharacterBody3D playerInstance = (CharacterBody3D)player.Instantiate();
-                levelManager.CurrentLevel.AddChild(playerInstance);
-                playerInstance.Position = _spawnpoint.Position;
+                GD.Print("[Player Spawner] Default spawnpoint found");
             }
+
+            // Instantiate player
+            CharacterBody3D playerInstance = (CharacterBody3D)player.Instantiate();
+            levelManager.CurrentLevel.AddChild(playerInstance);
+            playerInstance.Position = _spawnpoint.Position;
+            GD.Print("[Player Spawner] Player instantiated at spawnpoint: " + _spawnpoint.Name);
         }
     }
 

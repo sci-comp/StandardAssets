@@ -17,7 +17,7 @@ public partial class SFXPlayer3D : Node
         
         if (audioDisplay == null || prefs == null)
         {
-            GD.PrintErr("Null reference to a child node in SFXPlayer3D");
+            GD.PrintErr("[SFXPlayer3D] Null reference to a child node");
         }
         else
         {
@@ -31,7 +31,7 @@ public partial class SFXPlayer3D : Node
             audioDisplay.Initialize(this);
         }
 
-        GD.Print(String.Format("3D sfx player ready with {0} sound groups", SoundGroups.Count));
+        GD.Print(String.Format("[SFXPlayer3D] Ready with {0} sound groups", SoundGroups.Count));
     }
 
     public void PlaySound(string soundGroupName, Vector3 location)
@@ -42,14 +42,14 @@ public partial class SFXPlayer3D : Node
 
             if (source != null)
             {
-                GD.Print("Playing: " + soundGroupName);
+                GD.Print("[SFXPlayer3D] Playing: " + soundGroupName);
                 source.Position = location;
                 source.Play();
             }
         }
         else
         {
-            GD.Print("Requested a sound group that does not exist: " + soundGroupName);
+            GD.Print("[SFXPlayer3D] Requested a sound group that does not exist: " + soundGroupName);
         }
     }
 

@@ -15,7 +15,7 @@ public partial class SFXPlayer : Node
             }
         }
 
-        GD.Print(string.Format("Sfx player ready with {0} sound groups", SoundGroups.Count));
+        GD.Print(string.Format("[SFXPlayer] Ready with {0} sound groups", SoundGroups.Count));
     }
 
     public void PlaySound(string soundGroupName)
@@ -24,13 +24,13 @@ public partial class SFXPlayer : Node
         {
             if (player != null)
             {
-                GD.Print("Playing: " + soundGroupName);
+                GD.Print("[SFXPlayer] Playing: " + soundGroupName);
                 player.Play();
             }
         }
         else
         {
-            GD.Print("Requested a sound group that does not exist: " + soundGroupName);
+            GD.Print("[SFXPlayer] Requested a sound group that does not exist: " + soundGroupName);
         }
     }
 

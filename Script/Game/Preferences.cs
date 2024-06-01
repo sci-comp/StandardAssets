@@ -14,16 +14,17 @@ public partial class Preferences : Node
         if (ResourceLoader.Exists(savePath))
         {
             Data = (PreferencesResource)ResourceLoader.Load(savePath);
+            GD.Print("[Preferences] Save file loaded");
         }
         else
         {
             Data = new();
-            GD.Print("Preferences not found, using defaults");
+            GD.Print("[Preferences] Resource not found, using defaults");
         }
 
         UpdateAudioPreferences();
         PreferencesUpdated?.Invoke();
-        GD.Print("Preferences loaded");
+        GD.Print("[Preferences] Ready");
     }
 
     public void SavePreferences()
@@ -32,11 +33,11 @@ public partial class Preferences : Node
 
         if (result != Error.Ok)
         {
-            GD.PrintErr("Failed to save preferences to location: " + savePath);
+            GD.PrintErr("[Preferences] Failed to save preferences to location: " + savePath);
         }
         else
         {
-            GD.Print("Saved player preferences to: " + savePath);
+            GD.Print("[Preferences] Saved player preferences to: " + savePath);
         }
     }
 
@@ -68,7 +69,7 @@ public partial class Preferences : Node
         AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("UI"), Data.UIVolume);
         AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("Voice"), Data.VoiceVolume);
 
-        GD.Print("Audio settings restored from preferences");
+        GD.Print("[Preferences] Audio settings restored");
     }
 
 }

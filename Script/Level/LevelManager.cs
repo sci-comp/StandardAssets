@@ -16,7 +16,7 @@ public partial class LevelManager : Node
     private readonly object levelChangeLock = new();
 
     public bool IsTransitioning { get; set; } = false;
-    public string DesiredSpawnpoint { get; set; } = "";
+    public string RequestedSpawnpoint { get; set; } = "";
     public string PreviousLevelName { get; set; } = "";
     public LevelInfoCollection LevelInfoCollection { get; private set; }
     public Node CurrentLevel { get; set; }
@@ -56,13 +56,13 @@ public partial class LevelManager : Node
             LevelInfoCollection = (LevelInfoCollection)_resource.Duplicate();
             if (LevelInfoCollection == null)
             {
-                GD.PrintErr("LevelInfoCollection is null?");
+                GD.PrintErr("[Level Manager] LevelInfoCollection is null");
                 return;
             }
         }
         else
         {
-            GD.PrintErr("LevelInfoCollection not found at location: ", LevelInfoCollectionPath);
+            GD.PrintErr("[Level Manager] LevelInfoCollection not found at location: ", LevelInfoCollectionPath);
             return;
         }
 
@@ -72,13 +72,12 @@ public partial class LevelManager : Node
         ((ShaderMaterial)shaderBlendRect.Material).SetShaderParameter("dissolve_texture", Pattern);
         ((ShaderMaterial)shaderBlendRect.Material).SetShaderParameter("fade_color", ShaderColor);
 
-        GD.Print("Level manager ready, loaded: " + CurrentLevel.Name);
-        EmitSignal(nameof(LevelLoaded));
+        GD.Print("[Level Manager] Ready");
     }
 
     public void ChangeLevel(string levelName, string spawnpoint = "")
     {
-        DesiredSpawnpoint = spawnpoint;
+        RequestedSpawnpoint = spawnpoint;
 
         LevelInfo _info = LevelInfoCollection.LevelInfo[levelName];
 
@@ -91,7 +90,7 @@ public partial class LevelManager : Node
     {
         if (path == null)
         {
-            GD.PrintErr("Scene path is null");
+            GD.PrintErr("[Level Manager] Scene path is null");
             IsTransitioning = false;
             return;
         }
@@ -100,7 +99,7 @@ public partial class LevelManager : Node
         {
             if (CurrentLevel != null && CurrentLevel.SceneFilePath == path)
             {
-                GD.Print("We are trying to transition to the same scene. Does that make sense?");
+                GD.PrintErr("[Level Manager] Blocking attempt to transition to the already loaded scene");
                 return;
             }
 
@@ -109,12 +108,12 @@ public partial class LevelManager : Node
 
         if (ResourceLoader.Load(path, "PackedScene", 0) is not PackedScene nextLevel)
         {
-            GD.PrintErr("Invalid level path: ", path);
+            GD.PrintErr("[Level Manager] Invalid level path: ", path);
             IsTransitioning = false;
             return;
         }
 
-        GD.Print("Unloading level: " + CurrentLevel.Name);
+        GD.Print("[Level Manager] Unloading level: " + CurrentLevel.Name);
         EmitSignal(nameof(BeginUnloadingLevel));
 
         PreviousLevelName = CurrentLevel.Name;
@@ -126,7 +125,7 @@ public partial class LevelManager : Node
         CurrentLevel = nextLevel.Instantiate();
         SceneTreeRoot.AddChild(CurrentLevel);
 
-        GD.Print("Level loaded: " + CurrentLevel.Name);
+        GD.Print("[Level Manager] Level loaded: " + CurrentLevel.Name);
         EmitSignal(nameof(LevelLoaded));
 
         await FadeIn();
