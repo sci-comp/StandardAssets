@@ -1,6 +1,5 @@
-// https://godotshaders.com/shader/beefed-up-world-normal-mix-shader/
-// original World Mix Shader: 2022 Kasper Arnklit Frandsen - Public Domain - No Rights Reserved
-// additional code from a shader material automatically converted from a spatial material in Godot 4.1
+// Original source: https://godotshaders.com/shader/beefed-up-world-normal-mix-shader/
+// License: MIT
 
 shader_type spatial;
 
@@ -19,7 +18,6 @@ uniform float fade : hint_range(0.0, 1.0) = 0.1;
 uniform vec3 uv_scale_fg = vec3(1.0);
 uniform vec3 uv_scale_bg = vec3(1.0);
 
-
 uniform sampler2D albedo_texture_fg : source_color,filter_linear_mipmap,repeat_enable;
 uniform sampler2D orm_texture_fg : source_color;
 uniform sampler2D normal_texture_fg: hint_normal,filter_linear_mipmap,repeat_enable;
@@ -32,10 +30,8 @@ uniform float normal_scale : hint_range(-16,16) = 1;
 uniform float roughness : hint_range(0,1) = 1;
 uniform float ao_light_affect : hint_range(0.0,1.0);
 
-
-void fragment() {
-	
-
+void fragment() 
+{
 	vec2 fg_uv = UV * uv_scale_fg.xy;
 	vec2 bg_uv = UV * uv_scale_bg.xy;
 	vec3 albedo_tex_fg = texture(albedo_texture_fg, fg_uv).rgb;
@@ -61,18 +57,23 @@ void fragment() {
 	//METALLIC = mixed_orm.b;
 	NORMAL_MAP = mix(normal_tex_bg, normal_tex_fg, mask);
 
-	if (use_detail_map) {
-	vec2 detail_uv = UV * detail_uv_scale.xy;
-	vec4 detail_tex = texture(texture_detail_albedo,detail_uv);
-	vec4 detail_norm_tex = texture(texture_detail_normal,detail_uv);
-	vec4 detail_mask_tex = texture(texture_detail_mask,detail_uv);
-	if (enable_detail_albedo) {
-	vec3 detail = mix(ALBEDO.rgb,detail_tex.rgb,detail_tex.a);
-	ALBEDO = mix(ALBEDO,detail,detail_mask_tex.r);
+	if (use_detail_map) 
+	{
+		vec2 detail_uv = UV * detail_uv_scale.xy;
+		vec4 detail_tex = texture(texture_detail_albedo,detail_uv);
+		vec4 detail_norm_tex = texture(texture_detail_normal,detail_uv);
+		vec4 detail_mask_tex = texture(texture_detail_mask,detail_uv);
+		
+		if (enable_detail_albedo) 
+		{
+			vec3 detail = mix(ALBEDO.rgb,detail_tex.rgb,detail_tex.a);
+			ALBEDO = mix(ALBEDO,detail,detail_mask_tex.r);
+		}
+		
+		vec3 detail_norm = mix(NORMAL_MAP,detail_norm_tex.rgb,detail_tex.a);
+		NORMAL_MAP = mix(NORMAL_MAP,detail_norm,detail_mask_tex.r);
 	}
-	vec3 detail_norm = mix(NORMAL_MAP,detail_norm_tex.rgb,detail_tex.a);
-	NORMAL_MAP = mix(NORMAL_MAP,detail_norm,detail_mask_tex.r);
 	
-	}
 	NORMAL_MAP_DEPTH = normal_scale;
 }
+

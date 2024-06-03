@@ -1,4 +1,5 @@
-// https://godotshaders.com/shader/pbr-glass/
+// Original source: https://godotshaders.com/shader/pbr-glass/
+// License: CC0
 
 shader_type spatial;
 render_mode diffuse_burley, specular_schlick_ggx, blend_mix;

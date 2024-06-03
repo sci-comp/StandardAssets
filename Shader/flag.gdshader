@@ -1,4 +1,5 @@
-// https://github.com/gdquest-demos/godot-shaders/blob/master/godot/Shaders/flag_3d.shader
+// Original source: https://github.com/gdquest-demos/godot-shaders
+// License: MIT
 
 shader_type spatial;
 
