@@ -1,5 +1,3 @@
-//https://godotshaders.com/shader/dashed-grid-the-best-darn-grid-shader-yet/
-
 shader_type spatial;
 
 uniform float subdivisions : hint_range(1, 1024, 1.0) = 32;
@@ -27,6 +25,7 @@ uniform float in_dashed_scale_y : hint_range(0.0, 0.99, 0.01) = 0.3;
 uniform float in_dashed_count_x : hint_range(0.0, 18.0, 1.0) = 6.0;
 uniform float in_dashed_count_y : hint_range(0.0, 18.0, 1.0) = 6.0;
 
+
 float grid(vec2 uv, vec2 lineWidth,bool check) {
 	vec4 uvDDXY = vec4(dFdx(uv), dFdy(uv));
 	vec2 uvDeriv = vec2(length(uvDDXY.xz), length(uvDDXY.yw));
@@ -37,8 +36,10 @@ float grid(vec2 uv, vec2 lineWidth,bool check) {
 		invertLine.y ? 1.0 - lineWidth.y : lineWidth.y
 		);
 	
+	
 	vec2 lineAA = uvDeriv * 1.5;
 	vec2 gridUV = abs((fract(uv)) * 2.0 - 1.0);
+	
 	
 	if (check == true){
 		targetWidth = vec2(1.0);
@@ -61,13 +62,16 @@ float grid(vec2 uv, vec2 lineWidth,bool check) {
 	vec2 drawWidth = clamp(targetWidth, uvDeriv, vec2(1.0));
 	vec2 gridBase = smoothstep(drawWidth + lineAA, drawWidth - lineAA, gridUV);
 	
+	
 	gridBase *= clamp(targetWidth / drawWidth, 0.0, 1.0);
 	gridBase = mix(gridBase , targetWidth , clamp((uvDeriv * 2.0 - 1.0) , 0.0, 1.0));
 	gridBase.x = invertLine.x ? 1.0 - gridBase.x : gridBase.x; 
 	gridBase.y = invertLine.y ? 1.0 - gridBase.y : gridBase.y; 
 	
+	
 	return mix(gridBase.x, 1.0, gridBase.y);
 }
+
 
 float dashed_grid(vec2 uv, vec2 lineWidth, vec2 dot_width, vec2 count, float add){
 	//Inverts the width values
@@ -80,12 +84,13 @@ float dashed_grid(vec2 uv, vec2 lineWidth, vec2 dot_width, vec2 count, float add
 	return grid;
 }
 
+
 void fragment() {
 	//Subdividing uv
 	vec2 uv = UV * subdivisions;
 	
 	//CheckerBoard
-	float checkeredGrid = grid(uv , vec2(0.5), true);
+	float checkeredGrid = grid(uv, vec2(0.5), true);
 	
 	//Grid
 	float mainGrid = dashed_grid(
@@ -112,5 +117,6 @@ void fragment() {
 	
 	ALBEDO = grid;
 
+	
 }
 
