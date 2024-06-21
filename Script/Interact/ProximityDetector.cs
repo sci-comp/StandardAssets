@@ -2,7 +2,7 @@ using Godot;
 
 public partial class ProximityDetector : Area3D
 {
-    [Export] public string InteractButton = "button_a";
+    [Export] public string InteractButton = "a";
 
     private IInspectable currentSelection;
     private Label labelTitle;
