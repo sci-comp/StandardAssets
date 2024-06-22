@@ -3,32 +3,33 @@ using System.Collections.Generic;
 
 public partial class PuzzleManager : Node
 {
-    /*
-    private List<Interactable> levers = new();
-    private Unlockable unlockable;
+    private readonly List<Lever> levers = new();
+    private readonly List<Unlockable> unlockables = new();
 
     public override void _Ready()
     {
-        foreach (Node child in GetNode("Levers").GetChildren())
-        {
-            if (child is Interactable lever)
-            {
-                //lever
-                levers.Add(lever);
-            }
-        }
+        Toolbox.FindAndPopulate(this, levers);
+        Toolbox.FindAndPopulate(this, unlockables);
 
-        unlockable = GetNode<Unlockable>("UnlockableObject");
+        foreach (Lever lever in levers)
+        {
+            lever.Interacted += OnInteract;
+            lever.Reusable = false;
+        }
     }
 
-    private void OnLeverInteracted()
+    private void OnInteract()
     {
         foreach (var lever in levers)
         {
-            if (!lever.IsActivated()) return;
+            if (!lever.Activated) return;
         }
 
-        unlockable.Unlock();
+        foreach (Unlockable unlockable in unlockables)
+        {
+            unlockable.Unlock();
+        }
     }
-    */
+    
 }
+

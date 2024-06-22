@@ -3,10 +3,16 @@ using System;
 
 public partial class HiddenReward : Node3D, Unlockable
 {
+    public override void _Ready()
+    {
+        Visible = false;
+    }
+
     public void Unlock()
     {
         GD.Print("Treasure Chest Unlocked!");
-        // Add unlocking logic here (e.g., animation, open chest, etc.)
+        Visible = true;
+        // Play smoke vfx
     }
 
 }
