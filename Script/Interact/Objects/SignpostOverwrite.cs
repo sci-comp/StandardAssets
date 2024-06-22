@@ -3,7 +3,7 @@ using System;
 
 public partial class SignpostOverwrite : Node
 {
-    [Export] public string Title = "";
+    /*[Export] public string Title = "";
     [Export] public string Details = "";
 
     public override void _Ready()
@@ -17,5 +17,5 @@ public partial class SignpostOverwrite : Node
                 break;
             }
         }
-    }
+    }*/
 }

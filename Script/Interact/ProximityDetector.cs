@@ -4,7 +4,7 @@ public partial class ProximityDetector : Area3D
 {
     [Export] public string InteractButton = "a";
 
-    private IInspectable currentSelection;
+    private Inspectable currentSelection;
     private Label labelTitle;
     private Label labelDetails;
 
@@ -40,7 +40,7 @@ public partial class ProximityDetector : Area3D
 
     private void OnBodyEntered(Node3D body)
     {
-        if (body is IInspectable inspectable)
+        if (body is Inspectable inspectable)
         {
             inspectable.Inspect();
             inspectable.Select();
@@ -56,7 +56,7 @@ public partial class ProximityDetector : Area3D
 
     private void OnBodyExited(Node3D body)
     {
-        if (body is IInspectable inspectable)
+        if (body is Inspectable inspectable)
         {
             if (inspectable == currentSelection)
             {
@@ -68,7 +68,7 @@ public partial class ProximityDetector : Area3D
                 var bodies = GetOverlappingBodies();
                 foreach (var next_body in bodies)
                 {
-                    if (next_body is IInspectable next_inspectable)
+                    if (next_body is Inspectable next_inspectable)
                     {
                         next_inspectable.Select();
 
@@ -101,7 +101,7 @@ public partial class ProximityDetector : Area3D
 
     public override void _UnhandledInput(InputEvent @event)
     {
-        if (currentSelection is IInteractable _interactable) 
+        if (currentSelection is Interactable _interactable) 
         {
             if (@event.IsActionPressed(InteractButton))
             {

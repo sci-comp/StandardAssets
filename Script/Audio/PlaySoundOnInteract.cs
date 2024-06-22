@@ -1,9 +1,9 @@
 using Godot;
 using System;
 
-public partial class PlaySoundOnInteract : StaticBody3D, IInteractable
+public partial class PlaySoundOnInteract : Interactable
 {
-    [Export] public string SoundName = "DoorOpen";
+    /*[Export] public string SoundName = "DoorOpen";
     [Export] string title = "Object";
     [Export] string details = "Unidentified";
 
@@ -36,6 +36,6 @@ public partial class PlaySoundOnInteract : StaticBody3D, IInteractable
     {
         // Do nothing
     }
-
+    */
 }
 

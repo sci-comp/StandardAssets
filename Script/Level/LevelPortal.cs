@@ -3,6 +3,7 @@ using Godot;
 public partial class LevelPortal : Area3D
 {
     [Export] public string LevelToLoad;
+    [Export] public string Spawnpoint = "";
     [Export] public string PortalEnteredSFX = "portal";
 
     private LevelManager levelManager;
@@ -19,7 +20,7 @@ public partial class LevelPortal : Area3D
         if (!levelManager.IsTransitioning)
         {
             GD.Print("Level portal triggered");
-            levelManager.ChangeLevel(LevelToLoad);
+            levelManager.ChangeLevel(LevelToLoad, Spawnpoint);
         }
     }
 

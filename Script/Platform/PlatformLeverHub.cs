@@ -1,12 +1,9 @@
 using Godot;
 using System.Collections.Generic;
 
-public partial class PlatformLeverOverride : Node3D
+public partial class PlatformLeverHub : Node3D
 {
-    [Export] public string Title = "Lever";
-    [Export] public string Details = "";
-
-    private List<PlatformLever> levers = new();
+    private List<Lever> levers = new();
     private List<ITriggeredPlatform> platforms = new();
 
     public override void _Ready()
@@ -14,11 +11,10 @@ public partial class PlatformLeverOverride : Node3D
         FindAndPopulate(this, levers);
         FindAndPopulate(this, platforms);
 
-        foreach (PlatformLever lever in levers)
+        foreach (Lever lever in levers)
         {
-            lever.Initialize(Title, Details, platforms);
+            lever.Interacted += OnInteract;
         }
-
     }
 
     private void FindAndPopulate<T>(Node node, List<T> list) where T : class
@@ -33,5 +29,14 @@ public partial class PlatformLeverOverride : Node3D
             FindAndPopulate(child, list);
         }
     }
+
+    private void OnInteract()
+    {        
+        foreach (ITriggeredPlatform platform in platforms)
+        {
+            platform.Trigger();
+        }
+    }
+
 }
 
