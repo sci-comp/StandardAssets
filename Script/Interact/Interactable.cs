@@ -1,12 +1,17 @@
 using System;
 
-public abstract partial class Interactable : Inspectable
+namespace Game
 {
-    public event Action Interacted;
-
-    public virtual void Interact()
+    public abstract partial class Interactable : Inspectable
     {
-        Interacted?.Invoke();
+        public event Action Interacted;
+
+        public virtual void Interact()
+        {
+            Interacted?.Invoke();
+        }
+
     }
 
 }
+

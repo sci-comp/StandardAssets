@@ -1,18 +1,22 @@
 using Godot;
 
-public partial class PlayParticlesOnEnter : Area3D
+namespace Game
 {
-    private GpuParticles3D particles;
-
-    public override void _Ready()
+    public partial class PlayParticlesOnEnter : Area3D
     {
-        BodyEntered += OnBodyEntered;
-        particles = GetNode<GpuParticles3D>("./vfx_confetti");
-    }
+        private GpuParticles3D particles;
 
-    private void OnBodyEntered(Node3D other)
-    {
-        particles.Emitting = true;
+        public override void _Ready()
+        {
+            BodyEntered += OnBodyEntered;
+            particles = GetNode<GpuParticles3D>("./vfx_confetti");
+        }
+
+        private void OnBodyEntered(Node3D other)
+        {
+            particles.Emitting = true;
+        }
+
     }
 
 }

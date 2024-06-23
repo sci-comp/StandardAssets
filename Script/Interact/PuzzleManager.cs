@@ -1,35 +1,39 @@
 using Godot;
 using System.Collections.Generic;
 
-public partial class PuzzleManager : Node
+namespace Game
 {
-    private readonly List<Lever> levers = new();
-    private readonly List<Unlockable> unlockables = new();
-
-    public override void _Ready()
+    public partial class PuzzleManager : Node
     {
-        Toolbox.FindAndPopulate(this, levers);
-        Toolbox.FindAndPopulate(this, unlockables);
+        private readonly List<Lever> levers = new();
+        private readonly List<Unlockable> unlockables = new();
 
-        foreach (Lever lever in levers)
+        public override void _Ready()
         {
-            lever.Interacted += OnInteract;
-            lever.Reusable = false;
+            Toolbox.FindAndPopulate(this, levers);
+            Toolbox.FindAndPopulate(this, unlockables);
+
+            foreach (Lever lever in levers)
+            {
+                lever.Interacted += OnInteract;
+                lever.Reusable = false;
+            }
         }
+
+        private void OnInteract()
+        {
+            foreach (var lever in levers)
+            {
+                if (!lever.Activated) return;
+            }
+
+            foreach (Unlockable unlockable in unlockables)
+            {
+                unlockable.Unlock();
+            }
+        }
+
     }
 
-    private void OnInteract()
-    {
-        foreach (var lever in levers)
-        {
-            if (!lever.Activated) return;
-        }
-
-        foreach (Unlockable unlockable in unlockables)
-        {
-            unlockable.Unlock();
-        }
-    }
-    
 }
 

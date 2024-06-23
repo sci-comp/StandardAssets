@@ -1,11 +1,15 @@
 using Godot;
 
-public partial class Signpost : Inspectable
+namespace Game
 {
-    [Export] public string _Title = "Signpost";
-    [Export] public string _Details = "";
+    public partial class Signpost : Inspectable
+    {
+        [Export] public string _Title = "Signpost";
+        [Export] public string _Details = "";
 
-    public override string Title => _Title;
-    public override string Details => _Details;
+        public override string Title => _Title;
+        public override string Details => _Details;
+    }
+
 }
 

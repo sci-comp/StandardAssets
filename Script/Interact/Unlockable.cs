@@ -1,9 +1,10 @@
-using Godot;
-using System.Collections.Generic;
-
-public interface Unlockable
+namespace Game
 {
-    public abstract void Unlock();
+    public interface Unlockable
+    {
+        public abstract void Unlock();
+
+    }
 
 }
 

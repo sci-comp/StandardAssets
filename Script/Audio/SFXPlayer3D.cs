@@ -2,63 +2,67 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public partial class SFXPlayer3D : Node
+namespace Game
 {
-    private Preferences prefs;
-    private SFXPlayer3DDisplay audioDisplay;
-
-    public float MasterVolume { get; set; } = 0.7f;
-    public Dictionary<string, SoundGroup3D> SoundGroups = new();
-
-    public override void _Ready()
+    public partial class SFXPlayer3D : Node
     {
-        audioDisplay = GetNode<SFXPlayer3DDisplay>("Display");
-        prefs = GetNode<Preferences>("/root/Preferences");
-        
-        if (audioDisplay == null || prefs == null)
+        private Preferences prefs;
+        private SFXPlayer3DDisplay audioDisplay;
+
+        public float MasterVolume { get; set; } = 0.7f;
+        public Dictionary<string, SoundGroup3D> SoundGroups = new();
+
+        public override void _Ready()
         {
-            GD.PrintErr("[SFXPlayer3D] Null reference to a child node");
-        }
-        else
-        {
-            PossibleSFX3D possibleSFX3D = new();
-            possibleSFX3D.Initialize(this);
-            SoundGroups = possibleSFX3D.GetSoundGroups();
-            foreach (SoundGroup3D soundGroup in SoundGroups.Values)
+            audioDisplay = GetNode<SFXPlayer3DDisplay>("Display");
+            prefs = GetNode<Preferences>("/root/Preferences");
+
+            if (audioDisplay == null || prefs == null)
             {
-                soundGroup.Initialize(this);
+                GD.PrintErr("[SFXPlayer3D] Null reference to a child node");
             }
-            audioDisplay.Initialize(this);
-        }
-
-        GD.Print(String.Format("[SFXPlayer3D] Ready with {0} sound groups", SoundGroups.Count));
-    }
-
-    public void PlaySound(string soundGroupName, Vector3 location)
-    {
-        if (SoundGroups.TryGetValue(soundGroupName, out SoundGroup3D soundGroup))
-        {
-            (AudioStreamPlayer3D source, SoundGroup3D sourceSoundGroup) = soundGroup.GetAvailableSource();
-
-            if (source != null)
+            else
             {
-                GD.Print("[SFXPlayer3D] Playing: " + soundGroupName);
-                source.Position = location;
-                source.Play();
+                PossibleSFX3D possibleSFX3D = new();
+                possibleSFX3D.Initialize(this);
+                SoundGroups = possibleSFX3D.GetSoundGroups();
+                foreach (SoundGroup3D soundGroup in SoundGroups.Values)
+                {
+                    soundGroup.Initialize(this);
+                }
+                audioDisplay.Initialize(this);
+            }
+
+            GD.Print(String.Format("[SFXPlayer3D] Ready with {0} sound groups", SoundGroups.Count));
+        }
+
+        public void PlaySound(string soundGroupName, Vector3 location)
+        {
+            if (SoundGroups.TryGetValue(soundGroupName, out SoundGroup3D soundGroup))
+            {
+                (AudioStreamPlayer3D source, SoundGroup3D sourceSoundGroup) = soundGroup.GetAvailableSource();
+
+                if (source != null)
+                {
+                    GD.Print("[SFXPlayer3D] Playing: " + soundGroupName);
+                    source.Position = location;
+                    source.Play();
+                }
+            }
+            else
+            {
+                GD.Print("[SFXPlayer3D] Requested a sound group that does not exist: " + soundGroupName);
             }
         }
-        else
-        {
-            GD.Print("[SFXPlayer3D] Requested a sound group that does not exist: " + soundGroupName);
-        }
-    }
 
-    public void UpdateSoundGroupDisplay(SoundGroup3D _soundGroup)
-    {
-        if (audioDisplay.Visible)
+        public void UpdateSoundGroupDisplay(SoundGroup3D _soundGroup)
         {
-            audioDisplay.UpdateSoundGroup(_soundGroup);
+            if (audioDisplay.Visible)
+            {
+                audioDisplay.UpdateSoundGroup(_soundGroup);
+            }
         }
+
     }
 
 }

@@ -1,32 +1,36 @@
 using Godot;
 using System.Collections.Generic;
 
-public partial class LevelInfoCollection : Resource
+namespace Game
 {
-    [Export] public Godot.Collections.Array<LevelInfo> LevelInfoList = new();
-
-    private Dictionary<string, LevelInfo> levelInfo;
-
-    public Dictionary<string, LevelInfo> LevelInfo
+    public partial class LevelInfoCollection : Resource
     {
-        get
+        [Export] public Godot.Collections.Array<LevelInfo> LevelInfoList = new();
+
+        private Dictionary<string, LevelInfo> levelInfo;
+
+        public Dictionary<string, LevelInfo> LevelInfo
         {
-            if (levelInfo == null)
+            get
             {
-                levelInfo = new Dictionary<string, LevelInfo>();
-                for (int i = 0; i < LevelInfoList.Count; ++i)
+                if (levelInfo == null)
                 {
-                    LevelInfo _sceneInfo = LevelInfoList[i];
-                    if (!levelInfo.TryAdd(_sceneInfo.LevelName, _sceneInfo))
+                    levelInfo = new Dictionary<string, LevelInfo>();
+                    for (int i = 0; i < LevelInfoList.Count; ++i)
                     {
-                        GD.PrintErr("Duplicate scene name found: " + _sceneInfo.LevelName);
+                        LevelInfo _sceneInfo = LevelInfoList[i];
+                        if (!levelInfo.TryAdd(_sceneInfo.LevelName, _sceneInfo))
+                        {
+                            GD.PrintErr("Duplicate scene name found: " + _sceneInfo.LevelName);
+                        }
                     }
                 }
-            }
 
-            return levelInfo;
+                return levelInfo;
+            }
         }
+
     }
 
-} 
+}
 

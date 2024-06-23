@@ -1,37 +1,41 @@
 using Godot;
 using System.Collections.Generic;
 
-public partial class SFXPlayer : Node
+namespace Game
 {
-    public Dictionary<string, AudioStreamPlayer> SoundGroups = new();
-
-    public override void _Ready()
+    public partial class SFXPlayer : Node
     {
-        foreach (Node child in GetChildren())
+        public Dictionary<string, AudioStreamPlayer> SoundGroups = new();
+
+        public override void _Ready()
         {
-            if (child is AudioStreamPlayer)
+            foreach (Node child in GetChildren())
             {
-                SoundGroups[child.Name] = child as AudioStreamPlayer;
+                if (child is AudioStreamPlayer)
+                {
+                    SoundGroups[child.Name] = child as AudioStreamPlayer;
+                }
+            }
+
+            GD.Print(string.Format("[SFXPlayer] Ready with {0} sound groups", SoundGroups.Count));
+        }
+
+        public void PlaySound(string soundGroupName)
+        {
+            if (SoundGroups.TryGetValue(soundGroupName, out AudioStreamPlayer player))
+            {
+                if (player != null)
+                {
+                    GD.Print("[SFXPlayer] Playing: " + soundGroupName);
+                    player.Play();
+                }
+            }
+            else
+            {
+                GD.Print("[SFXPlayer] Requested a sound group that does not exist: " + soundGroupName);
             }
         }
 
-        GD.Print(string.Format("[SFXPlayer] Ready with {0} sound groups", SoundGroups.Count));
-    }
-
-    public void PlaySound(string soundGroupName)
-    {
-        if (SoundGroups.TryGetValue(soundGroupName, out AudioStreamPlayer player))
-        {
-            if (player != null)
-            {
-                GD.Print("[SFXPlayer] Playing: " + soundGroupName);
-                player.Play();
-            }
-        }
-        else
-        {
-            GD.Print("[SFXPlayer] Requested a sound group that does not exist: " + soundGroupName);
-        }
     }
 
 }

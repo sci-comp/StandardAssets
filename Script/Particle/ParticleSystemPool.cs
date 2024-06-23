@@ -5,39 +5,42 @@ using System.Collections.Generic;
 /// When TriggerParticleSystemAt is called, the first GpuParticles3D in line is,
 /// dequeued, stopped, started, then enqueued.
 /// </summary>
-public partial class ParticleSystemPool : Node
+namespace Game
 {
-    private Queue<GpuParticles3D> particleSystemsQueue = new();
-    private GpuParticles3D[] Pool;
-
-    public override void _Ready()
+    public partial class ParticleSystemPool : Node
     {
-        foreach (GpuParticles3D system in Pool)
-        {
-            system.Visible = false;
-            particleSystemsQueue.Enqueue(system);
-        }
-    }
+        private Queue<GpuParticles3D> particleSystemsQueue = new();
+        private GpuParticles3D[] Pool;
 
-    public void TriggerParticleSystemAt(Vector3 position)
-    {
-        if (particleSystemsQueue.Count == 0)
+        public override void _Ready()
         {
-            return;
+            foreach (GpuParticles3D system in Pool)
+            {
+                system.Visible = false;
+                particleSystemsQueue.Enqueue(system);
+            }
         }
 
-        GpuParticles3D systemToUse = particleSystemsQueue.Dequeue();
-
-        if (systemToUse.Emitting)
+        public void TriggerParticleSystemAt(Vector3 position)
         {
-            systemToUse.Emitting = false;
+            if (particleSystemsQueue.Count == 0)
+            {
+                return;
+            }
+
+            GpuParticles3D systemToUse = particleSystemsQueue.Dequeue();
+
+            if (systemToUse.Emitting)
+            {
+                systemToUse.Emitting = false;
+            }
+
+            systemToUse.Position = position;
+            systemToUse.Visible = true;
+            systemToUse.Emitting = true;
+
+            particleSystemsQueue.Enqueue(systemToUse);
         }
-
-        systemToUse.Position = position;
-        systemToUse.Visible = true;
-        systemToUse.Emitting = true;
-
-        particleSystemsQueue.Enqueue(systemToUse);
     }
 
 }

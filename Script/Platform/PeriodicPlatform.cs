@@ -1,38 +1,42 @@
 using Godot;
 
-public partial class PeriodicPlatform : AnimatableBody3D
+namespace Game
 {
-    [Export] float restDuration = 3.0f;
-    [Export] Vector3 moveDistance = new(0, 1, 0);
-    [Export] float moveDuration = 7.0f;
-
-    private Vector3 initialPos;
-    private Vector3 dest;
-    private Tween tween;
-
-    public override void _Ready()
+    public partial class PeriodicPlatform : AnimatableBody3D
     {
-        initialPos = Position;
-        dest = initialPos + moveDistance;
+        [Export] float restDuration = 3.0f;
+        [Export] float moveDuration = 7.0f;
+        [Export] Vector3 moveDistance = new(0, 1, 0);
 
-        tween = CreateTween();
+        private Vector3 initialPos;
+        private Vector3 dest;
+        private Tween tween;
 
-        tween.TweenProperty(this, "position", dest, moveDuration);
-
-        if (!Mathf.IsZeroApprox(restDuration))
+        public override void _Ready()
         {
-            tween.TweenInterval(restDuration);
+            initialPos = Position;
+            dest = initialPos + moveDistance;
+
+            tween = CreateTween();
+
+            tween.TweenProperty(this, "position", dest, moveDuration);
+
+            if (!Mathf.IsZeroApprox(restDuration))
+            {
+                tween.TweenInterval(restDuration);
+            }
+
+            tween.TweenProperty(this, "position", initialPos, moveDuration);
+
+            if (!Mathf.IsZeroApprox(restDuration))
+            {
+                tween.TweenInterval(restDuration);
+            }
+
+            tween.SetLoops(0);
+            tween.Play();
         }
 
-        tween.TweenProperty(this, "position", initialPos, moveDuration);
-
-        if (!Mathf.IsZeroApprox(restDuration))
-        {
-            tween.TweenInterval(restDuration);
-        }
-
-        tween.SetLoops(0);
-        tween.Play(); 
     }
 
 }

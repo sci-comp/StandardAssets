@@ -1,28 +1,32 @@
 using Godot;
 using System.Collections.Generic;
 
-public partial class PlatformLeverHub : Node
+namespace Game
 {
-    private List<Lever> levers = new();
-    private List<ITriggeredPlatform> platforms = new();
-
-    public override void _Ready()
+    public partial class PlatformLeverHub : Node
     {
-        Toolbox.FindAndPopulate(this, levers);
-        Toolbox.FindAndPopulate(this, platforms);
+        private readonly List<Lever> levers = new();
+        private readonly List<IActivatedPlatform> platforms = new();
 
-        foreach (Lever lever in levers)
+        public override void _Ready()
         {
-            lever.Interacted += OnInteract;
-        }
-    }
+            Toolbox.FindAndPopulate(this, levers);
+            Toolbox.FindAndPopulate(this, platforms);
 
-    private void OnInteract()
-    {        
-        foreach (ITriggeredPlatform platform in platforms)
-        {
-            platform.Trigger();
+            foreach (Lever lever in levers)
+            {
+                lever.Interacted += OnInteract;
+            }
         }
+
+        private void OnInteract()
+        {
+            foreach (IActivatedPlatform platform in platforms)
+            {
+                platform.Activate();
+            }
+        }
+
     }
 
 }

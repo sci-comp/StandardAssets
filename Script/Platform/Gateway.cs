@@ -1,32 +1,36 @@
 using Godot;
 
-public partial class Gateway : Area3D
+namespace Game
 {
-    private Vector3 SpawnPosition;
-    private Gateway otherGateway;
-
-    public bool WaitingOnPlayerToExitPlatform = false;
-
-    public void Initialize(Gateway _otherGateway)
+    public partial class Gateway : Area3D
     {
-        SpawnPosition = new Vector3(Position.X, Position.Y + 1f, Position.Z);
-        otherGateway = _otherGateway;
+        private Vector3 SpawnPosition;
+        private Gateway otherGateway;
 
-        BodyExited += OnBodyExit;
-    }
+        public bool WaitingOnPlayerToExitPlatform = false;
 
-    public void ActivateGateway(CharacterBody3D character)
-    {
-        if (otherGateway != null && character != null)
+        public void Initialize(Gateway _otherGateway)
         {
-            otherGateway.WaitingOnPlayerToExitPlatform = true;
-            character.Position = otherGateway.SpawnPosition;
-        }
-    }
+            SpawnPosition = new Vector3(Position.X, Position.Y + 1f, Position.Z);
+            otherGateway = _otherGateway;
 
-    private void OnBodyExit(Node3D body)
-    {
-        WaitingOnPlayerToExitPlatform = false;
+            BodyExited += OnBodyExit;
+        }
+
+        public void ActivateGateway(CharacterBody3D character)
+        {
+            if (otherGateway != null && character != null)
+            {
+                otherGateway.WaitingOnPlayerToExitPlatform = true;
+                character.Position = otherGateway.SpawnPosition;
+            }
+        }
+
+        private void OnBodyExit(Node3D body)
+        {
+            WaitingOnPlayerToExitPlatform = false;
+        }
+
     }
 
 }

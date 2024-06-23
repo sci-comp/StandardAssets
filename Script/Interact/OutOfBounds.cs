@@ -1,21 +1,25 @@
 using Godot;
 
-public partial class OutOfBounds : Area3D
+namespace Game
 {
-    private Node3D playerResetPosition;
-
-    public override void _Ready()
+    public partial class OutOfBounds : Area3D
     {
-        playerResetPosition = GetNode<Node3D>("SpawnPoint");
-        BodyEntered += OnBodyEntered;
-    }
+        private Node3D playerResetPosition;
 
-    private void OnBodyEntered(Node body)
-    {
-        if (body is CharacterBody3D characterBody)
+        public override void _Ready()
         {
-            characterBody.GlobalTransform = new Transform3D(characterBody.GlobalTransform.Basis, playerResetPosition.GlobalTransform.Origin);
+            playerResetPosition = GetNode<Node3D>("SpawnPoint");
+            BodyEntered += OnBodyEntered;
         }
+
+        private void OnBodyEntered(Node body)
+        {
+            if (body is CharacterBody3D characterBody)
+            {
+                characterBody.GlobalTransform = new Transform3D(characterBody.GlobalTransform.Basis, playerResetPosition.GlobalTransform.Origin);
+            }
+        }
+
     }
 
 }

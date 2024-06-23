@@ -1,75 +1,79 @@
 using Godot;
 using System;
 
-public partial class Preferences : Node
+namespace Game
 {
-    private readonly string savePath = "user://preferences.tres";
-
-    public PreferencesResource Data;
-
-    public event Action PreferencesUpdated;
-
-    public override void _Ready()
+    public partial class Preferences : Node
     {
-        if (ResourceLoader.Exists(savePath))
+        private readonly string savePath = "user://preferences.tres";
+
+        public PreferencesResource Data;
+
+        public event Action PreferencesUpdated;
+
+        public override void _Ready()
         {
-            Data = (PreferencesResource)ResourceLoader.Load(savePath);
-            GD.Print("[Preferences] Save file loaded");
-        }
-        else
-        {
-            Data = new();
-            GD.Print("[Preferences] Resource not found, using defaults");
+            if (ResourceLoader.Exists(savePath))
+            {
+                Data = (PreferencesResource)ResourceLoader.Load(savePath);
+                GD.Print("[Preferences] Save file loaded");
+            }
+            else
+            {
+                Data = new();
+                GD.Print("[Preferences] Resource not found, using defaults");
+            }
+
+            UpdateAudioPreferences();
+            PreferencesUpdated?.Invoke();
+            GD.Print("[Preferences] Ready");
         }
 
-        UpdateAudioPreferences();
-        PreferencesUpdated?.Invoke();
-        GD.Print("[Preferences] Ready");
-    }
+        public void SavePreferences()
+        {
+            Error result = ResourceSaver.Save(Data, savePath);
 
-    public void SavePreferences()
-    {
-        Error result = ResourceSaver.Save(Data, savePath);
-
-        if (result != Error.Ok)
-        {
-            GD.PrintErr("[Preferences] Failed to save preferences to location: " + savePath);
-        }
-        else
-        {
-            GD.Print("[Preferences] Saved player preferences to: " + savePath);
-        }
-    }
-
-    private void UpdateAudioPreferences()
-    {
-        if (Data.EnableAudio && AudioServer.IsBusMute(AudioServer.GetBusIndex("Master")))
-        {
-            AudioServer.SetBusMute(AudioServer.GetBusIndex("Master"), false);
-        }
-        else if (!Data.EnableAudio && !AudioServer.IsBusMute(AudioServer.GetBusIndex("Master")))
-        {
-            AudioServer.SetBusMute(AudioServer.GetBusIndex("Master"), true);
+            if (result != Error.Ok)
+            {
+                GD.PrintErr("[Preferences] Failed to save preferences to location: " + savePath);
+            }
+            else
+            {
+                GD.Print("[Preferences] Saved player preferences to: " + savePath);
+            }
         }
 
-        if (Data.EnableMusic && AudioServer.IsBusMute(AudioServer.GetBusIndex("Music")))
+        private void UpdateAudioPreferences()
         {
-            AudioServer.SetBusMute(AudioServer.GetBusIndex("Music"), false);
-        }
-        else if (!Data.EnableMusic && !AudioServer.IsBusMute(AudioServer.GetBusIndex("Music")))
-        {
-            AudioServer.SetBusMute(AudioServer.GetBusIndex("Music"), true);
+            if (Data.EnableAudio && AudioServer.IsBusMute(AudioServer.GetBusIndex("Master")))
+            {
+                AudioServer.SetBusMute(AudioServer.GetBusIndex("Master"), false);
+            }
+            else if (!Data.EnableAudio && !AudioServer.IsBusMute(AudioServer.GetBusIndex("Master")))
+            {
+                AudioServer.SetBusMute(AudioServer.GetBusIndex("Master"), true);
+            }
+
+            if (Data.EnableMusic && AudioServer.IsBusMute(AudioServer.GetBusIndex("Music")))
+            {
+                AudioServer.SetBusMute(AudioServer.GetBusIndex("Music"), false);
+            }
+            else if (!Data.EnableMusic && !AudioServer.IsBusMute(AudioServer.GetBusIndex("Music")))
+            {
+                AudioServer.SetBusMute(AudioServer.GetBusIndex("Music"), true);
+            }
+
+            AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("Master"), Data.MasterVolume);
+            AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("Ambient"), Data.AmbientVolume);
+            AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("Environment"), Data.EnvironmentVolume);
+            AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("Music"), Data.MusicVolume);
+            AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("SFX"), Data.SFXVolume);
+            AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("UI"), Data.UIVolume);
+            AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("Voice"), Data.VoiceVolume);
+
+            GD.Print("[Preferences] Audio settings restored");
         }
 
-        AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("Master"), Data.MasterVolume);
-        AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("Ambient"), Data.AmbientVolume);
-        AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("Environment"), Data.EnvironmentVolume);
-        AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("Music"), Data.MusicVolume);
-        AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("SFX"), Data.SFXVolume);
-        AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("UI"), Data.UIVolume);
-        AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("Voice"), Data.VoiceVolume);
-
-        GD.Print("[Preferences] Audio settings restored");
     }
 
 }

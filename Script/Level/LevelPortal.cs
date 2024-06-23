@@ -1,27 +1,31 @@
 using Godot;
 
-public partial class LevelPortal : Area3D
+namespace Game
 {
-    [Export] public string LevelToLoad;
-    [Export] public string Spawnpoint = "";
-    [Export] public string PortalEnteredSFX = "portal";
-
-    private LevelManager levelManager;
-
-    public override void _Ready()
+    public partial class LevelPortal : Area3D
     {
-        levelManager = GetNode<LevelManager>("/root/LevelManager");
+        [Export] public string LevelToLoad;
+        [Export] public string Spawnpoint = "";
+        [Export] public string PortalEnteredSFX = "portal";
 
-        BodyEntered += OnBodyEnter;
-    }
+        private LevelManager levelManager;
 
-    public void OnBodyEnter(Node body)
-    {
-        if (!levelManager.IsTransitioning)
+        public override void _Ready()
         {
-            GD.Print("Level portal triggered");
-            levelManager.ChangeLevel(LevelToLoad, Spawnpoint);
+            levelManager = GetNode<LevelManager>("/root/LevelManager");
+
+            BodyEntered += OnBodyEnter;
         }
+
+        public void OnBodyEnter(Node body)
+        {
+            if (!levelManager.IsTransitioning)
+            {
+                GD.Print("Level portal triggered");
+                levelManager.ChangeLevel(LevelToLoad, Spawnpoint);
+            }
+        }
+
     }
 
 }
