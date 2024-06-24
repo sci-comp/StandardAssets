@@ -184,6 +184,37 @@ namespace Game
             return newForward;
         }
 
+        public static List<string> GetPathsWithExtension(string path, string extension)
+        {
+            List<string> paths = new();
+            DirAccess dir = DirAccess.Open(path);
+
+            if (dir != null)
+            {
+                dir.ListDirBegin();
+                string fileName = dir.GetNext();
+
+                while (fileName != "")
+                {
+                    if (dir.CurrentIsDir())
+                    {
+                        if (fileName != "." && fileName != "..")
+                        {
+                            paths.AddRange(GetPathsWithExtension(path + "/" + fileName, extension));
+                        }
+                    }
+                    else if (fileName.EndsWith(extension))
+                    {
+                        paths.Add(path + "/" + fileName);
+                    }
+
+                    fileName = dir.GetNext();
+                }
+            }
+
+            return paths;
+        }
+
     }
 
 }
