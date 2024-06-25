@@ -32,7 +32,7 @@ namespace Game
 
             if (MaxVoices > AvailableSources.Count)
             {
-                GD.Print("More voices are allowed than sources exist for sound group: "
+                GD.Print("[SoundGroup3D] More voices are allowed than sources exist for sound group: "
                     + Name
                     + ". Setting max voices to: " + AvailableSources.Count);
 
@@ -42,7 +42,7 @@ namespace Game
 
         public void OnAudioFinished(AudioStreamPlayer3D src)
         {
-            GD.Print("On audio finished playing.");
+            GD.Print("[SoundGroup3D] Audio finished playing.");
             ActiveSources.Remove(src);
             AvailableSources.Add(src);
             sfxPlayer3D.UpdateSoundGroupDisplay(this);

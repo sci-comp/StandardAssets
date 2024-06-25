@@ -6,7 +6,7 @@ namespace Game
     {
         [Export] public string InteractButton = "interact";
 
-        private Inspectable currentSelection;
+        private IInspectable currentSelection;
         private Label labelTitle;
         private Label labelDetails;
 
@@ -30,58 +30,66 @@ namespace Game
             DisableUI();
         }
 
-        private void OnAreaEntered(Node3D body)
+        private void OnAreaEntered(Area3D area)
         {
-            OnBodyEntered(body);
+            if (area is IInspectable inspectable)
+            {
+                OnEntered(inspectable);
+            }
         }
 
-        private void OnAreaExited(Node3D body)
+        private void OnAreaExited(Area3D area)
         {
-            OnBodyExited(body);
+            if (area is IInspectable inspectable)
+            {
+                OnExited(inspectable);
+            }
         }
 
         private void OnBodyEntered(Node3D body)
         {
-            if (body is Inspectable inspectable)
+            if (body is IInspectable inspectable)
             {
-                inspectable.Inspect();
-                inspectable.Select();
-                currentSelection = inspectable;
-
-                EnableUI(inspectable.Title, inspectable.Details);
-            }
-            else
-            {
-                GD.Print("An unfiltered object entered the proximity detection area: " + body.Name);
+                OnEntered(inspectable);
             }
         }
 
         private void OnBodyExited(Node3D body)
         {
-            if (body is Inspectable inspectable)
+            if (body is IInspectable inspectable)
             {
-                if (inspectable == currentSelection)
+                OnExited(inspectable);
+            }
+        }
+
+        private void OnEntered(IInspectable inspectable)
+        {
+            inspectable.Inspect();
+            inspectable.Select();
+            currentSelection = inspectable;
+
+            EnableUI(inspectable.Title, inspectable.Details);
+        }
+
+        private void OnExited(IInspectable inspectable)
+        {
+            if (inspectable == currentSelection)
+            {
+                inspectable.Deselect();
+                currentSelection = null;
+
+                DisableUI();
+
+                var bodies = GetOverlappingBodies();
+                foreach (var next_body in bodies)
                 {
-                    inspectable.Deselect();
-                    currentSelection = null;
-
-                    DisableUI();
-
-                    var bodies = GetOverlappingBodies();
-                    foreach (var next_body in bodies)
+                    if (next_body is IInspectable next_inspectable)
                     {
-                        if (next_body is Inspectable next_inspectable)
-                        {
-                            next_inspectable.Select();
+                        next_inspectable.Select();
 
-                            EnableUI(inspectable.Title, inspectable.Details);
-                        }
+                        EnableUI(inspectable.Title, inspectable.Details);
                     }
                 }
-            }
-            else
-            {
-                GD.Print("An unfiltered object exited the proximity detection area: " + body.Name);
             }
         }
 
@@ -103,7 +111,7 @@ namespace Game
 
         public override void _UnhandledInput(InputEvent @event)
         {
-            if (currentSelection is Interactable _interactable)
+            if (currentSelection is IInteractable _interactable)
             {
                 if (@event.IsActionPressed(InteractButton))
                 {

@@ -8,7 +8,7 @@ namespace Game
 
         public override void _Ready()
         {
-            playerResetPosition = GetNode<Node3D>("SpawnPoint");
+            playerResetPosition = GetNode<Node3D>("Spawnpoint");
             BodyEntered += OnBodyEntered;
         }
 

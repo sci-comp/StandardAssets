@@ -1,8 +1,9 @@
 using Godot;
+using System;
 
 namespace Game
 {
-    public partial class PlaySoundOnInteract : Interactable
+    public partial class PlaySoundOnInteract : Node3D, IInteractable
     {
         [Export] public string SoundName = "DoorOpen";
         [Export] public string _Title = "Object";
@@ -10,19 +11,27 @@ namespace Game
 
         private SFXPlayer3D player;
 
-        public override string Title => _Title;
-        public override string Details => _Details;
+        public string Title => _Title;
+        public string Details => _Details;
+
+        public event Action Interacted;
 
         public override void _Ready()
         {
             player = GetNode<SFXPlayer3D>("/root/SFXPlayer3D");
         }
 
-        public override void Interact()
+        public void Interact()
         {
             player.PlaySound(SoundName, Position);
-            base.Interact();
+            Interacted?.Invoke();
         }
+
+        public void Inspect() { }
+
+        public void Select() { }
+
+        public void Deselect() { }
 
     }
 

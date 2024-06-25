@@ -175,7 +175,7 @@ namespace Game
             float cos = Mathf.Cos(radians);
             float sin = Mathf.Sin(radians);
 
-            Vector3 newForward = new Vector3(
+            Vector3 newForward = new(
                 cos * characterForward.X + sin * characterForward.Z,
                 characterForward.Y,
                 cos * characterForward.Z - sin * characterForward.X
@@ -184,10 +184,13 @@ namespace Game
             return newForward;
         }
 
-        public static List<string> GetPathsWithExtension(string path, string extension)
+        public static List<string> GetPathsWithExtension(string dir_path, string extension)
         {
+            /* Given a path to a directory, return a list of all files with an extension 
+                matching the parameter. This method checks the contents of nested directories. */
+
             List<string> paths = new();
-            DirAccess dir = DirAccess.Open(path);
+            DirAccess dir = DirAccess.Open(dir_path);
 
             if (dir != null)
             {
@@ -200,12 +203,12 @@ namespace Game
                     {
                         if (fileName != "." && fileName != "..")
                         {
-                            paths.AddRange(GetPathsWithExtension(path + "/" + fileName, extension));
+                            paths.AddRange(GetPathsWithExtension(dir_path + "/" + fileName, extension));
                         }
                     }
                     else if (fileName.EndsWith(extension))
                     {
-                        paths.Add(path + "/" + fileName);
+                        paths.Add(dir_path + "/" + fileName);
                     }
 
                     fileName = dir.GetNext();

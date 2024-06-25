@@ -1,8 +1,9 @@
 using Godot;
+using System;
 
 namespace Game
 {
-    public partial class Lever : Interactable
+    public partial class Lever : Node3D, IInteractable
     {
         [Export] public bool Reusable = true;
         [Export] public float LeverMoveDuration = 0.6f;
@@ -21,9 +22,10 @@ namespace Game
         private Tween tween;
 
         public bool Activated => !canInteract;
+        public event Action Interacted;
 
-        public override string Title => _Title;
-        public override string Details => _Details;
+        public string Title => _Title;
+        public string Details => _Details;
 
         public override void _Ready()
         {
@@ -50,7 +52,7 @@ namespace Game
             canInteract = true;
         }
 
-        public override void Interact()
+        public  void Interact()
         {
             if (!canInteract)
             {
@@ -58,9 +60,12 @@ namespace Game
             }
             canInteract = false;
             tween.Play();
-            base.Interact();
+            Interacted?.Invoke();
         }
 
+        public void Inspect() { }
+        public void Select() { }
+        public void Deselect() { }
     }
 
 }
