@@ -6,15 +6,21 @@ namespace Game
     {
         [Export] public string PlayerPath = "res://Prefab/Player.tscn";
 
+        private CameraBridge cameraBridge;
         private LevelManager levelManager;
         private PackedScene player;
+        private Node nodePhantomCamera3D;
 
         public override void _Ready()
         {
             levelManager = GetNode<LevelManager>("/root/LevelManager");
+            cameraBridge = GetNode<CameraBridge>("CameraBridge");
+            nodePhantomCamera3D = GetNode<Node>("PhantomCamera3D");
 
             levelManager.LevelLoaded += OnLevelLoaded;
             player = GD.Load<PackedScene>(PlayerPath);
+
+            #region Null checks
 
             if (player == null)
             {
@@ -26,12 +32,16 @@ namespace Game
                 GD.Print("[Player Spawner] levelManager is null");
             }
 
-            GD.Print("[Player Spawner] Ready");
+            #endregion
+
+            cameraBridge.Initialize(nodePhantomCamera3D);
 
             if (levelManager.CurrentLevelName != null && levelManager.CurrentLevelName != "")
             {
                 OnLevelLoaded();
             }
+
+            GD.Print("[Player Spawner] Ready");
         }
 
         private void OnLevelLoaded()
@@ -70,8 +80,16 @@ namespace Game
                 CharacterBody3D playerInstance = (CharacterBody3D)player.Instantiate();
                 levelManager.CurrentLevel.AddChild(playerInstance);
                 playerInstance.Position = _spawnpoint.Position;
+
+                if (playerInstance is CharacterController cc)
+                {
+                    cc.CameraBridge = cameraBridge;
+                }
+
                 GD.Print("[Player Spawner] Player instantiated at spawnpoint: " + _spawnpoint.Name);
+
             }
+
         }
 
     }

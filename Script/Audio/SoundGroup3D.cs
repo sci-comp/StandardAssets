@@ -42,7 +42,6 @@ namespace Game
 
         public void OnAudioFinished(AudioStreamPlayer3D src)
         {
-            GD.Print("[SoundGroup3D] Audio finished playing.");
             ActiveSources.Remove(src);
             AvailableSources.Add(src);
             sfxPlayer3D.UpdateSoundGroupDisplay(this);

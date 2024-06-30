@@ -12,10 +12,13 @@ namespace Game
         public float MasterVolume { get; set; } = 0.7f;
         public Dictionary<string, SoundGroup3D> SoundGroups = new();
 
+        private MeshInstance3D debugSphere;
+
         public override void _Ready()
         {
             audioDisplay = GetNode<SFXPlayer3DDisplay>("Display");
             prefs = GetNode<Preferences>("/root/Preferences");
+            debugSphere = GetNode<MeshInstance3D>("DebugSphere");
 
             if (audioDisplay == null || prefs == null)
             {
@@ -47,6 +50,8 @@ namespace Game
                     GD.Print("[SFXPlayer3D] Playing: " + soundGroupName);
                     source.Position = location;
                     source.Play();
+                    //debugSphere.Position = location;
+                    //GD.Print("[SFXPlayer3D] location: ", location);
                 }
             }
             else

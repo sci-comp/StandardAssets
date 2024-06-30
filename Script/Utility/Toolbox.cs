@@ -23,7 +23,7 @@ namespace Game
         Left,
         Right,
         Forward,
-        Back
+        Backward
     }
 
     public static class Toolbox
@@ -169,9 +169,8 @@ namespace Game
                                _direction.Z - _normal.Z * _dot).Normalized();
         }
 
-        public static Vector3 RotateAroundUp(Vector3 characterForward, float degrees)
+        public static Vector3 RotateAroundUp(Vector3 characterForward, float radians)
         {
-            float radians = Mathf.DegToRad(degrees);
             float cos = Mathf.Cos(radians);
             float sin = Mathf.Sin(radians);
 
