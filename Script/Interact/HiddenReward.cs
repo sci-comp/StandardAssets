@@ -2,7 +2,7 @@ using Godot;
 
 namespace Game
 {
-    public partial class HiddenReward : Node3D, Unlockable
+    public partial class HiddenReward : Node3D, IUnlockable
     {
         public override void _Ready()
         {

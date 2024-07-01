@@ -6,7 +6,7 @@ namespace Game
     public partial class PuzzleManager : Node
     {
         private readonly List<Lever> levers = new();
-        private readonly List<Unlockable> unlockables = new();
+        private readonly List<IUnlockable> unlockables = new();
 
         public override void _Ready()
         {
@@ -27,7 +27,7 @@ namespace Game
                 if (!lever.Activated) return;
             }
 
-            foreach (Unlockable unlockable in unlockables)
+            foreach (IUnlockable unlockable in unlockables)
             {
                 unlockable.Unlock();
             }

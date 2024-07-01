@@ -3,7 +3,7 @@ using System;
 
 namespace Game
 {
-    public partial class Lever : Node3D, IInteractable
+    public partial class Lever : Interactable
     {
         [Export] public bool Reusable = true;
         [Export] public float LeverMoveDuration = 0.6f;
@@ -22,10 +22,11 @@ namespace Game
         private Tween tween;
 
         public bool Activated => !canInteract;
-        public event Action Interacted;
 
-        public string Title => _Title;
-        public string Details => _Details;
+        public bool CanInteract() { return canInteract; }
+
+        public override string Title => _Title;
+        public override string Details => _Details;
 
         public override void _Ready()
         {
@@ -52,7 +53,7 @@ namespace Game
             canInteract = true;
         }
 
-        public  void Interact()
+        public override void Interact()
         {
             if (!canInteract)
             {
@@ -60,12 +61,8 @@ namespace Game
             }
             canInteract = false;
             tween.Play();
-            Interacted?.Invoke();
+            base.Interact();
         }
-
-        public void Inspect() { }
-        public void Select() { }
-        public void Deselect() { }
     }
 
 }

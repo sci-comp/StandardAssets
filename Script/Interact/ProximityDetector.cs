@@ -6,11 +6,12 @@ namespace Game
     {
         [Export] public string InteractButton = "interact";
 
-        private IInspectable currentSelection;
+        private Inspectable currentlySelectedStaticBody;
+        private InspectableArea currentlySelectedArea;
         private Label labelTitle;
         private Label labelDetails;
 
-        public bool SelectionExists => currentSelection != null;
+        public bool SelectionExists => (currentlySelectedStaticBody != null) || (currentlySelectedArea != null);
 
         public override void _Ready()
         {
@@ -32,63 +33,75 @@ namespace Game
 
         private void OnAreaEntered(Area3D area)
         {
-            if (area is IInspectable inspectable)
+            if (area is InspectableArea inspectableArea)
             {
-                OnEntered(inspectable);
+                inspectableArea.Inspect();
+                inspectableArea.Select();
+                currentlySelectedArea = inspectableArea;
+                EnableUI(inspectableArea.Title, inspectableArea.Details);
             }
         }
 
         private void OnAreaExited(Area3D area)
         {
-            if (area is IInspectable inspectable)
+            if (area is InspectableArea inspectable)
             {
-                OnExited(inspectable);
+                if (inspectable == currentlySelectedArea)
+                {
+                    inspectable.Deselect();
+                    currentlySelectedArea = null;
+                    DisableUI();
+                    SelectNext();
+                }
             }
         }
 
         private void OnBodyEntered(Node3D body)
         {
-            if (body is IInspectable inspectable)
+            if (body is Inspectable inspectable)
             {
-                OnEntered(inspectable);
+                inspectable.Inspect();
+                inspectable.Select();
+                currentlySelectedStaticBody = inspectable;
+                EnableUI(inspectable.Title, inspectable.Details);
             }
         }
 
         private void OnBodyExited(Node3D body)
         {
-            if (body is IInspectable inspectable)
+            if (body is Inspectable inspectable)
             {
-                OnExited(inspectable);
+                if (inspectable == currentlySelectedStaticBody)
+                {
+                    inspectable.Deselect();
+                    currentlySelectedArea = null;
+                    DisableUI();
+                    SelectNext();
+                }
             }
         }
 
-        private void OnEntered(IInspectable inspectable)
+        private void SelectNext()
         {
-            inspectable.Inspect();
-            inspectable.Select();
-            currentSelection = inspectable;
-
-            EnableUI(inspectable.Title, inspectable.Details);
-        }
-
-        private void OnExited(IInspectable inspectable)
-        {
-            if (inspectable == currentSelection)
+            var bodies = GetOverlappingBodies();
+            foreach (var nextBody in bodies)
             {
-                inspectable.Deselect();
-                currentSelection = null;
-
-                DisableUI();
-
-                var bodies = GetOverlappingBodies();
-                foreach (var next_body in bodies)
+                if (nextBody is Inspectable nextInspectable)
                 {
-                    if (next_body is IInspectable next_inspectable)
-                    {
-                        next_inspectable.Select();
+                    nextInspectable.Select();
+                    EnableUI(nextInspectable.Title, nextInspectable.Details);
+                    return;
+                }
+            }
 
-                        EnableUI(inspectable.Title, inspectable.Details);
-                    }
+            var areas = GetOverlappingAreas();
+            foreach (var nextArea in areas)
+            {
+                if (nextArea is InspectableArea nextInspectable)
+                {
+                    nextInspectable.Select();
+                    EnableUI(nextInspectable.Title, nextInspectable.Details);
+                    return;
                 }
             }
         }
@@ -111,11 +124,15 @@ namespace Game
 
         public override void _UnhandledInput(InputEvent @event)
         {
-            if (currentSelection is IInteractable _interactable)
+            if (@event.IsActionPressed(InteractButton))
             {
-                if (@event.IsActionPressed(InteractButton))
+                if (currentlySelectedStaticBody is Interactable interactable)
                 {
-                    _interactable.Interact();
+                    interactable.Interact();
+                }
+                else if (currentlySelectedArea is InteractableArea interactableArea)
+                {
+                    interactableArea.Interact();
                 }
             }
         }

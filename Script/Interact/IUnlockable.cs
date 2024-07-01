@@ -1,6 +1,6 @@
 namespace Game
 {
-    public interface Unlockable
+    public interface IUnlockable
     {
         public abstract void Unlock();
 
