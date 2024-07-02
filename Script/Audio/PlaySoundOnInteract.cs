@@ -22,8 +22,8 @@ namespace Game
         {
             player.PlaySound(SoundName, Position);
             base.Interact();
-        }
 
+        }
 
     }
 

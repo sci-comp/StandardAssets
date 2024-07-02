@@ -1,10 +1,11 @@
 using Godot;
-using System;
 
 namespace Game
 {
-    public partial class Lever : Interactable
+    public partial class Lever : InteractableArea
     {
+        [Export] public Node3D leverArm;
+        [Export] public AxisDirection rotateAround = AxisDirection.Right;
         [Export] public bool Reusable = true;
         [Export] public float LeverMoveDuration = 0.6f;
         [Export] public float MoveDuration = 1.0f;
@@ -17,8 +18,9 @@ namespace Game
         private bool canInteract = true;
         private bool isMoving = false;
         private float t_current = 0.0f;
-        private Vector3 initialRot;
-        private Vector3 dest;
+        private Basis initialBasis;
+        private Basis destBasis;
+        private Vector3 rotateAroundAxis;
         private Tween tween;
 
         public bool Activated => !canInteract;
@@ -30,16 +32,18 @@ namespace Game
 
         public override void _Ready()
         {
-            initialRot = Rotation;
-            dest = new Vector3(initialRot.X + Mathf.DegToRad(DegreesRotation), initialRot.Y, initialRot.Z);
+            rotateAroundAxis = Toolbox.GetAxisDirection(rotateAround);
+
+            initialBasis = leverArm.Basis;
+            destBasis = initialBasis.Rotated(rotateAroundAxis, Mathf.DegToRad(DegreesRotation));
 
             tween = CreateTween();
-            tween.TweenProperty(this, "rotation", dest, MoveDuration);
+            tween.TweenProperty(leverArm, "basis", destBasis, MoveDuration);
             tween.TweenInterval(RestDuration);
 
             if (Reusable)
             {
-                tween.TweenProperty(this, "rotation", initialRot, MoveDuration);
+                tween.TweenProperty(leverArm, "basis", initialBasis, MoveDuration);
                 tween.SetLoops();
                 tween.LoopFinished += OnIdle;
             }
@@ -63,6 +67,7 @@ namespace Game
             tween.Play();
             base.Interact();
         }
+
     }
 
 }
