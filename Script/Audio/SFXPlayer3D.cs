@@ -43,11 +43,11 @@ namespace Game
         {
             if (SoundGroups.TryGetValue(soundGroupName, out SoundGroup3D soundGroup))
             {
-                (AudioStreamPlayer3D source, SoundGroup3D sourceSoundGroup) = soundGroup.GetAvailableSource();
+                AudioStreamPlayer3D source = soundGroup.GetAvailableSource();
 
                 if (source != null)
                 {
-                    GD.Print("[SFXPlayer3D] Playing: " + soundGroupName);
+                    GD.Print("[SFXPlayer3D] Playing: " + soundGroupName, " with volume: ", source.VolumeDb, " Db");
                     source.Position = location;
                     source.Play();
                     //debugSphere.Position = location;

@@ -3,7 +3,6 @@
 [ext_resource type="Script" path="res://addons/StandardAssets/Script/Level/LevelPortal.cs" id="1_k065a"]
 [ext_resource type="Material" uid="uid://4mruw3vlcdii" path="res://addons/StandardAssets/Material/Particle/MI_FX_Star_04.tres" id="2_8ugvs"]
 
-
 [sub_resource type="Curve" id="Curve_i6e0p"]
 _data = [Vector2(0, 360), 0.0, 0.0, 0, 0, Vector2(1e-05, 1), 0.0, 0.0, 0, 0, Vector2(0.99999, 0), 0.0, 0.0, 0, 0, Vector2(1, -360), 0.0, 0.0, 0, 0]
 point_count = 4
@@ -28,7 +27,7 @@ curve = SubResource("Curve_5w1ab")
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_7v5nw"]
 lifetime_randomness = 0.2
 emission_shape = 2
-emission_sphere_radius = 3.0
+emission_sphere_radius = 2.0
 angle_min = -64.5
 angle_max = 64.5
 angle_curve = SubResource("CurveTexture_67v2p")
@@ -48,9 +47,9 @@ material = ExtResource("2_8ugvs")
 [sub_resource type="Skin" id="Skin_j5jd2"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_ftc6w"]
-radius = 3.0
+radius = 2.0
 
-[node name="PF_Level_Portal" type="Area3D"]
+[node name="VFX_Level_Portal" type="Area3D"]
 collision_mask = 2
 script = ExtResource("1_k065a")
 

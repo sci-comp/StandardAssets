@@ -55,7 +55,7 @@ namespace Game
             sfxPlayer3D.UpdateSoundGroupDisplay(this);
         }
 
-        public (AudioStreamPlayer3D, SoundGroup3D) GetAvailableSource()
+        public AudioStreamPlayer3D GetAvailableSource()
         {
             AudioStreamPlayer3D src;
 
@@ -70,14 +70,13 @@ namespace Game
             int idx = rnd.RandiRange(0, AvailableSources.Count - 1);
             src = AvailableSources[idx];
             src.PitchScale = (float)GD.RandRange(VaryPitch.X, VaryPitch.Y);
-            src.VolumeDb = (float)GD.RandRange(VaryVolume.X, VaryVolume.Y);
-
+            src.VolumeDb = Toolbox.Linear2Db((float)GD.RandRange(VaryVolume.X, VaryVolume.Y));
             AvailableSources.RemoveAt(idx);
             ActiveSources.Add(src);
 
             sfxPlayer3D.UpdateSoundGroupDisplay(this);
 
-            return (src, this);
+            return (src);
         }
 
     }

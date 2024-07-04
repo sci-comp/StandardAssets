@@ -4,7 +4,7 @@ namespace Game
 {
     public partial class Lever : InteractableArea
     {
-        [Export] public Node3D leverArm;
+        private Node3D leverArm;
         [Export] public AxisDirection rotateAround = AxisDirection.Right;
         [Export] public bool Reusable = true;
         [Export] public float LeverMoveDuration = 0.6f;
@@ -32,6 +32,8 @@ namespace Game
 
         public override void _Ready()
         {
+            leverArm = GetNode<Node3D>("LeverArm");
+
             rotateAroundAxis = Toolbox.GetAxisDirection(rotateAround);
 
             initialBasis = leverArm.Basis;

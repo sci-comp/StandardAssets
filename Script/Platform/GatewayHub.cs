@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Game
 {
-    public partial class GatewayHub : Node3D
+    public partial class GatewayHub : Node
     {
         private List<Gateway> gateways = new();
         private float timeoutDuration = 1.0f;
@@ -12,18 +12,13 @@ namespace Game
 
         public override void _Ready()
         {
-            foreach (Node child in GetChildren())
-            {
-                if (child is Gateway gateway)
-                {
-                    gateways.Add(gateway);
-                }
-            }
+            Toolbox.FindAndPopulate(this, gateways);
 
             for (int i = 0; i < gateways.Count; i++)
             {
                 gateways[i].Initialize(gateways[(i + 1) % gateways.Count]);
             }
+            GD.Print("Gateway hub pop: ", gateways.Count);
         }
 
         public override void _PhysicsProcess(double delta)

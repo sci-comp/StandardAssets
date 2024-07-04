@@ -4,14 +4,14 @@ namespace Game
 {
     public partial class Gateway : Area3D
     {
-        private Vector3 SpawnPosition;
+        public Marker3D Spawnpoint;
         private Gateway otherGateway;
 
         public bool WaitingOnPlayerToExitPlatform = false;
 
         public void Initialize(Gateway _otherGateway)
         {
-            SpawnPosition = new Vector3(Position.X, Position.Y + 1f, Position.Z);
+            Spawnpoint = GetNode<Marker3D>("Spawnpoint");
             otherGateway = _otherGateway;
 
             BodyExited += OnBodyExit;
@@ -22,7 +22,7 @@ namespace Game
             if (otherGateway != null && character != null)
             {
                 otherGateway.WaitingOnPlayerToExitPlatform = true;
-                character.Position = otherGateway.SpawnPosition;
+                character.GlobalPosition = otherGateway.Spawnpoint.GlobalPosition;
             }
         }
 
