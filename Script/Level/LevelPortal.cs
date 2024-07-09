@@ -4,8 +4,8 @@ namespace Game
 {
     public partial class LevelPortal : Area3D
     {
-        [Export] public string LevelToLoad;
-        [Export] public string Spawnpoint = "";
+        [Export] public string LevelToLoad = "Sandbox";
+        [Export] public string Spawnpoint = "SP_Sandbox";
         [Export] public string PortalEnteredSFX = "portal";
 
         private LevelManager levelManager;

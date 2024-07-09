@@ -47,7 +47,7 @@ namespace Game
 
                 if (source != null)
                 {
-                    GD.Print("[SFXPlayer3D] Playing: " + soundGroupName, " with volume: ", source.VolumeDb, " Db");
+                    GD.Print("[SFXPlayer3D] Playing: " + soundGroupName);
                     source.Position = location;
                     source.Play();
                     //debugSphere.Position = location;

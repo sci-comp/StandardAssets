@@ -7,12 +7,12 @@ namespace Game
         private Node3D leverArm;
         [Export] public AxisDirection rotateAround = AxisDirection.Right;
         [Export] public bool Reusable = true;
-        [Export] public float LeverMoveDuration = 0.6f;
-        [Export] public float MoveDuration = 1.0f;
+        [Export] public float LeverMoveDuration = 1.0f;
         [Export] public float RestDuration = 1.0f;
         [Export] public float DegreesRotation = 60.0f;
         [Export] public string _Title = "Lever";
         [Export] public string _Details = "";
+        [Export] public string SoundName = "Lever";
 
         private bool alreadyTriggered = false;
         private bool canInteract = true;
@@ -21,8 +21,9 @@ namespace Game
         private Basis initialBasis;
         private Basis destBasis;
         private Vector3 rotateAroundAxis;
+        private SFXPlayer3D sfxPlayer3D;
         private Tween tween;
-
+        
         public bool Activated => !canInteract;
 
         public bool CanInteract() { return canInteract; }
@@ -32,6 +33,7 @@ namespace Game
 
         public override void _Ready()
         {
+            sfxPlayer3D = GetNode<SFXPlayer3D>("/root/SFXPlayer3D");
             leverArm = GetNode<Node3D>("LeverArm");
 
             rotateAroundAxis = Toolbox.GetAxisDirection(rotateAround);
@@ -40,12 +42,13 @@ namespace Game
             destBasis = initialBasis.Rotated(rotateAroundAxis, Mathf.DegToRad(DegreesRotation));
 
             tween = CreateTween();
-            tween.TweenProperty(leverArm, "basis", destBasis, MoveDuration);
+            tween.TweenProperty(leverArm, "basis", destBasis, LeverMoveDuration);
             tween.TweenInterval(RestDuration);
 
             if (Reusable)
             {
-                tween.TweenProperty(leverArm, "basis", initialBasis, MoveDuration);
+                tween.TweenCallback(Callable.From(PlaySound));
+                tween.TweenProperty(leverArm, "basis", initialBasis, LeverMoveDuration);
                 tween.SetLoops();
                 tween.LoopFinished += OnIdle;
             }
@@ -59,12 +62,19 @@ namespace Game
             canInteract = true;
         }
 
+        public void PlaySound()
+        {
+            sfxPlayer3D.PlaySound(SoundName, GlobalPosition);
+        }
+
         public override void Interact()
         {
             if (!canInteract)
             {
                 return;
             }
+
+            PlaySound();
             canInteract = false;
             tween.Play();
             base.Interact();
