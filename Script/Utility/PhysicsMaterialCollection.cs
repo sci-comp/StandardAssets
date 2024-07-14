@@ -18,12 +18,17 @@ namespace Game
                     physicsMaterial = new Dictionary<string, PhysicsMaterial>();
 
                     using var dir = DirAccess.Open(PhysicsMaterialPath);
+                    
                     if (dir != null)
                     {
                         dir.ListDirBegin();
                         string fileName = dir.GetNext();
                         while (fileName != "")
                         {
+                            // DirAccess returns
+                            //   in an exported build: dir/fileName.extension.import
+                            //   in the editor: dir/fileName.extension
+                            // In an exported build, ResourceLoader can load from the original path
                             if (ResourceLoader.Exists(PhysicsMaterialPath + fileName))
                             {
                                 if (ResourceLoader.Load(PhysicsMaterialPath + fileName) is PhysicsMaterial physMat)

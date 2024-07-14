@@ -24,7 +24,7 @@ namespace Game
                 GD.Print("[Preferences] Resource not found, using defaults");
             }
 
-            UpdateAudioPreferences();
+            ApplyAudioPreferences();
             PreferencesUpdated?.Invoke();
             GD.Print("[Preferences] Ready");
         }
@@ -43,7 +43,7 @@ namespace Game
             }
         }
 
-        private void UpdateAudioPreferences()
+        public void ApplyAudioPreferences()
         {
             if (Data.EnableAudio && AudioServer.IsBusMute(AudioServer.GetBusIndex("Master")))
             {

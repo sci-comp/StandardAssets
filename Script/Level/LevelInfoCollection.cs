@@ -5,7 +5,7 @@ namespace Game
 {
     public partial class LevelInfoCollection : Resource
     {
-        [Export] public Godot.Collections.Array<LevelInfo> LevelInfoList = new();
+        private static string LevelDir = "res://Data/Level/";
 
         private Dictionary<string, LevelInfo> levelInfo;
 
@@ -16,14 +16,35 @@ namespace Game
                 if (levelInfo == null)
                 {
                     levelInfo = new Dictionary<string, LevelInfo>();
-                    for (int i = 0; i < LevelInfoList.Count; ++i)
+
+                    using var dir = DirAccess.Open(LevelDir);
+
+                    if (dir != null)
                     {
-                        LevelInfo _sceneInfo = LevelInfoList[i];
-                        if (!levelInfo.TryAdd(_sceneInfo.LevelName, _sceneInfo))
+                        dir.ListDirBegin();
+                        string fileName = dir.GetNext();
+                        while (fileName != "")
                         {
-                            GD.PrintErr("Duplicate scene name found: " + _sceneInfo.LevelName);
+                            // DirAccess returns
+                            //   in an exported build: dir/fileName.extension.import
+                            //   in the editor: dir/fileName.extension
+                            // In an exported build, ResourceLoader can load from the original path
+                            fileName = fileName.Replace(".import", "");
+                            fileName = fileName.Replace(".remap", "");
+                            if (ResourceLoader.Exists(LevelDir + fileName))
+                            {
+                                GD.Print("Info exists: ", fileName);
+                                if (ResourceLoader.Load(LevelDir + fileName) is LevelInfo _levelInfo)
+                                {
+                                    string levelInfoName = fileName.TrimSuffix(".tres");
+                                    levelInfo[levelInfoName] = _levelInfo;
+                                }
+                            }
+
+                            fileName = dir.GetNext();
                         }
                     }
+
                 }
 
                 return levelInfo;

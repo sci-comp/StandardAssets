@@ -196,6 +196,12 @@ namespace Game
                 dir.ListDirBegin();
                 string fileName = dir.GetNext();
 
+                // DirAccess returns
+                //   in an exported build: dir/fileName.extension.import
+                //   in the editor: dir/fileName.extension
+                // In an exported build, ResourceLoader can load from the original path
+                fileName = fileName.Replace(".import", "");
+
                 while (fileName != "")
                 {
                     if (dir.CurrentIsDir())
@@ -207,6 +213,7 @@ namespace Game
                     }
                     else if (fileName.EndsWith(extension))
                     {
+                        
                         paths.Add(dir_path + "/" + fileName);
                     }
 
