@@ -29,6 +29,9 @@ namespace Game
                             //   in an exported build: dir/fileName.extension.import
                             //   in the editor: dir/fileName.extension
                             // In an exported build, ResourceLoader can load from the original path
+                            fileName = fileName.Replace(".import", "");
+                            fileName = fileName.Replace(".remap", "");
+
                             if (ResourceLoader.Exists(PhysicsMaterialPath + fileName))
                             {
                                 if (ResourceLoader.Load(PhysicsMaterialPath + fileName) is PhysicsMaterial physMat)

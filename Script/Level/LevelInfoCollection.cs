@@ -5,7 +5,7 @@ namespace Game
 {
     public partial class LevelInfoCollection : Resource
     {
-        private static string LevelDir = "res://Data/Level/";
+        private readonly static string levelDir = "res://Data/Level/";
 
         private Dictionary<string, LevelInfo> levelInfo;
 
@@ -17,7 +17,7 @@ namespace Game
                 {
                     levelInfo = new Dictionary<string, LevelInfo>();
 
-                    using var dir = DirAccess.Open(LevelDir);
+                    using var dir = DirAccess.Open(levelDir);
 
                     if (dir != null)
                     {
@@ -31,10 +31,9 @@ namespace Game
                             // In an exported build, ResourceLoader can load from the original path
                             fileName = fileName.Replace(".import", "");
                             fileName = fileName.Replace(".remap", "");
-                            if (ResourceLoader.Exists(LevelDir + fileName))
+                            if (ResourceLoader.Exists(levelDir + fileName))
                             {
-                                GD.Print("Info exists: ", fileName);
-                                if (ResourceLoader.Load(LevelDir + fileName) is LevelInfo _levelInfo)
+                                if (ResourceLoader.Load(levelDir + fileName) is LevelInfo _levelInfo)
                                 {
                                     string levelInfoName = fileName.TrimSuffix(".tres");
                                     levelInfo[levelInfoName] = _levelInfo;

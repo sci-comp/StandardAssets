@@ -1,4 +1,5 @@
 using Godot;
+using System;
 
 namespace Game
 {
@@ -8,6 +9,8 @@ namespace Game
 
         private LevelManager levelManager;
         private PackedScene player;
+
+        public event Action<CharacterController> PlayerSpawned;
 
         public override void _Ready()
         {
@@ -70,14 +73,28 @@ namespace Game
                     GD.Print("[Player Spawner] Default spawnpoint found");
                 }
 
-                // Instantiate player
-                CharacterBody3D playerInstance = (CharacterBody3D)player.Instantiate();
-                levelManager.CurrentLevel.AddChild(playerInstance);
-                playerInstance.Position = _spawnpoint.Position;
-                GD.Print("[Player Spawner] Player instantiated at spawnpoint: " + _spawnpoint.Name);
-
+                // Give time for Autoloads to run their Ready methods when starting from a debug scene
+                CallDeferred("SpawnPlayerAtEndOfFrame", _spawnpoint);
             }
 
+        }
+
+        private void SpawnPlayerAtEndOfFrame(Node3D _spawnpoint)
+        {
+            // Instantiate player
+            CharacterBody3D playerInstance = (CharacterBody3D)player.Instantiate();
+            levelManager.CurrentLevel.AddChild(playerInstance);
+            playerInstance.Position = _spawnpoint.Position;
+            if (playerInstance is CharacterController cc)
+            {
+                PlayerSpawned?.Invoke(cc);
+            }
+            else
+            {
+                GD.PrintErr("[PlayerSpawner] playerInstance is not of type CharacterController");
+            }
+
+            GD.Print("[Player Spawner] Player instantiated at spawnpoint: " + _spawnpoint.Name);
         }
 
     }
