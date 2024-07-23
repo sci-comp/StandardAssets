@@ -16,7 +16,6 @@ namespace Game
             foreach (Lever lever in levers)
             {
                 lever.Interacted += OnInteract;
-                lever.Reusable = false;
             }
         }
 

@@ -10,8 +10,12 @@ namespace Game
         private float t_current = 0.0f;
         private bool isTimeout = false;
 
+        private CameraBridge cameraBridge;
+
         public override void _Ready()
         {
+            cameraBridge = GetNode<CameraBridge>("/root/CameraBridge");
+
             Toolbox.FindAndPopulate(this, gateways);
 
             for (int i = 0; i < gateways.Count; i++)
@@ -43,6 +47,7 @@ namespace Game
                     {
                         if (body is CharacterBody3D character && Mathf.IsZeroApprox(character.Velocity.Length()))
                         {
+                            cameraBridge.Blink();
                             gateway.ActivateGateway(character);
                             isTimeout = true;
                             return;

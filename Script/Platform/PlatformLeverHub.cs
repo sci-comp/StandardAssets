@@ -17,6 +17,11 @@ namespace Game
             {
                 lever.Interacted += OnInteract;
             }
+
+            foreach (IActivatedPlatform platform in platforms)
+            {
+                platform.OnCanBeActivated += OnCanBeActivated;
+            }
         }
 
         private void OnInteract()
@@ -24,6 +29,14 @@ namespace Game
             foreach (IActivatedPlatform platform in platforms)
             {
                 platform.Activate();
+            }
+        }
+
+        private void OnCanBeActivated() 
+        { 
+            foreach (Lever lever in levers)
+            {
+                lever.ResetLever();
             }
         }
 

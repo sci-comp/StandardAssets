@@ -6,7 +6,6 @@ namespace Game
     {
         private Node3D leverArm;
         [Export] public AxisDirection rotateAround = AxisDirection.Right;
-        [Export] public bool Reusable = true;
         [Export] public float LeverMoveDuration = 1.0f;
         [Export] public float RestDuration = 1.0f;
         [Export] public float DegreesRotation = 60.0f;
@@ -40,26 +39,21 @@ namespace Game
 
             initialBasis = leverArm.Basis;
             destBasis = initialBasis.Rotated(rotateAroundAxis, Mathf.DegToRad(DegreesRotation));
-
-            tween = CreateTween();
-            tween.TweenProperty(leverArm, "basis", destBasis, LeverMoveDuration);
-            tween.TweenInterval(RestDuration);
-
-            if (Reusable)
-            {
-                tween.TweenCallback(Callable.From(PlaySound));
-                tween.TweenProperty(leverArm, "basis", initialBasis, LeverMoveDuration);
-                tween.SetLoops();
-                tween.LoopFinished += OnIdle;
-            }
-
-            tween.Pause();
         }
 
-        private void OnIdle(long _loopCount)
+
+        public void ResetLever()
         {
-            tween.Pause();
-            canInteract = true;
+            if (canInteract)
+            {
+                return;
+            }
+
+            PlaySound();
+            tween = CreateTween();
+            tween.TweenProperty(leverArm, "basis", initialBasis, LeverMoveDuration);
+            tween.Finished += () => canInteract = true;
+            tween.Play();
         }
 
         public void PlaySound()
@@ -74,8 +68,10 @@ namespace Game
                 return;
             }
 
-            PlaySound();
             canInteract = false;
+            PlaySound();
+            tween = CreateTween();
+            tween.TweenProperty(leverArm, "basis", destBasis, LeverMoveDuration);
             tween.Play();
             base.Interact();
         }

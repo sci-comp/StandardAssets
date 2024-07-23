@@ -1,4 +1,5 @@
 using Godot;
+using System;
 
 namespace Game
 {
@@ -10,6 +11,8 @@ namespace Game
         private bool canBeTriggered = true;
         private bool enabled = false;
         private Tween tween;
+
+        public event Action OnCanBeActivated;
 
         public bool CanBeActivated() { return canBeTriggered; }
         public bool Enabled() { return enabled; }
@@ -27,12 +30,12 @@ namespace Game
 
         public void Disable()
         {
-
+            tween.Play();
         }
 
         public void Enable()
         {
-
+            tween.Pause();
         }
 
         public void Activate()
@@ -49,6 +52,7 @@ namespace Game
         {
             tween.Pause();
             canBeTriggered = true;
+            OnCanBeActivated?.Invoke();
         }
 
     }

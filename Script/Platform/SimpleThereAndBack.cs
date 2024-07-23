@@ -1,5 +1,5 @@
-
 using Godot;
+using System;
 
 namespace Game
 {
@@ -14,6 +14,8 @@ namespace Game
         private Vector3 initialPos;
         private Tween tween;
 
+        public event Action OnCanBeActivated;
+
         public bool CanBeActivated() { return canBeTriggered; }
         public bool Enabled() { return enabled; }
 
@@ -24,7 +26,7 @@ namespace Game
             tween.TweenProperty(this, "position", initialPos + MoveDistance, MoveDuration);
             tween.TweenInterval(RestDuration);
             tween.TweenProperty(this, "position", initialPos, MoveDuration);
-            tween.TweenInterval(RestDuration);
+            //tween.TweenInterval(RestDuration);
             tween.SetLoops();
             tween.LoopFinished += OnIdle;
             tween.Pause();
@@ -32,12 +34,12 @@ namespace Game
 
         public void Disable()
         {
-            enabled = false;
+            tween.Play();
         }
 
         public void Enable()
         {
-            enabled = true;
+            tween.Pause();
         }
 
         public void Activate()
@@ -54,6 +56,7 @@ namespace Game
         {
             tween.Pause();
             canBeTriggered = true;
+            OnCanBeActivated?.Invoke();
         }
     }
 }
