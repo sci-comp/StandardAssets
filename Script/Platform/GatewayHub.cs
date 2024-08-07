@@ -22,7 +22,6 @@ namespace Game
             {
                 gateways[i].Initialize(gateways[(i + 1) % gateways.Count]);
             }
-            GD.Print("Gateway hub pop: ", gateways.Count);
         }
 
         public override void _PhysicsProcess(double delta)

@@ -8,27 +8,29 @@ namespace Game
         [Export] public string PlayerPath = "res://Prefab/Player.tscn";
 
         private LevelManager levelManager;
-        private PackedScene player;
+        private SaveManager saveManager;
+        private PackedScene playerPackedScene;
 
-        public event Action<CharacterController> PlayerSpawned;
+        public event Action<CharacterHolder> PlayerSpawned;
 
         public override void _Ready()
         {
             levelManager = GetNode<LevelManager>("/root/LevelManager");
+            saveManager = GetNode<SaveManager>("/root/SaveManager");
 
             levelManager.LevelLoaded += OnLevelLoaded;
-            player = GD.Load<PackedScene>(PlayerPath);
+            playerPackedScene = GD.Load<PackedScene>(PlayerPath);
 
             #region Null checks
 
-            if (player == null)
+            if (playerPackedScene == null)
             {
-                GD.Print("[Player Spawner] Player is null");
+                GD.Print("[PlayerSpawner] Player is null");
             }
 
             if (levelManager == null)
             {
-                GD.Print("[Player Spawner] levelManager is null");
+                GD.Print("[PlayerSpawner] levelManager is null");
             }
 
             #endregion
@@ -38,39 +40,39 @@ namespace Game
                 OnLevelLoaded();
             }
 
-            GD.Print("[Player Spawner] Ready");
+            GD.Print("[PlayerSpawner] Ready");
         }
 
         private void OnLevelLoaded()
         {
             if (levelManager.CurrentLevelInfo != null && levelManager.CurrentLevelInfo.PlayerExistsInLevel)
             {
-                Node3D _spawnpoint = null;
+                Marker3D _spawnpoint = null;
 
                 if (levelManager.RequestedSpawnpoint != "")
                 {
-                    _spawnpoint = (Node3D)levelManager.CurrentLevel.FindChild(levelManager.RequestedSpawnpoint);
+                    _spawnpoint = saveManager.FindLastSpawnpoint();
 
                     if (_spawnpoint == null)
                     {
-                        GD.PrintErr("[Player Spawner] Requested spawnpoint not found: " + levelManager.RequestedSpawnpoint);
+                        GD.PrintErr("[PlayerSpawner] Requested spawnpoint not found: " + levelManager.RequestedSpawnpoint);
                     }
                     else
                     {
-                        GD.Print("[Player Spawner] Requested spawnpoint found");
+                        GD.Print("[PlayerSpawner] Requested spawnpoint found");
                     }
                 }
 
-                _spawnpoint ??= (Node3D)levelManager.CurrentLevel.FindChild("SP_" + levelManager.CurrentLevel.Name);
+                _spawnpoint ??= (Marker3D)levelManager.CurrentLevel.FindChild("SP_" + levelManager.CurrentLevel.Name);
 
                 if (_spawnpoint == null)
                 {
-                    GD.PrintErr("[Player Spawner] No spawnpoint found in level: " + levelManager.CurrentLevel.Name);
+                    GD.PrintErr("[PlayerSpawner] No spawnpoint found in level: " + levelManager.CurrentLevel.Name);
                     return;
                 }
                 else
                 {
-                    GD.Print("[Player Spawner] Default spawnpoint found");
+                    GD.Print("[PlayerSpawner] Default spawnpoint found");
                 }
 
                 // Give time for Autoloads to run their Ready methods when starting from a debug scene
@@ -82,19 +84,20 @@ namespace Game
         private void SpawnPlayerAtEndOfFrame(Node3D _spawnpoint)
         {
             // Instantiate player
-            CharacterBody3D playerInstance = (CharacterBody3D)player.Instantiate();
-            levelManager.CurrentLevel.AddChild(playerInstance);
-            playerInstance.Position = _spawnpoint.Position;
-            if (playerInstance is CharacterController cc)
+            Node characterInstance = playerPackedScene.Instantiate();
+            levelManager.CurrentLevel.AddChild(characterInstance);
+            
+            if (characterInstance is CharacterHolder characterHolder)
             {
-                PlayerSpawned?.Invoke(cc);
+                characterHolder.SetCharacterPosition(_spawnpoint.Position);
+                PlayerSpawned?.Invoke(characterHolder);
             }
             else
             {
                 GD.PrintErr("[PlayerSpawner] playerInstance is not of type CharacterController");
             }
 
-            GD.Print("[Player Spawner] Player instantiated at spawnpoint: " + _spawnpoint.Name);
+            GD.Print("[PlayerSpawner] Player instantiated at spawnpoint: " + _spawnpoint.Name);
         }
 
     }

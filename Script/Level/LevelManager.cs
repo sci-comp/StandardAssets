@@ -16,6 +16,7 @@ namespace Game
         private AnimationPlayer animationPlayer;
         private ColorRect shaderBlendRect;
         private readonly object levelChangeLock = new();
+        private Node spawnpoints;
 
         public bool IsTransitioning { get; set; } = false;
         public string RequestedSpawnpoint { get; set; } = "";
@@ -37,7 +38,7 @@ namespace Game
             {
                 if (LevelInfoCollection == null)
                 {
-                    GD.PrintErr("LevelInfoCollection is null in LevelManager.");
+                    GD.PrintErr("[LevelManager] LevelInfoCollection is null");
                     return null;
                 }
 
@@ -57,6 +58,10 @@ namespace Game
             var SceneTree = GetTree();
             SceneTreeRoot = SceneTree.Root;
             CurrentLevel = SceneTree.CurrentScene;
+            if (CurrentLevel.HasNode("Spawnpoints"))
+            {
+                spawnpoints = CurrentLevel.GetNode("Spawnpoints");
+            }
 
             if (ResourceLoader.Exists(LevelInfoCollectionPath))
             {
@@ -64,23 +69,23 @@ namespace Game
                 LevelInfoCollection = (LevelInfoCollection)_resource.Duplicate();
                 if (LevelInfoCollection == null)
                 {
-                    GD.PrintErr("[Level Manager] LevelInfoCollection is null");
+                    GD.PrintErr("[LevelManager] LevelInfoCollection is null");
                     return;
                 }
             }
             else
             {
-                GD.PrintErr("[Level Manager] LevelInfoCollection not found at location: ", LevelInfoCollectionPath);
+                GD.PrintErr("[LevelManager] LevelInfoCollection not found at location: ", LevelInfoCollectionPath);
                 return;
             }
 
             animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
             shaderBlendRect = GetNode<ColorRect>("CanvasLayer/ColorRect");
-
+            
             ((ShaderMaterial)shaderBlendRect.Material).SetShaderParameter("dissolve_texture", Pattern);
             ((ShaderMaterial)shaderBlendRect.Material).SetShaderParameter("fade_color", ShaderColor);
 
-            GD.Print("[Level Manager] Ready");
+            GD.Print("[LevelManager] Ready");
         }
 
         public void ChangeLevel(string levelName, string spawnpoint = "")
@@ -98,7 +103,7 @@ namespace Game
         {
             if (path == null)
             {
-                GD.PrintErr("[Level Manager] Scene path is null");
+                GD.PrintErr("[LevelManager] Scene path is null");
                 IsTransitioning = false;
                 return;
             }
@@ -107,7 +112,7 @@ namespace Game
             {
                 if (CurrentLevel != null && CurrentLevel.SceneFilePath == path)
                 {
-                    GD.PrintErr("[Level Manager] Blocking attempt to transition to the already loaded scene");
+                    GD.PrintErr("[LevelManager] Blocking attempt to transition to the already loaded scene");
                     return;
                 }
 
@@ -116,12 +121,12 @@ namespace Game
 
             if (ResourceLoader.Load(path, "PackedScene", 0) is not PackedScene nextLevel)
             {
-                GD.PrintErr("[Level Manager] Invalid level path: ", path);
+                GD.PrintErr("[LevelManager] Invalid level path: ", path);
                 IsTransitioning = false;
                 return;
             }
 
-            GD.Print("[Level Manager] Unloading level: " + CurrentLevel.Name);
+            GD.Print("[LevelManager] Unloading level: " + CurrentLevel.Name);
             EmitSignal(nameof(BeginUnloadingLevel));
 
             PreviousLevelName = CurrentLevel.Name;
@@ -133,7 +138,7 @@ namespace Game
             CurrentLevel = nextLevel.Instantiate();
             SceneTreeRoot.AddChild(CurrentLevel);
 
-            GD.Print("[Level Manager] Level loaded: " + CurrentLevel.Name);
+            GD.Print("[LevelManager] Level loaded: " + CurrentLevel.Name);
             EmitSignal(nameof(LevelLoaded));
 
             await FadeIn();
