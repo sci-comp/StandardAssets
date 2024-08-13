@@ -3,41 +3,48 @@ using System.Collections.Generic;
 
 namespace Game
 {
-    public partial class Compass : Camera3D
+    public partial class Compass : Control
     {
         private TextureRect northIndicator;
         private TextureRect eastIndicator;
         private TextureRect southIndicator;
         private TextureRect westIndicator;
 
-        private Control lineContainer;
-        private Camera3D playerCamera;
+        private Camera3D mainCamera;
         private const int MaxPOIs = 32;
 
-        private List<PointOfInterest> listOfPointsOfInterest = new List<PointOfInterest>();
+        private readonly List<PointOfInterest> listOfPointsOfInterest = new();
+
+        private CameraBridge cameraBridge;
+        private LevelManager levelManager;
 
         public override void _Ready()
         {
-            playerCamera = this;
+            cameraBridge = GetNode<CameraBridge>("/root/CameraBridge");
+            levelManager = GetNode<LevelManager>("/root/LevelManager");
+            levelManager.BeginUnloadingLevel += OnBeginUnloadingLevel;
 
-            northIndicator = GetNode<TextureRect>("Compass/LineContainer/NorthIndicator");
-            eastIndicator = GetNode<TextureRect>("Compass/LineContainer/EastIndicator");
-            southIndicator = GetNode<TextureRect>("Compass/LineContainer/SouthIndicator");
-            westIndicator = GetNode<TextureRect>("Compass/LineContainer/WestIndicator");
+            if (cameraBridge == null)
+            {
+                GD.Print("[Compass] Camera bridge is null");
+            }
+            else
+            {
+                mainCamera = cameraBridge.MainCamera;
 
-            lineContainer = GetNode<Control>("Compass");
+                if (mainCamera == null)
+                {
+                    GD.PrintErr("[Compass] Camera is null");
+                }
+            }
+            
+            northIndicator = GetNode<TextureRect>("NorthIndicator");
+            eastIndicator = GetNode<TextureRect>("EastIndicator");
+            southIndicator = GetNode<TextureRect>("SouthIndicator");
+            westIndicator = GetNode<TextureRect>("WestIndicator");
 
             PointOfInterest.POISpawned += OnPOISpawned;
             PointOfInterest.POIDestroyed += OnPOIDestroyed;
-
-            var pois = GetTree().GetNodesInGroup("POI");
-            foreach (Node poiNode in pois)
-            {
-                if (poiNode is PointOfInterest poi && poi.IconTexture != null)
-                {
-                    AddPOIToCompass(poi);
-                }
-            }
         }
 
         public override void _Process(double delta)
@@ -45,9 +52,55 @@ namespace Game
             UpdateCompass();
         }
 
+        public override void _ExitTree()
+        {
+            PointOfInterest.POISpawned -= OnPOISpawned;
+            PointOfInterest.POIDestroyed -= OnPOIDestroyed;
+        }
+
+        private void OnBeginUnloadingLevel()
+        {
+            Visible = false;
+        }
+
+        private void OnLevelLoaded()
+        {
+            if (levelManager.CurrentLevelInfo.PlayerExistsInLevel)
+            {
+                Visible = true;
+            }
+            else
+            {
+                Visible = false;
+            }
+        }
+
+        private void OnPOIDestroyed(PointOfInterest poi)
+        {
+            if (listOfPointsOfInterest.Contains(poi))
+            {
+                listOfPointsOfInterest.Remove(poi);
+                poi.IconRepresentation?.QueueFree();
+            }
+        }
+
+        private void OnPOISpawned(PointOfInterest poi)
+        {
+            var poiIcon = new TextureRect
+            {
+                Texture = poi.IconTexture,
+                Name = poi.Name + "_Icon",
+                Visible = false,
+                StretchMode = TextureRect.StretchModeEnum.KeepAspect
+            };
+            AddChild(poiIcon);
+            poi.IconRepresentation = poiIcon;
+            listOfPointsOfInterest.Add(poi);
+        }
+
         private void UpdateCompass()
         {
-            var playerOrientation = playerCamera.GlobalTransform.Basis.GetEuler().Y;
+            var playerOrientation = mainCamera.GlobalTransform.Basis.GetEuler().Y;
             UpdateIndicatorPosition(northIndicator, playerOrientation, 0);
             UpdateIndicatorPosition(westIndicator, playerOrientation, Mathf.Pi / 2);
             UpdateIndicatorPosition(southIndicator, playerOrientation, Mathf.Pi);
@@ -58,7 +111,7 @@ namespace Game
             {
                 if (count < MaxPOIs)
                 {
-                    Vector3 directionToPOI = (poi.GlobalTransform.Origin - playerCamera.GlobalTransform.Origin).Normalized();
+                    Vector3 directionToPOI = (poi.GlobalTransform.Origin - mainCamera.GlobalTransform.Origin).Normalized();
                     float poiDirectionAngle = Mathf.Atan2(directionToPOI.X, directionToPOI.Z) + Mathf.Pi;
                     poiDirectionAngle = Mathf.PosMod(poiDirectionAngle, Mathf.Pi * 2);
                     UpdateIndicatorPosition(poi.IconRepresentation, playerOrientation, poiDirectionAngle);
@@ -77,7 +130,7 @@ namespace Game
             if (isInFrontOfPlayer)
             {
                 float normalizedPosition = -1.0f * angleDifference / (Mathf.Pi / 2);
-                float positionX = normalizedPosition * (lineContainer.Size.X / 2) + (lineContainer.Size.X / 2) - (indicator.Size.X / 2);
+                float positionX = normalizedPosition * (Size.X / 2) + (Size.X / 2) - (indicator.Size.X / 2);
                 indicator.Position = new Vector2(positionX, indicator.Position.Y);
                 indicator.Visible = true;
             }
@@ -85,40 +138,6 @@ namespace Game
             {
                 indicator.Visible = false;
             }
-        }
-
-        public override void _ExitTree()
-        {
-            PointOfInterest.POISpawned -= OnPOISpawned;
-            PointOfInterest.POIDestroyed -= OnPOIDestroyed;
-        }
-
-        private void OnPOISpawned(PointOfInterest poi)
-        {
-            AddPOIToCompass(poi);
-        }
-
-        private void OnPOIDestroyed(PointOfInterest poi)
-        {
-            if (listOfPointsOfInterest.Contains(poi))
-            {
-                listOfPointsOfInterest.Remove(poi);
-                poi.IconRepresentation?.QueueFree();
-            }
-        }
-
-        private void AddPOIToCompass(PointOfInterest poi)
-        {
-            var poiIcon = new TextureRect
-            {
-                Texture = poi.IconTexture,
-                Name = poi.Name + "_Icon",
-                Visible = false,
-                StretchMode = TextureRect.StretchModeEnum.KeepAspect
-            };
-            lineContainer.AddChild(poiIcon);
-            poi.IconRepresentation = poiIcon;
-            listOfPointsOfInterest.Add(poi);
         }
 
     }

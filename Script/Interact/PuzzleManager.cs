@@ -6,12 +6,12 @@ namespace Game
     public partial class PuzzleManager : Node
     {
         private readonly List<Lever> levers = new();
-        private readonly List<IUnlockable> unlockables = new();
+        private readonly List<IFlag> flags = new();
 
         public override void _Ready()
         {
             Toolbox.FindAndPopulate(this, levers);
-            Toolbox.FindAndPopulate(this, unlockables);
+            Toolbox.FindAndPopulate(this, flags);
 
             foreach (Lever lever in levers)
             {
@@ -26,9 +26,9 @@ namespace Game
                 if (!lever.Activated) return;
             }
 
-            foreach (IUnlockable unlockable in unlockables)
+            foreach (IFlag flag in flags)
             {
-                unlockable.Unlock();
+                flag.RaiseFlag();
             }
         }
 

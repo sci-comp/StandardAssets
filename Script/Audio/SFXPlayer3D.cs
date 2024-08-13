@@ -7,7 +7,6 @@ namespace Game
     public partial class SFXPlayer3D : Node
     {
         private Preferences prefs;
-        private SFXPlayer3DDisplay audioDisplay;
 
         public float MasterVolume { get; set; } = 0.7f;
         public Dictionary<string, SoundGroup3D> SoundGroups = new();
@@ -16,11 +15,10 @@ namespace Game
 
         public override void _Ready()
         {
-            audioDisplay = GetNode<SFXPlayer3DDisplay>("Display");
             prefs = GetNode<Preferences>("/root/Preferences");
             debugSphere = GetNode<MeshInstance3D>("DebugSphere");
 
-            if (audioDisplay == null || prefs == null)
+            if (prefs == null)
             {
                 GD.PrintErr("[SFXPlayer3D] Null reference to a child node");
             }
@@ -33,7 +31,6 @@ namespace Game
                 {
                     soundGroup.Initialize(this);
                 }
-                audioDisplay.Initialize(this);
             }
 
             GD.Print(String.Format("[SFXPlayer3D] Ready with {0} sound groups", SoundGroups.Count));
@@ -57,14 +54,6 @@ namespace Game
             else
             {
                 GD.Print("[SFXPlayer3D] Requested a sound group that does not exist: " + soundGroupName);
-            }
-        }
-
-        public void UpdateSoundGroupDisplay(SoundGroup3D _soundGroup)
-        {
-            if (audioDisplay.Visible)
-            {
-                audioDisplay.UpdateSoundGroup(_soundGroup);
             }
         }
 

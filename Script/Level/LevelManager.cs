@@ -5,16 +5,12 @@ namespace Game
 {
     public partial class LevelManager : Node
     {
-        [Export] public int Speed = 2;
-        [Export] public Color ShaderColor = new("#000000");
-        [Export] public Texture Pattern = new Texture2D();
-        [Export] public float WaitTime = 0.5f;
-        [Export] public bool InvertOnLeave = true;
-        [Export] public float Ease = 1.0f;
+        [Export] public float FadeSpeedScale = 1f;
+        [Export] public Color FadeToColor = new("#000000");
         [Export] public string LevelInfoCollectionPath = "res://Data/LevelInfoCollection.tres";
 
         private AnimationPlayer animationPlayer;
-        private ColorRect shaderBlendRect;
+        private ColorRect colorRect;
         private readonly object levelChangeLock = new();
         private Node spawnpoints;
 
@@ -58,6 +54,7 @@ namespace Game
             var SceneTree = GetTree();
             SceneTreeRoot = SceneTree.Root;
             CurrentLevel = SceneTree.CurrentScene;
+
             if (CurrentLevel.HasNode("Spawnpoints"))
             {
                 spawnpoints = CurrentLevel.GetNode("Spawnpoints");
@@ -80,11 +77,8 @@ namespace Game
             }
 
             animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
-            shaderBlendRect = GetNode<ColorRect>("CanvasLayer/ColorRect");
+            colorRect = GetNode<ColorRect>("CanvasLayer/ColorRect");
             
-            ((ShaderMaterial)shaderBlendRect.Material).SetShaderParameter("dissolve_texture", Pattern);
-            ((ShaderMaterial)shaderBlendRect.Material).SetShaderParameter("fade_color", ShaderColor);
-
             GD.Print("[LevelManager] Ready");
         }
 
@@ -94,7 +88,6 @@ namespace Game
 
             LevelInfo _info = LevelInfoCollection.LevelInfo[levelName];
 
-            // Wait until the end of the frame
             IsTransitioning = true;  // Must set this here since ChangeSceneNow is async
             CallDeferred(nameof(ChangeSceneNow), _info.Path);
         }
@@ -148,26 +141,19 @@ namespace Game
 
         public async Task FadeOut()
         {
-            animationPlayer.SpeedScale = Speed;
-            ((ShaderMaterial)shaderBlendRect.Material).SetShaderParameter("inverted", false);
-            var animation = animationPlayer.GetAnimation("ShaderFade");
-            animation.TrackSetKeyTransition(0, 0, Ease);
-            animationPlayer.Play("ShaderFade");
+            animationPlayer.SpeedScale = FadeSpeedScale;
+            animationPlayer.Play("FadeToBlack");
             await ToSignal(animationPlayer, "animation_finished");
             EmitSignal(nameof(FadeOutComplete));
         }
 
         public async Task FadeIn()
         {
-            animationPlayer.SpeedScale = Speed;
-            ((ShaderMaterial)shaderBlendRect.Material).SetShaderParameter("inverted", true);
-            var animation = animationPlayer.GetAnimation("ShaderFade");
-            animation.TrackSetKeyTransition(0, 0, Ease);
-            animationPlayer.PlayBackwards("ShaderFade");
+            animationPlayer.SpeedScale = FadeSpeedScale;
+            animationPlayer.PlayBackwards("FadeToBlack");
             await ToSignal(animationPlayer, "animation_finished");
             EmitSignal(nameof(FadeInComplete));
         }
-
     }
 
 }

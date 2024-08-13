@@ -32,10 +32,6 @@ namespace Game
 
             if (MaxVoices > AvailableSources.Count)
             {
-                GD.Print("[SoundGroup3D] More voices are allowed than sources exist for sound group: "
-                    + Name
-                    + ". Setting max voices to: " + AvailableSources.Count);
-
                 MaxVoices = AvailableSources.Count;
             }
         }
@@ -44,7 +40,6 @@ namespace Game
         {
             ActiveSources.Remove(src);
             AvailableSources.Add(src);
-            sfxPlayer3D.UpdateSoundGroupDisplay(this);
         }
 
         public void Stop(AudioStreamPlayer3D src)
@@ -52,7 +47,6 @@ namespace Game
             src.Stop();
             ActiveSources.Remove(src);
             AvailableSources.Add(src);
-            sfxPlayer3D.UpdateSoundGroupDisplay(this);
         }
 
         public AudioStreamPlayer3D GetAvailableSource()
@@ -73,8 +67,6 @@ namespace Game
             src.VolumeDb = Toolbox.Linear2Db((float)GD.RandRange(VaryVolume.X, VaryVolume.Y));
             AvailableSources.RemoveAt(idx);
             ActiveSources.Add(src);
-
-            sfxPlayer3D.UpdateSoundGroupDisplay(this);
 
             return (src);
         }
