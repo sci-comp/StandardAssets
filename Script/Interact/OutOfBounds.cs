@@ -24,7 +24,13 @@ namespace Game
         {
             if (body is CharacterBody3D characterBody)
             {
-                Marker3D sp = saveManager.FindLastSpawnpoint();
+                Marker3D sp = saveManager.FindSpawnpoint();
+
+                if (sp == null)
+                {
+                    GD.PrintErr("[OutOfBounds] Spawnpoint not found");
+                    return;
+                }
 
                 cameraBridge.Blink();
                 sfxPlayer3D.PlaySound(SfxToPlay, characterBody.GlobalPosition);

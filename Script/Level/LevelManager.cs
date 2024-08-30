@@ -15,7 +15,6 @@ namespace Game
         private Node spawnpoints;
 
         public bool IsTransitioning { get; set; } = false;
-        public string RequestedSpawnpoint { get; set; } = "";
         public string PreviousLevelName { get; set; } = "";
         public LevelInfoCollection LevelInfoCollection { get; private set; }
         public Node CurrentLevel { get; set; }
@@ -82,10 +81,8 @@ namespace Game
             GD.Print("[LevelManager] Ready");
         }
 
-        public void ChangeLevel(string levelName, string spawnpoint = "")
+        public void ChangeLevel(string levelName)
         {
-            RequestedSpawnpoint = spawnpoint;
-
             LevelInfo _info = LevelInfoCollection.LevelInfo[levelName];
 
             IsTransitioning = true;  // Must set this here since ChangeSceneNow is async
@@ -124,10 +121,23 @@ namespace Game
 
             PreviousLevelName = CurrentLevel.Name;
 
+            GD.Print("Before fade out");
             await FadeOut();
 
+            GD.Print("Before timer 1");
+            await ToSignal(GetTree().CreateTimer(1.0f), "timeout");
+
             CurrentLevel?.CallDeferred("queue_free");
+            //CurrentLevel.QueueFree();
+
+            GD.Print("Before tree exit");
             await ToSignal(CurrentLevel, "tree_exited");
+
+            GD.Print("Before timer 2");
+            await ToSignal(GetTree().CreateTimer(1.0f), "timeout");
+            // await ToSignal(GetTree(), "process_frame");
+
+            GD.Print("After timer");
             CurrentLevel = nextLevel.Instantiate();
             SceneTreeRoot.AddChild(CurrentLevel);
 
@@ -144,6 +154,7 @@ namespace Game
             animationPlayer.SpeedScale = FadeSpeedScale;
             animationPlayer.Play("FadeToBlack");
             await ToSignal(animationPlayer, "animation_finished");
+            GD.Print("Fade out completed");
             EmitSignal(nameof(FadeOutComplete));
         }
 

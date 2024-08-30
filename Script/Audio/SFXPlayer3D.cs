@@ -44,6 +44,10 @@ namespace Game
 
                 if (source != null)
                 {
+                    if (source.Playing)
+                    {
+                        GD.Print("Sound group is already playing");
+                    }
                     GD.Print("[SFXPlayer3D] Playing: " + soundGroupName);
                     source.Position = location;
                     source.Play();

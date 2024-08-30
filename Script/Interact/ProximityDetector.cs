@@ -1,4 +1,5 @@
 using Godot;
+using Inventory;
 
 namespace Game
 {
@@ -11,10 +12,14 @@ namespace Game
         private Label labelTitle;
         private Label labelDetails;
 
+        public Backpack Backpack;
+
         public bool SelectionExists => (currentlySelectedStaticBody != null) || (currentlySelectedArea != null);
 
-        public override void _Ready()
+        public void Initialize(Backpack _backpack)
         {
+            Backpack = _backpack;
+
             labelTitle = GetNode<Label>("Title");
             labelDetails = GetNode<Label>("Details");
 

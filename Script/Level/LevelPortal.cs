@@ -9,11 +9,12 @@ namespace Game
         [Export] public string PortalEnteredSFX = "portal";
 
         private LevelManager levelManager;
+        private SaveManager saveManager;
 
         public override void _Ready()
         {
             levelManager = GetNode<LevelManager>("/root/LevelManager");
-
+            saveManager = GetNode<SaveManager>("/root/SaveManager");
             BodyEntered += OnBodyEnter;
         }
 
@@ -22,7 +23,8 @@ namespace Game
             if (!levelManager.IsTransitioning)
             {
                 GD.Print("Level portal triggered");
-                levelManager.ChangeLevel(LevelToLoad, Spawnpoint);
+                saveManager.UpdateSaveData(LevelToLoad, Spawnpoint);
+                levelManager.ChangeLevel(LevelToLoad);
             }
         }
 

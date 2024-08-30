@@ -44,6 +44,8 @@ namespace Game
                         }
                     }
 
+                    GD.Print("[LevelInfoCollection] Level info has been initialized with ", levelInfo.Count, " levels");
+
                 }
 
                 return levelInfo;

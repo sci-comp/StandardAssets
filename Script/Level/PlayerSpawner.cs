@@ -11,7 +11,7 @@ namespace Game
         private SaveManager saveManager;
         private PackedScene playerPackedScene;
 
-        public event Action<CharacterHolder> PlayerSpawned;
+        public event Action<CharacterHub> PlayerSpawned;
 
         public override void _Ready()
         {
@@ -49,13 +49,13 @@ namespace Game
             {
                 Marker3D _spawnpoint = null;
 
-                if (levelManager.RequestedSpawnpoint != "")
+                if (saveManager.GetSpawnpoint() != "")
                 {
-                    _spawnpoint = saveManager.FindLastSpawnpoint();
+                    _spawnpoint = saveManager.FindSpawnpoint();
 
                     if (_spawnpoint == null)
                     {
-                        GD.PrintErr("[PlayerSpawner] Requested spawnpoint not found: " + levelManager.RequestedSpawnpoint);
+                        GD.PrintErr("[PlayerSpawner] Requested spawnpoint not found: " + saveManager.GetSpawnpoint());
                     }
                     else
                     {
@@ -87,10 +87,10 @@ namespace Game
             Node characterInstance = playerPackedScene.Instantiate();
             levelManager.CurrentLevel.AddChild(characterInstance);
             
-            if (characterInstance is CharacterHolder characterHolder)
+            if (characterInstance is CharacterHub characterHub)
             {
-                characterHolder.SetCharacterPosition(_spawnpoint.Position);
-                PlayerSpawned?.Invoke(characterHolder);
+                characterHub.SetCharacterPosition(_spawnpoint.Position);
+                PlayerSpawned?.Invoke(characterHub);
             }
             else
             {
