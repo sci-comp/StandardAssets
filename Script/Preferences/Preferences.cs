@@ -16,12 +16,12 @@ namespace Game
             if (ResourceLoader.Exists(savePath))
             {
                 Data = (PreferencesResource)ResourceLoader.Load(savePath);
-                GD.Print("[Preferences] Save file loaded");
+                GD.Print("[Preferences] Data loaded from path: ", savePath);
             }
             else
             {
                 Data = new();
-                GD.Print("[Preferences] Resource not found, using defaults");
+                GD.Print("[Preferences] Data not found at path: ", savePath, ", using defaults");
             }
 
             ApplyAudioPreferences();

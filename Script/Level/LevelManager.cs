@@ -1,4 +1,6 @@
 using Godot;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Game
@@ -6,43 +8,40 @@ namespace Game
     public partial class LevelManager : Node
     {
         [Export] public float FadeSpeedScale = 1f;
-        [Export] public Color FadeToColor = new("#000000");
+        [Export] public string LevelDir = "res://Data/Level/";
         [Export] public string LevelInfoCollectionPath = "res://Data/LevelInfoCollection.tres";
+        [Export] public Color FadeToColor = new("#000000");
 
         private AnimationPlayer animationPlayer;
         private ColorRect colorRect;
-        private readonly object levelChangeLock = new();
         private Node spawnpoints;
+        private readonly object levelChangeLock = new();
+        private readonly Dictionary<string, LevelInfo> levelInfo = new();
 
         public bool IsTransitioning { get; set; } = false;
         public string PreviousLevelName { get; set; } = "";
-        public LevelInfoCollection LevelInfoCollection { get; private set; }
+        
         public Node CurrentLevel { get; set; }
         public Node SceneTree { get; set; }
         public Node SceneTreeRoot { get; set; }
         public string CurrentLevelName => CurrentLevel.Name;
 
-        [Signal] public delegate void LevelLoadedEventHandler();
-        [Signal] public delegate void BeginUnloadingLevelEventHandler();
-        [Signal] public delegate void FadeInCompleteEventHandler();
-        [Signal] public delegate void FadeOutCompleteEventHandler();
+        public event Action LevelLoaded;
+        public event Action BeginUnloadingLevel;
+        public event Action FadeInComplete;
+        public event Action FadeOutComplete;
 
         public LevelInfo CurrentLevelInfo
         {
             get
             {
-                if (LevelInfoCollection == null)
+                if (levelInfo.ContainsKey(CurrentLevel.Name))
                 {
-                    GD.PrintErr("[LevelManager] LevelInfoCollection is null");
-                    return null;
-                }
-
-                if (LevelInfoCollection.LevelInfo.ContainsKey(CurrentLevel.Name))
-                {
-                    return LevelInfoCollection.LevelInfo[CurrentLevel.Name];
+                    return levelInfo[CurrentLevel.Name];
                 }
                 else
                 {
+                    GD.PrintErr("[LevelManager] Level name does not exist in the level info key ring: ", CurrentLevel.Name);
                     return null;
                 }
             }
@@ -59,21 +58,7 @@ namespace Game
                 spawnpoints = CurrentLevel.GetNode("Spawnpoints");
             }
 
-            if (ResourceLoader.Exists(LevelInfoCollectionPath))
-            {
-                var _resource = ResourceLoader.Load(LevelInfoCollectionPath);
-                LevelInfoCollection = (LevelInfoCollection)_resource.Duplicate();
-                if (LevelInfoCollection == null)
-                {
-                    GD.PrintErr("[LevelManager] LevelInfoCollection is null");
-                    return;
-                }
-            }
-            else
-            {
-                GD.PrintErr("[LevelManager] LevelInfoCollection not found at location: ", LevelInfoCollectionPath);
-                return;
-            }
+            LoadLevelInformation();
 
             animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
             colorRect = GetNode<ColorRect>("CanvasLayer/ColorRect");
@@ -83,7 +68,7 @@ namespace Game
 
         public void ChangeLevel(string levelName)
         {
-            LevelInfo _info = LevelInfoCollection.LevelInfo[levelName];
+            LevelInfo _info = levelInfo[levelName];
 
             IsTransitioning = true;  // Must set this here since ChangeSceneNow is async
             CallDeferred(nameof(ChangeSceneNow), _info.Path);
@@ -117,32 +102,17 @@ namespace Game
             }
 
             GD.Print("[LevelManager] Unloading level: " + CurrentLevel.Name);
-            EmitSignal(nameof(BeginUnloadingLevel));
-
+            BeginUnloadingLevel?.Invoke();
             PreviousLevelName = CurrentLevel.Name;
-
-            GD.Print("Before fade out");
             await FadeOut();
-
-            GD.Print("Before timer 1");
             await ToSignal(GetTree().CreateTimer(1.0f), "timeout");
-
             CurrentLevel?.CallDeferred("queue_free");
-            //CurrentLevel.QueueFree();
-
-            GD.Print("Before tree exit");
             await ToSignal(CurrentLevel, "tree_exited");
-
-            GD.Print("Before timer 2");
             await ToSignal(GetTree().CreateTimer(1.0f), "timeout");
-            // await ToSignal(GetTree(), "process_frame");
-
-            GD.Print("After timer");
             CurrentLevel = nextLevel.Instantiate();
             SceneTreeRoot.AddChild(CurrentLevel);
-
             GD.Print("[LevelManager] Level loaded: " + CurrentLevel.Name);
-            EmitSignal(nameof(LevelLoaded));
+            LevelLoaded?.Invoke();
 
             await FadeIn();
 
@@ -154,8 +124,7 @@ namespace Game
             animationPlayer.SpeedScale = FadeSpeedScale;
             animationPlayer.Play("FadeToBlack");
             await ToSignal(animationPlayer, "animation_finished");
-            GD.Print("Fade out completed");
-            EmitSignal(nameof(FadeOutComplete));
+            FadeOutComplete?.Invoke();
         }
 
         public async Task FadeIn()
@@ -163,8 +132,50 @@ namespace Game
             animationPlayer.SpeedScale = FadeSpeedScale;
             animationPlayer.PlayBackwards("FadeToBlack");
             await ToSignal(animationPlayer, "animation_finished");
-            EmitSignal(nameof(FadeInComplete));
+            FadeInComplete?.Invoke();
         }
+
+        public void LoadLevelInformation()
+        {
+            DirAccess dir = DirAccess.Open(LevelDir);
+
+            if (dir != null)
+            {
+                dir.ListDirBegin();
+                string fileName = dir.GetNext();
+                while (fileName != "")
+                {
+                    // DirAccess returns
+                    //   in an exported build: dir/fileName.extension.import
+                    //   in the editor: dir/fileName.extension
+                    // In an exported build, ResourceLoader can load from the original path
+                    fileName = fileName.Replace(".import", "");
+                    fileName = fileName.Replace(".remap", "");
+                    if (ResourceLoader.Exists(LevelDir + fileName))
+                    {
+                        if (ResourceLoader.Load(LevelDir + fileName) is LevelInfo _levelInfo)
+                        {
+                            string levelInfoName = fileName.TrimSuffix(".tres");
+                            levelInfo[levelInfoName] = _levelInfo;
+                        }
+                    }
+
+                    fileName = dir.GetNext();
+                }
+            }
+            else
+            {
+                GD.PrintErr("[LevelDatabase] Level information directory is missing: ", LevelDir);
+            }
+
+            GD.Print("[LevelDatabase] Ready with information on ", "0", " levels");
+        }
+
+        public LevelInfo GetLevelInfo(string levelName)
+        {
+            return levelInfo[levelName];
+        }
+
     }
 
 }

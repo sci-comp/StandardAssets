@@ -15,22 +15,14 @@ namespace Game
 
         public override void _Ready()
         {
-            prefs = GetNode<Preferences>("/root/Preferences");
             debugSphere = GetNode<MeshInstance3D>("DebugSphere");
 
-            if (prefs == null)
+            PossibleSFX3D possibleSFX3D = new();
+            possibleSFX3D.Initialize(this);
+            SoundGroups = possibleSFX3D.GetSoundGroups();
+            foreach (SoundGroup3D soundGroup in SoundGroups.Values)
             {
-                GD.PrintErr("[SFXPlayer3D] Null reference to a child node");
-            }
-            else
-            {
-                PossibleSFX3D possibleSFX3D = new();
-                possibleSFX3D.Initialize(this);
-                SoundGroups = possibleSFX3D.GetSoundGroups();
-                foreach (SoundGroup3D soundGroup in SoundGroups.Values)
-                {
-                    soundGroup.Initialize(this);
-                }
+                soundGroup.Initialize(this);
             }
 
             GD.Print(String.Format("[SFXPlayer3D] Ready with {0} sound groups", SoundGroups.Count));
