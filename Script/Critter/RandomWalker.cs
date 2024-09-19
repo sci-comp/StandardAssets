@@ -67,7 +67,6 @@ public partial class RandomWalker : CharacterBody3D
 
     private void VelocityComputed(Vector3 _velocity) 
     {
-        GD.Print("On computed: ", _velocity);
         Velocity = Velocity.MoveToward(_velocity, 0.25f);
         MoveAndSlide();
     }
