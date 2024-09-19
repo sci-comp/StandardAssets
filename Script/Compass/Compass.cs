@@ -5,10 +5,10 @@ namespace Game
 {
     public partial class Compass : Control
     {
-        private TextureRect northIndicator;
-        private TextureRect eastIndicator;
-        private TextureRect southIndicator;
-        private TextureRect westIndicator;
+        private TextureRect north;
+        private TextureRect east;
+        private TextureRect south;
+        private TextureRect west;
 
         private Camera3D mainCamera;
         private const int MaxPOIs = 32;
@@ -17,12 +17,13 @@ namespace Game
 
         private CameraBridge cameraBridge;
         private LevelManager levelManager;
+        private PlayerSpawner playerSpawner;
 
         public override void _Ready()
         {
             cameraBridge = GetNode<CameraBridge>("/root/CameraBridge");
             levelManager = GetNode<LevelManager>("/root/LevelManager");
-            levelManager.BeginUnloadingLevel += OnBeginUnloadingLevel;
+            playerSpawner = GetNode<PlayerSpawner>("/root/PlayerSpawner");
 
             if (cameraBridge == null)
             {
@@ -37,14 +38,21 @@ namespace Game
                     GD.PrintErr("[Compass] Camera is null");
                 }
             }
-            
-            northIndicator = GetNode<TextureRect>("NorthIndicator");
-            eastIndicator = GetNode<TextureRect>("EastIndicator");
-            southIndicator = GetNode<TextureRect>("SouthIndicator");
-            westIndicator = GetNode<TextureRect>("WestIndicator");
 
+            north = GetNode<TextureRect>("North");
+            east = GetNode<TextureRect>("East");
+            south = GetNode<TextureRect>("South");
+            west = GetNode<TextureRect>("West");
+
+            playerSpawner.PlayerSpawned += OnPlayerSpawned;
             PointOfInterest.POISpawned += OnPOISpawned;
             PointOfInterest.POIDestroyed += OnPOIDestroyed;
+
+            levelManager.BeginUnloadingLevel += OnBeginUnloadingLevel;
+
+
+            Visible = false;
+            GD.Print("[Compass] Ready");
         }
 
         public override void _Process(double delta)
@@ -60,21 +68,16 @@ namespace Game
 
         private void OnBeginUnloadingLevel()
         {
+            GD.Print("[Compass] On begin unloading level, setting visible to true");
             Visible = false;
         }
 
-        private void OnLevelLoaded()
+        private void OnPlayerSpawned(CharacterHub characterHub)
         {
-            if (levelManager.CurrentLevelInfo.PlayerExistsInLevel)
-            {
-                Visible = true;
-            }
-            else
-            {
-                Visible = false;
-            }
+            GD.Print("[Compass] On player spawned, setting visible to true");
+            Visible = true;
         }
-
+        
         private void OnPOIDestroyed(PointOfInterest poi)
         {
             if (listOfPointsOfInterest.Contains(poi))
@@ -100,11 +103,17 @@ namespace Game
 
         private void UpdateCompass()
         {
+            if (mainCamera == null)
+            {
+                GD.PrintErr("[Compass] Cannot find camera");
+                return;
+            }
+
             var playerOrientation = mainCamera.GlobalTransform.Basis.GetEuler().Y;
-            UpdateIndicatorPosition(northIndicator, playerOrientation, 0);
-            UpdateIndicatorPosition(westIndicator, playerOrientation, Mathf.Pi / 2);
-            UpdateIndicatorPosition(southIndicator, playerOrientation, Mathf.Pi);
-            UpdateIndicatorPosition(eastIndicator, playerOrientation, 3 * Mathf.Pi / 2);
+            UpdateIndicatorPosition(north, playerOrientation, 0);
+            UpdateIndicatorPosition(west, playerOrientation, Mathf.Pi / 2);
+            UpdateIndicatorPosition(south, playerOrientation, Mathf.Pi);
+            UpdateIndicatorPosition(east, playerOrientation, 3 * Mathf.Pi / 2);
 
             int count = 0;
             foreach (PointOfInterest poi in listOfPointsOfInterest)
@@ -130,8 +139,10 @@ namespace Game
             if (isInFrontOfPlayer)
             {
                 float normalizedPosition = -1.0f * angleDifference / (Mathf.Pi / 2);
-                float positionX = normalizedPosition * (Size.X / 2) + (Size.X / 2) - (indicator.Size.X / 2);
-                indicator.Position = new Vector2(positionX, indicator.Position.Y);
+
+                float scaledPosition = normalizedPosition * Size.X / 2;
+                float offset = (Size.X / 2) - (indicator.Size.X / 2);
+                indicator.Position = new Vector2(scaledPosition + offset, indicator.Position.Y);
                 indicator.Visible = true;
             }
             else

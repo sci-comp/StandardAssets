@@ -6,20 +6,17 @@ namespace Game
     public partial class ProximityDetector : Area3D
     {
         [Export] public string InteractButton = "interact";
+        [Export] public string PlayerID = "Player1";
 
         private Inspectable currentlySelectedStaticBody;
         private InspectableArea currentlySelectedArea;
         private Label labelTitle;
         private Label labelDetails;
 
-        public Backpack Backpack;
-
         public bool SelectionExists => (currentlySelectedStaticBody != null) || (currentlySelectedArea != null);
 
-        public void Initialize(Backpack _backpack)
+        public void Initialize()
         {
-            Backpack = _backpack;
-
             labelTitle = GetNode<Label>("Title");
             labelDetails = GetNode<Label>("Details");
 

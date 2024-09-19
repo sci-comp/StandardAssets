@@ -6,6 +6,7 @@ namespace Game
     public partial class PlayerSpawner : Node
     {
         [Export] public string PlayerPath = "res://Prefab/Player.tscn";
+        [Export] public string PlayerID = "Player1";
 
         private LevelManager levelManager;
         private SaveManager saveManager;
