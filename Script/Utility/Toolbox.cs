@@ -183,6 +183,37 @@ namespace Game
             return newForward;
         }
 
+        public static List<T> LoadResourcesFromDirectory<T>(string path) where T : Resource
+        {
+            List<T> resources = new List<T>();
+            DirAccess dir = DirAccess.Open(path);
+
+            if (dir != null)
+            {
+                dir.ListDirBegin();
+                string fileName = dir.GetNext();
+                while (fileName != "")
+                {
+                    if (dir.CurrentIsDir() && fileName != "." && fileName != "..")
+                    {
+                        resources.AddRange(LoadResourcesFromDirectory<T>(path + "/" + fileName));
+                    }
+                    else
+                    {
+                        string resourcePath = path + "/" + fileName.Replace(".import", "").Replace(".remap", "");
+                        if (ResourceLoader.Exists(resourcePath) && ResourceLoader.Load(resourcePath) is T resource)
+                        {
+                            resources.Add(resource);
+                        }
+                    }
+                    fileName = dir.GetNext();
+                }
+                dir.ListDirEnd();
+            }
+            return resources;
+        }
+
+
         public static List<string> GetPathsWithExtension(string dir_path, string extension)
         {
             /* Given a path to a directory, return a list of all files with an extension 

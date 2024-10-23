@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Linq;
 
 namespace Game
 {
@@ -48,38 +49,17 @@ namespace Game
         {
             if (levelManager.CurrentLevelInfo != null && levelManager.CurrentLevelInfo.PlayerExistsInLevel)
             {
-                Marker3D _spawnpoint = null;
-
-                if (saveManager.GetSpawnpoint() != "")
+                if (saveManager.SpawnpointName != "")
                 {
-                    _spawnpoint = saveManager.FindSpawnpoint();
+                    Marker3D _spawnpoint = saveManager.FindSpawnpoint();
 
-                    if (_spawnpoint == null)
+                    if (_spawnpoint != null)
                     {
-                        GD.PrintErr("[PlayerSpawner] Requested spawnpoint not found: " + saveManager.GetSpawnpoint());
-                    }
-                    else
-                    {
-                        GD.Print("[PlayerSpawner] Requested spawnpoint found");
+                        // Give time for Autoloads to run their Ready methods when starting from a debug scene
+                        CallDeferred("SpawnPlayerAtEndOfFrame", _spawnpoint);
                     }
                 }
-
-                _spawnpoint ??= (Marker3D)levelManager.CurrentLevel.FindChild("SP_" + levelManager.CurrentLevel.Name);
-
-                if (_spawnpoint == null)
-                {
-                    GD.PrintErr("[PlayerSpawner] No spawnpoint found in level: " + levelManager.CurrentLevel.Name);
-                    return;
-                }
-                else
-                {
-                    GD.Print("[PlayerSpawner] Default spawnpoint found");
-                }
-
-                // Give time for Autoloads to run their Ready methods when starting from a debug scene
-                CallDeferred("SpawnPlayerAtEndOfFrame", _spawnpoint);
             }
-
         }
 
         private void SpawnPlayerAtEndOfFrame(Node3D _spawnpoint)

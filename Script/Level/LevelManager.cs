@@ -14,7 +14,6 @@ namespace Game
 
         private AnimationPlayer animationPlayer;
         private ColorRect colorRect;
-        private Node spawnpoints;
         private readonly object levelChangeLock = new();
         private readonly Dictionary<string, LevelInfo> levelInfo = new();
 
@@ -27,7 +26,7 @@ namespace Game
         public string CurrentLevelName => CurrentLevel.Name;
 
         public event Action LevelLoaded;
-        public event Action BeginUnloadingLevel;
+        public event Action<string, string> BeginUnloadingLevel;
         public event Action FadeInComplete;
         public event Action FadeOutComplete;
 
@@ -53,11 +52,6 @@ namespace Game
             SceneTreeRoot = SceneTree.Root;
             CurrentLevel = SceneTree.CurrentScene;
 
-            if (CurrentLevel.HasNode("Spawnpoints"))
-            {
-                spawnpoints = CurrentLevel.GetNode("Spawnpoints");
-            }
-
             LoadLevelInformation();
 
             animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
@@ -66,15 +60,15 @@ namespace Game
             GD.Print("[LevelManager] Ready");
         }
 
-        public void ChangeLevel(string levelName)
+        public void ChangeLevel(string levelName, string spawnpoint)
         {
             LevelInfo _info = levelInfo[levelName];
 
             IsTransitioning = true;  // Must set this here since ChangeSceneNow is async
-            CallDeferred(nameof(ChangeSceneNow), _info.Path);
+            CallDeferred(nameof(ChangeSceneNow), _info.Path, levelName, spawnpoint);
         }
 
-        public async void ChangeSceneNow(string path)
+        public async void ChangeSceneNow(string path, string levelName, string spawnpoint)
         {
             if (path == null)
             {
@@ -94,25 +88,30 @@ namespace Game
                 IsTransitioning = true;  // Should already be true
             }
 
-            if (ResourceLoader.Load(path, "PackedScene", 0) is not PackedScene nextLevel)
+            GD.Print("[LevelManager] Unloading level: " + CurrentLevel.Name);
+            BeginUnloadingLevel?.Invoke(levelName, spawnpoint);
+
+            await FadeOut();
+
+            PreviousLevelName = CurrentLevel.Name;
+            PackedScene packedScene = (PackedScene)ResourceLoader.Load(path);
+
+            if (packedScene == null)
             {
-                GD.PrintErr("[LevelManager] Invalid level path: ", path);
+                GD.PrintErr("[LevelManager] Null scene at path: " + path);
                 IsTransitioning = false;
+                await FadeIn();
                 return;
             }
 
-            GD.Print("[LevelManager] Unloading level: " + CurrentLevel.Name);
-            BeginUnloadingLevel?.Invoke();
-            PreviousLevelName = CurrentLevel.Name;
-            await FadeOut();
-            await ToSignal(GetTree().CreateTimer(1.0f), "timeout");
             CurrentLevel?.CallDeferred("queue_free");
             await ToSignal(CurrentLevel, "tree_exited");
-            await ToSignal(GetTree().CreateTimer(1.0f), "timeout");
-            CurrentLevel = nextLevel.Instantiate();
+            
+            CurrentLevel = packedScene.Instantiate();
             SceneTreeRoot.AddChild(CurrentLevel);
-            GD.Print("[LevelManager] Level loaded: " + CurrentLevel.Name);
+            
             LevelLoaded?.Invoke();
+            GD.Print("[LevelManager] Level loaded: " + CurrentLevel.Name);
 
             await FadeIn();
 
@@ -135,40 +134,19 @@ namespace Game
             FadeInComplete?.Invoke();
         }
 
-        public void LoadLevelInformation()
+        public void LoadLevelInformation(string path = null)
         {
-            DirAccess dir = DirAccess.Open(LevelDir);
+            GD.Print("[LevelManager] Beginning to load level information");
 
-            if (dir != null)
+            List<LevelInfo> levels = Toolbox.LoadResourcesFromDirectory<LevelInfo>(path ?? LevelDir);
+            foreach (LevelInfo level in levels)
             {
-                dir.ListDirBegin();
-                string fileName = dir.GetNext();
-                while (fileName != "")
-                {
-                    // DirAccess returns
-                    //   in an exported build: dir/fileName.extension.import
-                    //   in the editor: dir/fileName.extension
-                    // In an exported build, ResourceLoader can load from the original path
-                    fileName = fileName.Replace(".import", "");
-                    fileName = fileName.Replace(".remap", "");
-                    if (ResourceLoader.Exists(LevelDir + fileName))
-                    {
-                        if (ResourceLoader.Load(LevelDir + fileName) is LevelInfo _levelInfo)
-                        {
-                            string levelInfoName = fileName.TrimSuffix(".tres");
-                            levelInfo[levelInfoName] = _levelInfo;
-                        }
-                    }
-
-                    fileName = dir.GetNext();
-                }
-            }
-            else
-            {
-                GD.PrintErr("[LevelDatabase] Level information directory is missing: ", LevelDir);
+                string levelInfoName = level.ResourcePath.GetFile().TrimSuffix(".tres");
+                levelInfo[levelInfoName] = level;
+                GD.Print("[LevelManager] Successfully added ", levelInfoName);
             }
 
-            GD.Print("[LevelDatabase] Ready with information on ", "0", " levels");
+            GD.Print("[LevelManager] Loaded information on ", levelInfo.Count, " levels");
         }
 
         public LevelInfo GetLevelInfo(string levelName)
@@ -180,3 +158,4 @@ namespace Game
 
 }
 
+//await ToSignal(GetTree().CreateTimer(1.0f), "timeout");

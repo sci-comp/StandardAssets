@@ -64,9 +64,11 @@ namespace Game
         {
             PointOfInterest.POISpawned -= OnPOISpawned;
             PointOfInterest.POIDestroyed -= OnPOIDestroyed;
+            playerSpawner.PlayerSpawned -= OnPlayerSpawned;
+            levelManager.BeginUnloadingLevel -= OnBeginUnloadingLevel;
         }
 
-        private void OnBeginUnloadingLevel()
+        private void OnBeginUnloadingLevel(string nextLevel, string nextSpawnpoint)
         {
             GD.Print("[Compass] On begin unloading level, setting visible to true");
             Visible = false;
