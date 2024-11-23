@@ -16,7 +16,7 @@ namespace Game
         {
             cameraBridge = GetNode<CameraBridge>("/root/CameraBridge");
 
-            Toolbox.FindAndPopulate(this, gateways);
+            Toolbox.Toolbox.FindAndPopulate(this, gateways);
 
             for (int i = 0; i < gateways.Count; i++)
             {

@@ -10,16 +10,16 @@ namespace Game
 
         public override void _Ready()
         {
-            Toolbox.FindAndPopulate(this, levers);
-            Toolbox.FindAndPopulate(this, flags);
-
+            Toolbox.Toolbox.FindAndPopulate(this, levers);
+            Toolbox.Toolbox.FindAndPopulate(this, flags);
+            
             foreach (Lever lever in levers)
             {
                 lever.Interacted += OnInteract;
             }
         }
 
-        private void OnInteract()
+        private void OnInteract(string playerID)
         {
             foreach (var lever in levers)
             {

@@ -4,6 +4,7 @@ public partial class PreferencesResource : Resource
 {
     [Export] public bool ExtraLuck = false;
     [Export] public bool UseGamepad = false;
+    [Export] public bool EnableDebug = false;
 
     [Export] public bool EnableAudio = true;
     [Export] public bool EnableMusic = true;

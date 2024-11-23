@@ -64,7 +64,7 @@ namespace Game
             int idx = rnd.RandiRange(0, AvailableSources.Count - 1);
             src = AvailableSources[idx];
             src.PitchScale = (float)GD.RandRange(VaryPitch.X, VaryPitch.Y);
-            src.VolumeDb = Toolbox.Linear2Db((float)GD.RandRange(VaryVolume.X, VaryVolume.Y));
+            src.VolumeDb = Toolbox.Audio.Linear2Db((float)GD.RandRange(VaryVolume.X, VaryVolume.Y));
             AvailableSources.RemoveAt(idx);
             ActiveSources.Add(src);
 

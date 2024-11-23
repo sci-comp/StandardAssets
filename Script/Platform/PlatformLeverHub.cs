@@ -10,8 +10,8 @@ namespace Game
 
         public override void _Ready()
         {
-            Toolbox.FindAndPopulate(this, levers);
-            Toolbox.FindAndPopulate(this, platforms);
+            Toolbox.Toolbox.FindAndPopulate(this, levers);
+            Toolbox.Toolbox.FindAndPopulate(this, platforms);
 
             foreach (Lever lever in levers)
             {
@@ -24,7 +24,7 @@ namespace Game
             }
         }
 
-        private void OnInteract()
+        private void OnInteract(string playerID)
         {
             foreach (IActivatedPlatform platform in platforms)
             {

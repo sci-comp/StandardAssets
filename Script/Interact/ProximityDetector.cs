@@ -1,5 +1,4 @@
 using Godot;
-using Inventory;
 
 namespace Game
 {
@@ -32,6 +31,66 @@ namespace Game
 
             DisableUI();
         }
+
+        public override void _UnhandledInput(InputEvent inputEvent)
+        {
+            if (inputEvent.IsActionPressed(InteractButton))
+            {
+                GetViewport().SetInputAsHandled();
+
+                if (currentlySelectedStaticBody is Interactable interactable)
+                {
+                    interactable.Interact(PlayerID);
+                }
+                else if (currentlySelectedArea is InteractableArea interactableArea)
+                {
+                    interactableArea.Interact(PlayerID);
+                }
+            }
+        }
+
+        private void DisableUI()
+        {
+            labelTitle.Text = "";
+            labelDetails.Text = "";
+            labelTitle.Visible = false;
+            labelDetails.Visible = false;
+        }
+
+        private void EnableUI(string _name, string _details)
+        {
+            labelTitle.Text = _name;
+            labelDetails.Text = _details;
+            labelTitle.Visible = true;
+            labelDetails.Visible = true;
+        }
+
+        private void SelectNext()
+        {
+            var bodies = GetOverlappingBodies();
+            foreach (var nextBody in bodies)
+            {
+                if (nextBody is Inspectable nextInspectable)
+                {
+                    nextInspectable.Select();
+                    EnableUI(nextInspectable.Title, nextInspectable.Details);
+                    return;
+                }
+            }
+
+            var areas = GetOverlappingAreas();
+            foreach (var nextArea in areas)
+            {
+                if (nextArea is InspectableArea nextInspectable)
+                {
+                    nextInspectable.Select();
+                    EnableUI(nextInspectable.Title, nextInspectable.Details);
+                    return;
+                }
+            }
+        }
+
+        // Events
 
         private void OnAreaEntered(Area3D area)
         {
@@ -79,62 +138,6 @@ namespace Game
                     currentlySelectedArea = null;
                     DisableUI();
                     SelectNext();
-                }
-            }
-        }
-
-        private void SelectNext()
-        {
-            var bodies = GetOverlappingBodies();
-            foreach (var nextBody in bodies)
-            {
-                if (nextBody is Inspectable nextInspectable)
-                {
-                    nextInspectable.Select();
-                    EnableUI(nextInspectable.Title, nextInspectable.Details);
-                    return;
-                }
-            }
-
-            var areas = GetOverlappingAreas();
-            foreach (var nextArea in areas)
-            {
-                if (nextArea is InspectableArea nextInspectable)
-                {
-                    nextInspectable.Select();
-                    EnableUI(nextInspectable.Title, nextInspectable.Details);
-                    return;
-                }
-            }
-        }
-
-        private void EnableUI(string _name, string _details)
-        {
-            labelTitle.Text = _name;
-            labelDetails.Text = _details;
-            labelTitle.Visible = true;
-            labelDetails.Visible = true;
-        }
-
-        private void DisableUI()
-        {
-            labelTitle.Text = "";
-            labelDetails.Text = "";
-            labelTitle.Visible = false;
-            labelDetails.Visible = false;
-        }
-
-        public override void _UnhandledInput(InputEvent @event)
-        {
-            if (@event.IsActionPressed(InteractButton))
-            {
-                if (currentlySelectedStaticBody is Interactable interactable)
-                {
-                    interactable.Interact();
-                }
-                else if (currentlySelectedArea is InteractableArea interactableArea)
-                {
-                    interactableArea.Interact();
                 }
             }
         }

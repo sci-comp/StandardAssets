@@ -18,7 +18,7 @@ namespace Game
             player = GetNode<SFXPlayer3D>("/root/SFXPlayer3D");
         }
 
-        public override void Interact()
+        public override void Interact(string playerID)
         {
             player.PlaySound(SoundName, Position);
             base.Interact();

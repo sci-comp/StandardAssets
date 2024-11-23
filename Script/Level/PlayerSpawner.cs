@@ -71,6 +71,7 @@ namespace Game
             if (characterInstance is CharacterHub characterHub)
             {
                 characterHub.SetCharacterPosition(_spawnpoint.Position);
+                characterHub.SetCharacterRotation(_spawnpoint.Rotation);
                 PlayerSpawned?.Invoke(characterHub);
             }
             else

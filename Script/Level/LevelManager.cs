@@ -60,6 +60,11 @@ namespace Game
             GD.Print("[LevelManager] Ready");
         }
 
+        public void ChangeLevel(string levelName)
+        {
+            ChangeLevel(levelName, "");
+        }
+
         public void ChangeLevel(string levelName, string spawnpoint)
         {
             LevelInfo _info = levelInfo[levelName];
@@ -138,7 +143,7 @@ namespace Game
         {
             GD.Print("[LevelManager] Beginning to load level information");
 
-            List<LevelInfo> levels = Toolbox.LoadResourcesFromDirectory<LevelInfo>(path ?? LevelDir);
+            List<LevelInfo> levels = Toolbox.FileSystem.LoadResourcesFromDirectory<LevelInfo>(path ?? LevelDir);
             foreach (LevelInfo level in levels)
             {
                 string levelInfoName = level.ResourcePath.GetFile().TrimSuffix(".tres");

@@ -1,4 +1,5 @@
 using Godot;
+using Toolbox;
 
 namespace Game
 {
@@ -35,7 +36,7 @@ namespace Game
             sfxPlayer3D = GetNode<SFXPlayer3D>("/root/SFXPlayer3D");
             leverArm = GetNode<Node3D>("LeverArm");
 
-            rotateAroundAxis = Toolbox.GetAxisDirection(rotateAround);
+            rotateAroundAxis = MathLib.GetAxisDirection(rotateAround);
 
             initialBasis = leverArm.Basis;
             destBasis = initialBasis.Rotated(rotateAroundAxis, Mathf.DegToRad(DegreesRotation));
@@ -61,7 +62,7 @@ namespace Game
             sfxPlayer3D.PlaySound(SoundName, GlobalPosition);
         }
 
-        public override void Interact()
+        public override void Interact(string playerID)
         {
             if (!canInteract)
             {

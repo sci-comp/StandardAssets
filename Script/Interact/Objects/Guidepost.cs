@@ -2,7 +2,7 @@ using Godot;
 
 namespace Game
 {
-    public partial class Signpost : InspectableArea
+    public partial class Guidepost : InspectableArea
     {
         [Export] public string _Title = "Signpost";
         [Export] public string _Details = "";

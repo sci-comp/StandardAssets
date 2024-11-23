@@ -2,11 +2,11 @@ using System;
 
 public abstract partial class InteractableArea : InspectableArea
 {
-    public event Action Interacted;
+    public event Action<string> Interacted;
 
-    public virtual void Interact()
+    public virtual void Interact(string playerID = "")
     {
-        Interacted?.Invoke();
+        Interacted?.Invoke(playerID);
     }
 
 }
