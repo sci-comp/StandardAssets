@@ -31,7 +31,7 @@ float noise(vec2 x) {
     vec2 p = floor(x);
     vec2 f = fract(x);
     f = f * f * (3.0 - 2.0 * f);
-    
+
     return mix(
         mix(hash(p), hash(p + vec2(1.0, 0.0)), f.x),
         mix(hash(p + vec2(0.0, 1.0)), hash(p + vec2(1.0, 1.0)), f.x),
@@ -64,19 +64,19 @@ void fragment() {
 
     float mod_uv_len = length(
         modified_uv * vec2(
-            (1.0 / fire_thickness) + modified_uv.y * fire_shape, 
+            (1.0 / fire_thickness) + modified_uv.y * fire_shape,
             1.0 / fire_height
         )
     );
 
     float fire_intensity = intensity - 16.0 * fire_sharpness * pow(
-        max(0.0, mod_uv_len - noise_val * max(0.0, modified_uv.y + 0.25)), 
+        max(0.0, mod_uv_len - noise_val * max(0.0, modified_uv.y + 0.25)),
         1.2
     );
 
     float fire_intensity1 = clamp(
-        noise_val * fire_intensity * (1.5 - pow(uv.y, 14.0)), 
-        0.0, 
+        noise_val * fire_intensity * (1.5 - pow(uv.y, 14.0)),
+        0.0,
         1.0
     );
 
@@ -106,7 +106,7 @@ void vertex() {
     vec4 ay = vec4(local_up.xyz, 0.0);
 	// Forward: to_world(view_space.right) CROSS local_transform.basis.y
     vec4 az = vec4(normalize(cross(INV_VIEW_MATRIX[0].xyz, local_up)), 0.0);
-	
+
     MODELVIEW_MATRIX = VIEW_MATRIX * mat4(ax, ay, az, MODEL_MATRIX[3]);
     MODELVIEW_NORMAL_MATRIX = mat3(MODELVIEW_MATRIX);
 }

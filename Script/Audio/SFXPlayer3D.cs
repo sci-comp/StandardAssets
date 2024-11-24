@@ -6,20 +6,15 @@ namespace Game
 {
     public partial class SFXPlayer3D : Node
     {
-        private Preferences prefs;
-
         public float MasterVolume { get; set; } = 0.7f;
         public Dictionary<string, SoundGroup3D> SoundGroups = new();
 
-        private MeshInstance3D debugSphere;
-
         public override void _Ready()
         {
-            debugSphere = GetNode<MeshInstance3D>("DebugSphere");
-
             PossibleSFX3D possibleSFX3D = new();
             possibleSFX3D.Initialize(this);
             SoundGroups = possibleSFX3D.GetSoundGroups();
+
             foreach (SoundGroup3D soundGroup in SoundGroups.Values)
             {
                 soundGroup.Initialize(this);
@@ -43,8 +38,6 @@ namespace Game
                     GD.Print("[SFXPlayer3D] Playing: " + soundGroupName);
                     source.Position = location;
                     source.Play();
-                    //debugSphere.Position = location;
-                    //GD.Print("[SFXPlayer3D] location: ", location);
                 }
             }
             else

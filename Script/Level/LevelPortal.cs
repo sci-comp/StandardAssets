@@ -22,7 +22,7 @@ namespace Game
         {
             if (!levelManager.IsTransitioning)
             {
-                GD.Print("Level portal triggered");
+                GD.Print($"[LevelPortal] Changing level to {LevelToLoad} with spawnpoint {Spawnpoint}");
                 levelManager.ChangeLevel(LevelToLoad, Spawnpoint);
             }
         }

@@ -6,7 +6,7 @@ namespace Game
 {
     public partial class PlayerSpawner : Node
     {
-        [Export] public string PlayerPath = "res://Prefab/Player.tscn";
+        [Export] public string PlayerPath = "res://Scene/Player.tscn";
         [Export] public string PlayerID = "Player1";
 
         private LevelManager levelManager;
@@ -76,7 +76,7 @@ namespace Game
             }
             else
             {
-                GD.PrintErr("[PlayerSpawner] playerInstance is not of type CharacterController");
+                GD.PrintErr("[PlayerSpawner] playerInstance is not of type CharacterHub");
             }
 
             GD.Print("[PlayerSpawner] Player instantiated at spawnpoint: " + _spawnpoint.Name);
