@@ -4,10 +4,11 @@ namespace Game
 {
     public partial class LevelInfo : Resource
     {
-        [Export] public string LevelName;
-        [Export] public bool PlayerExistsInLevel;
-        [Export] public string Path;
-        [Export] public string Environment;
+        [Export] public bool AllowMenu = true;
+        [Export] public bool PlayerExistsInLevel = true;
+        [Export] public string Environment = "wind";
+        [Export] public string LevelName = "";
+        [Export] public string Path = "";
     }
 
 }

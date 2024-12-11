@@ -148,7 +148,6 @@ namespace Game
             {
                 string levelInfoName = level.ResourcePath.GetFile().TrimSuffix(".tres");
                 levelInfo[levelInfoName] = level;
-                GD.Print("[LevelManager] Successfully added ", levelInfoName);
             }
 
             GD.Print("[LevelManager] Loaded information on ", levelInfo.Count, " levels");
