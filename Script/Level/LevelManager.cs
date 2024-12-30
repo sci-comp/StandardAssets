@@ -14,6 +14,7 @@ namespace Game
 
         private AnimationPlayer animationPlayer;
         private ColorRect colorRect;
+        private Label levelNameLabel;
         private readonly object levelChangeLock = new();
         private readonly Dictionary<string, LevelInfo> levelInfo = new();
 
@@ -24,6 +25,7 @@ namespace Game
         public Node SceneTree { get; set; }
         public Node SceneTreeRoot { get; set; }
         public string CurrentLevelName => CurrentLevel.Name;
+        public SaveManager SaveManager { get; set; }
 
         public event Action LevelLoaded;
         public event Action<string, string> BeginUnloadingLevel;
@@ -56,8 +58,16 @@ namespace Game
 
             animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
             colorRect = GetNode<ColorRect>("CanvasLayer/ColorRect");
-            
+            levelNameLabel = GetNode<Label>("LevelNameLabel");
+
+            levelNameLabel.Modulate = new Color(1, 1, 1, 0);
+
             GD.Print("[LevelManager] Ready");
+        }
+
+        public void ReturningFromEpigraph()
+        {
+            ChangeLevel(levelAfterEpigraph, spawnpointAfterEpigraph);
         }
 
         public void ChangeLevel(string levelName)
@@ -65,9 +75,20 @@ namespace Game
             ChangeLevel(levelName, "");
         }
 
+        private string levelAfterEpigraph = "";
+        private string spawnpointAfterEpigraph = "";
         public void ChangeLevel(string levelName, string spawnpoint)
         {
             LevelInfo _info = levelInfo[levelName];
+
+            if (_info.HasEpigraph && SaveManager != null && !SaveManager.AlreadyShownEpigraph(levelName))
+            {
+                GD.Print("[LevelManager] Epigraph not yet shown.. diverting from requested level");
+                levelAfterEpigraph = levelName;
+                spawnpointAfterEpigraph = spawnpoint;
+                levelName = "Epigraph";
+                spawnpoint = "";
+            }
 
             IsTransitioning = true;  // Must set this here since ChangeSceneNow is async
             CallDeferred(nameof(ChangeSceneNow), _info.Path, levelName, spawnpoint);
@@ -120,6 +141,8 @@ namespace Game
 
             await FadeIn();
 
+            DisplayLevelName(levelName);
+
             IsTransitioning = false;
         }
 
@@ -158,8 +181,31 @@ namespace Game
             return levelInfo[levelName];
         }
 
+        private async void DisplayLevelName(string levelName)
+        {
+            if (levelNameLabel == null)
+            {
+                return;
+            }
+
+            levelNameLabel.Text = levelName;
+            levelNameLabel.Modulate = new Color(1, 1, 1, 0);
+            levelNameLabel.Visible = true;
+
+            Tween fadeInTween = CreateTween();
+            fadeInTween.TweenProperty(levelNameLabel, "modulate:a", 1, .5);
+            await ToSignal(fadeInTween, "finished");
+
+            await ToSignal(GetTree().CreateTimer(2), "timeout");
+
+            Tween fadeOutTween = CreateTween();
+            fadeOutTween.TweenProperty(levelNameLabel, "modulate:a", 0, 1);
+            await ToSignal(fadeOutTween, "finished");
+
+            levelNameLabel.Visible = false;
+        }
+
     }
 
 }
 
-//await ToSignal(GetTree().CreateTimer(1.0f), "timeout");
