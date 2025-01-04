@@ -37,7 +37,7 @@ namespace Game
 
             #endregion
 
-            if (levelManager.CurrentLevelName != null && levelManager.CurrentLevelName != "")
+            if (levelManager.CurrentLevelID != null && levelManager.CurrentLevelID != "")
             {
                 OnLevelLoaded();
             }

@@ -24,7 +24,7 @@ namespace Game
         public Node CurrentLevel { get; set; }
         public Node SceneTree { get; set; }
         public Node SceneTreeRoot { get; set; }
-        public string CurrentLevelName => CurrentLevel.Name;
+        public string CurrentLevelID => CurrentLevelInfo.LevelID;
         public SaveManager SaveManager { get; set; }
 
         public event Action LevelLoaded;
@@ -67,36 +67,45 @@ namespace Game
 
         public void ReturningFromEpigraph()
         {
-            ChangeLevel(levelAfterEpigraph, spawnpointAfterEpigraph);
+            SaveManager.UpdateBooleanValue("Epigraph_" + levelIDAfterEpigraph, true);
+            ChangeLevel(levelIDAfterEpigraph, spawnpointAfterEpigraph);
         }
 
-        public void ChangeLevel(string levelName)
+        public void ChangeLevel(string levelID)
         {
-            ChangeLevel(levelName, "");
+            ChangeLevel(levelID, "");
         }
 
-        private string levelAfterEpigraph = "";
+        private string levelPathAfterEpigraph = "";
+        public string levelIDAfterEpigraph = "";
         private string spawnpointAfterEpigraph = "";
-        public void ChangeLevel(string levelName, string spawnpoint)
+        public void ChangeLevel(string levelID, string spawnpoint)
         {
-            LevelInfo _info = levelInfo[levelName];
+            LevelInfo _info = levelInfo[levelID];
 
-            if (_info.HasEpigraph && SaveManager != null && !SaveManager.AlreadyShownEpigraph(levelName))
+            string _path = _info.LevelPath;
+
+            if (_info.HasEpigraph && SaveManager != null && !SaveManager.GetBooleanValue("Epigraph_" + levelID))
             {
                 GD.Print("[LevelManager] Epigraph not yet shown.. diverting from requested level");
-                levelAfterEpigraph = levelName;
+                levelIDAfterEpigraph = levelID;
+                levelPathAfterEpigraph = _info.LevelPath;
                 spawnpointAfterEpigraph = spawnpoint;
-                levelName = "Epigraph";
+
+                levelID = "Epigraph";
                 spawnpoint = "";
+                _path = "res://Level/Epigraph.tscn";
             }
 
             IsTransitioning = true;  // Must set this here since ChangeSceneNow is async
-            CallDeferred(nameof(ChangeSceneNow), _info.Path, levelName, spawnpoint);
+            CallDeferred(nameof(ChangeSceneNow), _path, levelID, spawnpoint);
         }
 
-        public async void ChangeSceneNow(string path, string levelName, string spawnpoint)
+        public async void ChangeSceneNow(string path, string levelID, string spawnpoint)
         {
-            if (path == null)
+            GD.Print("[LevelManager] Chaning scene now:  ", levelID);
+
+            if (path == "")
             {
                 GD.PrintErr("[LevelManager] Scene path is null");
                 IsTransitioning = false;
@@ -115,7 +124,7 @@ namespace Game
             }
 
             GD.Print("[LevelManager] Unloading level: " + CurrentLevel.Name);
-            BeginUnloadingLevel?.Invoke(levelName, spawnpoint);
+            BeginUnloadingLevel?.Invoke(levelID, spawnpoint);
 
             await FadeOut();
 
@@ -141,7 +150,7 @@ namespace Game
 
             await FadeIn();
 
-            DisplayLevelName(levelName);
+            DisplayLevelName(levelID);
 
             IsTransitioning = false;
         }
@@ -181,14 +190,14 @@ namespace Game
             return levelInfo[levelName];
         }
 
-        private async void DisplayLevelName(string levelName)
+        private async void DisplayLevelName(string levelID)
         {
-            if (levelNameLabel == null)
+            if (levelNameLabel == null || !CurrentLevelInfo.FadeLevelTitleInOut)
             {
                 return;
             }
 
-            levelNameLabel.Text = levelName;
+            levelNameLabel.Text = CurrentLevelInfo.LevelName;
             levelNameLabel.Modulate = new Color(1, 1, 1, 0);
             levelNameLabel.Visible = true;
 
