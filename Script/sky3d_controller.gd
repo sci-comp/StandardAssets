@@ -40,7 +40,9 @@ func update_shader_parameters():
 func set_shader_params(material: Material, multimesh_node: MultiMeshInstance3D):
 	if sun:
 		# Get the direction the sun is shining FROM
-		var sun_dir = -sun.global_transform.basis.z
+		var sun_dir = -sun.global_transform.basis.y
+		sun_dir = Vector3(sun_dir.z, sun_dir.y, sun_dir.x)
+		print(sun_dir)
 		material.set_shader_parameter("light_direction", sun_dir)
 		material.set_shader_parameter("light_color", sun.light_color)
 	elif moon:
