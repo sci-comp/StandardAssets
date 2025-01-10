@@ -128,7 +128,6 @@ namespace Game
 
             await FadeOut();
 
-            PreviousLevelName = CurrentLevel.Name;
             PackedScene packedScene = (PackedScene)ResourceLoader.Load(path);
 
             if (packedScene == null)
@@ -141,7 +140,8 @@ namespace Game
 
             CurrentLevel?.CallDeferred("queue_free");
             await ToSignal(CurrentLevel, "tree_exited");
-            
+
+            PreviousLevelName = CurrentLevel.Name;
             CurrentLevel = packedScene.Instantiate();
             SceneTreeRoot.AddChild(CurrentLevel);
             
