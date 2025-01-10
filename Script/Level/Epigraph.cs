@@ -28,13 +28,16 @@ namespace Game
                 textureRect.Texture = resources.GetEpigraphTexture(levelManager.levelIDAfterEpigraph);
             }
 
+            Mouse.SetConfinedHidden();
+
             SetProcess(true);
         }
 
         public override void _Input(InputEvent @event)
         {
             if (@event is InputEventKey eventKey && eventKey.Pressed ||
-                @event is InputEventMouseButton eventMouse && eventMouse.Pressed)
+                @event is InputEventMouseButton eventMouse && eventMouse.Pressed ||
+                @event is InputEventJoypadButton eventButton && eventButton.Pressed)
             {
                 levelManager.ReturningFromEpigraph();
                 GetViewport().SetInputAsHandled();
