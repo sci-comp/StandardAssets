@@ -1,42 +1,42 @@
 using Godot;
-using Toolbox;
 
 namespace Game
 {
     public partial class Sky3DTimeSaver : Node
     {
-        private LevelManager levelManager;
-        private Node sky3D;
+        private Node timeOfDay;
         private SaveManager saveManager;
 
         public override void _Ready()
         {
-            sky3D = GetNode<Node>("Sky3D");
+            timeOfDay = GetNode<Node>("Sky3D/TimeOfDay");
             saveManager = GetNode<SaveManager>("/root/SaveManager");
-            levelManager = GetNode<LevelManager>("/root/LevelManager");
-            levelManager.BeginUnloadingLevel += OnBeginUnloadingLevel;
-            RestoreTimeOfDay();
-        }
 
-        public float GetCurrentTimeOfDay()
-        {
-            return (float)sky3D.Get("current_time");
+            if (timeOfDay == null || saveManager == null)
+            {
+                GD.PrintErr("[Sky3DTimeSaver] Null refs");
+            }
+
+            saveManager.BeforeSave += OnBeforeSave;
+            RestoreTimeOfDay();
         }
 
         public void RestoreTimeOfDay()
         {
-            float restoredTime = saveManager.GetTimeOfDay();
-            sky3D.Call("set_current_time", restoredTime);
-            GD.Print("[EnvironmentController] Restored time: ", restoredTime);
+            int restoredTime = saveManager.GetTimeOfDay();
+            
+            timeOfDay.Call("set_from_unix_timestamp", restoredTime);
+            GD.Print("[Sky3DTimeSaver] Restored time: ", restoredTime);
         }
 
         public void SaveTimeOfDay()
         {
-            float savedTime = (float)sky3D.Get("current_time");
+            int savedTime = (int)timeOfDay.Call("get_unix_timestamp");
             saveManager.SetTimeOfDay(savedTime);
+            GD.Print("[Sky3DTimeSaver] Saved time: ", savedTime);
         }
 
-        private void OnBeginUnloadingLevel(string levelID, string spawnpoint)
+        private void OnBeforeSave()
         {
             SaveTimeOfDay();
         }
