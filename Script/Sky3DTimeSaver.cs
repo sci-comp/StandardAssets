@@ -14,7 +14,8 @@ namespace Game
 
             if (timeOfDay == null || saveManager == null)
             {
-                GD.PrintErr("[Sky3DTimeSaver] Null refs");
+                GD.PrintErr("[Sky3DTimeSaver] Null references");
+                return;
             }
 
             saveManager.BeforeSave += OnBeforeSave;
@@ -24,7 +25,6 @@ namespace Game
         public void RestoreTimeOfDay()
         {
             int restoredTime = saveManager.GetTimeOfDay();
-            
             timeOfDay.Call("set_from_unix_timestamp", restoredTime);
             GD.Print("[Sky3DTimeSaver] Restored time: ", restoredTime);
         }
@@ -40,8 +40,6 @@ namespace Game
         {
             SaveTimeOfDay();
         }
-
     }
-
 }
 

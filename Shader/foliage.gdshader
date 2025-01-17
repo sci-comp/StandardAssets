@@ -25,7 +25,7 @@ void vertex()
     vec4 world_pos = MODEL_MATRIX * vec4(VERTEX, 1.0);
     // Get model scale for wind effect scaling
     float model_scale = length(MODEL_MATRIX[0].xyz);
-    
+
     vec2 uv = (world_pos.xz + VERTEX.yy) / (noise_scale + 1e-2);
     vec2 panning_uv = uv + fract(TIME * wind_direction * wind_speed);
     float wind = texture(texture_noise, panning_uv).r * 2.0 - 0.4;

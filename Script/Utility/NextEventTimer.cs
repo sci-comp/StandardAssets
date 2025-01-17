@@ -74,6 +74,16 @@ namespace Game
             loop = false;
         }
 
+        public void Pause()
+        {
+            SetProcess(false);
+        }
+
+        public void Resume()
+        {
+            SetProcess(true);
+        }
+
     }
 
 }
