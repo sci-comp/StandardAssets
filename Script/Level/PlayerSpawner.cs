@@ -1,6 +1,5 @@
 using Godot;
 using System;
-using System.Linq;
 
 namespace Game
 {
@@ -8,6 +7,9 @@ namespace Game
     {
         [Export] public string PlayerPath = "res://Scene/Player.tscn";
         [Export] public string PlayerID = "Player1";
+
+        public bool PlayerExists { get; set; } = false;
+        public CharacterHub CharacterHub { get; set; }
 
         private LevelManager levelManager;
         private SaveManager saveManager;
@@ -21,6 +23,7 @@ namespace Game
             saveManager = GetNode<SaveManager>("/root/SaveManager");
 
             levelManager.LevelLoaded += OnLevelLoaded;
+            levelManager.BeginUnloadingLevel += OnBeginUnloadingLevel;
             playerPackedScene = GD.Load<PackedScene>(PlayerPath);
 
             #region Null checks
@@ -43,6 +46,12 @@ namespace Game
             }
 
             GD.Print("[PlayerSpawner] Ready");
+        }
+
+        private void OnBeginUnloadingLevel(string levelID, string spawnpoint)
+        {
+            PlayerExists = false;
+            CharacterHub = null;
         }
 
         private void OnLevelLoaded()
@@ -73,6 +82,7 @@ namespace Game
                 characterHub.SetCharacterPosition(_spawnpoint.Position);
                 characterHub.SetCharacterRotation(_spawnpoint.Rotation);
                 PlayerSpawned?.Invoke(characterHub);
+                CharacterHub = characterHub;
             }
             else
             {

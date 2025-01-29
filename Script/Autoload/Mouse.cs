@@ -3,7 +3,7 @@ using Godot;
 public static partial class Mouse
 {
     /* As a game grows in size, it can become easy to lose control of the cursor's state.
-     * This autoload means to centralize access the mouse's mode.
+     * This static class means to centralize access the mouse's mode.
      *
      * If this class is in use, then, generally speaking, we should never directly set Input.MouseMode. */
 
