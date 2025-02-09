@@ -4,13 +4,17 @@ using System.Collections.Generic;
 
 namespace Game
 {
-    public partial class SFXPlayer3D : Node
+    public partial class SFX : Node
     {
         public float MasterVolume { get; set; } = 0.7f;
         public Dictionary<string, SoundGroup3D> SoundGroups = new();
 
+        private CameraBridge cameraBridge;
+
         public override void _Ready()
         {
+            cameraBridge = GetNode<CameraBridge>("/root/CameraBridge");
+
             PossibleSFX3D possibleSFX3D = new();
             possibleSFX3D.Initialize(this);
             SoundGroups = possibleSFX3D.GetSoundGroups();
@@ -20,7 +24,17 @@ namespace Game
                 soundGroup.Initialize(this);
             }
 
-            GD.Print(String.Format("[SFXPlayer3D] Ready with {0} sound groups", SoundGroups.Count));
+            GD.Print(String.Format("[SFX] Ready with {0} sound groups", SoundGroups.Count));
+        }
+
+        public void Play(string soundGroupName)
+        {
+            PlaySound(soundGroupName, cameraBridge.CameraPosition);
+        }
+
+        public void PlaySound(string soundGroupName)
+        {
+            PlaySound(soundGroupName, cameraBridge.CameraPosition);
         }
 
         public void PlaySound(string soundGroupName, Vector3 location)
@@ -35,14 +49,14 @@ namespace Game
                     {
                         GD.Print("Sound group is already playing");
                     }
-                    GD.Print("[SFXPlayer3D] Playing: " + soundGroupName);
+                    GD.Print("[SFX] Playing: " + soundGroupName);
                     source.Position = location;
                     source.Play();
                 }
             }
             else
             {
-                GD.Print("[SFXPlayer3D] Requested a sound group that does not exist: " + soundGroupName);
+                GD.Print("[SFX] Requested a sound group that does not exist: " + soundGroupName);
             }
         }
 

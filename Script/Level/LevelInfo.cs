@@ -1,4 +1,5 @@
 using Godot;
+using Godot.Collections;
 
 namespace Game
 {
@@ -11,8 +12,9 @@ namespace Game
         [Export] public string Environment = "wind";
         [Export] public string LevelName = "";
         [Export] public string LevelID = "";
-        [Export] public string LevelPath = "";
+        [Export] public PackedScene Level;
         [Export(PropertyHint.MultilineText)] public string Epigraph = "";
+
     }
 }
 

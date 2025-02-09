@@ -13,7 +13,7 @@ namespace Game
         private Camera3D mainCamera;
         private const int MaxPOIs = 32;
 
-        private readonly List<PointOfInterest> listOfPointsOfInterest = new();
+        private readonly List<PointOfInterest> listOfPointsOfInterest = [];
 
         private CameraBridge cameraBridge;
         private LevelManager levelManager;
@@ -44,7 +44,7 @@ namespace Game
             south = GetNode<TextureRect>("South");
             west = GetNode<TextureRect>("West");
 
-            playerSpawner.PlayerSpawned += OnPlayerSpawned;
+            CharacterHub.Spawned += OnPlayerSpawned;
             PointOfInterest.POISpawned += OnPOISpawned;
             PointOfInterest.POIDestroyed += OnPOIDestroyed;
 
@@ -64,7 +64,7 @@ namespace Game
         {
             PointOfInterest.POISpawned -= OnPOISpawned;
             PointOfInterest.POIDestroyed -= OnPOIDestroyed;
-            playerSpawner.PlayerSpawned -= OnPlayerSpawned;
+            CharacterHub.Spawned -= OnPlayerSpawned;
             levelManager.BeginUnloadingLevel -= OnBeginUnloadingLevel;
         }
 

@@ -1,6 +1,6 @@
 [gd_scene load_steps=13 format=3 uid="uid://cpbxu2g60vnq"]
 
-[ext_resource type="Script" path="res://addons/StandardAssets/Script/Level/LevelPortal.cs" id="1_k065a"]
+[ext_resource type="Script" uid="uid://boeifmaeewqud" path="res://addons/StandardAssets/Script/Level/LevelPortal.cs" id="1_k065a"]
 [ext_resource type="Material" uid="uid://4mruw3vlcdii" path="res://addons/StandardAssets/Material/Particle/MI_FX_Star_04.tres" id="2_8ugvs"]
 
 [sub_resource type="Curve" id="Curve_i6e0p"]

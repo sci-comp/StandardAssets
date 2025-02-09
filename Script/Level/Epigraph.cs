@@ -16,20 +16,23 @@ namespace Game
             textLabel = GetNode<Label>("Panel/MarginContainer/Label");
             levelManager = GetNode<LevelManager>("/root/LevelManager");
            
-            LevelInfo targetLevelInfo = levelManager.GetLevelInfo(levelManager.levelIDAfterEpigraph);
-
-            if (textLabel != null && !string.IsNullOrEmpty(targetLevelInfo.Epigraph))
+            if (levelManager.LevelInfo.TryGetValue(levelManager.levelIDAfterEpigraph, out LevelInfo levelInfo))
             {
-                textLabel.Text = targetLevelInfo.Epigraph;
-            }
+                if (textLabel != null && !string.IsNullOrEmpty(levelInfo.Epigraph))
+                {
+                    textLabel.Text = levelInfo.Epigraph;
+                }
 
-            if (textureRect != null && !string.IsNullOrEmpty(targetLevelInfo.Epigraph))
-            {
-                textureRect.Texture = resources.GetEpigraphTexture(levelManager.levelIDAfterEpigraph);
+                if (textureRect != null && !string.IsNullOrEmpty(levelInfo.Epigraph))
+                {
+                    if (resources.EpigraphTexture.TryGetValue(levelManager.levelIDAfterEpigraph, out Texture2D tex))
+                    {
+                        textureRect.Texture = tex;
+                    }
+                }
             }
 
             Mouse.SetConfinedHidden();
-
             SetProcess(true);
         }
 

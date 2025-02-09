@@ -7,12 +7,14 @@ namespace Toolbox
 {
     public static class FileSystem
     {
+        /* These seem to have problems in 4.4 beta2.. let's find an alternate approach
+
         public static List<string> GetPathsWithExtension(string dir_path, string extension)
         {
-            /* Given a path to a directory, return a list of all files with an extension 
-                matching the parameter. This method checks the contents of nested directories. */
+            // Given a path to a directory, return a list of all files with an extension 
+                matching the parameter. This method checks the contents of nested directories.
 
-            List<string> paths = new();
+            List<string> paths = [];
             DirAccess dir = DirAccess.Open(dir_path);
 
             if (dir != null)
@@ -50,7 +52,7 @@ namespace Toolbox
 
         public static List<T> LoadResourcesFromDirectory<T>(string path) where T : Resource
         {
-            List<T> resources = new();
+            List<T> resources = [];
             DirAccess dir = DirAccess.Open(path);
 
             if (dir != null)
@@ -143,9 +145,8 @@ namespace Toolbox
             return textures;
         }
 
-
+        */
     }
-
 
 }
 

@@ -21,7 +21,7 @@ namespace Game
         private Basis initialBasis;
         private Basis destBasis;
         private Vector3 rotateAroundAxis;
-        private SFXPlayer3D sfxPlayer3D;
+        private SFX sfx;
         private Tween tween;
         
         public bool Activated => !canInteract;
@@ -33,7 +33,7 @@ namespace Game
 
         public override void _Ready()
         {
-            sfxPlayer3D = GetNode<SFXPlayer3D>("/root/SFXPlayer3D");
+            sfx = GetNode<SFX>("/root/SFX");
             leverArm = GetNode<Node3D>("LeverArm");
 
             rotateAroundAxis = MathLib.GetAxisDirection(rotateAround);
@@ -59,7 +59,7 @@ namespace Game
 
         public void PlaySound()
         {
-            sfxPlayer3D.PlaySound(SoundName, GlobalPosition);
+            sfx.PlaySound(SoundName, GlobalPosition);
         }
 
         public override void Interact(string playerID)

@@ -15,7 +15,7 @@ namespace Game
         private SaveManager saveManager;
         private PackedScene playerPackedScene;
 
-        public event Action<CharacterHub> PlayerSpawned;
+        //public static event Action<CharacterHub> PlayerSpawned;
 
         public override void _Ready()
         {
@@ -81,7 +81,7 @@ namespace Game
             {
                 characterHub.SetCharacterPosition(_spawnpoint.Position);
                 characterHub.SetCharacterRotation(_spawnpoint.Rotation);
-                PlayerSpawned?.Invoke(characterHub);
+                //PlayerSpawned?.Invoke(characterHub);
                 CharacterHub = characterHub;
             }
             else

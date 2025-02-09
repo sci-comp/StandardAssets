@@ -10,16 +10,16 @@ namespace Game
         [Export] public Vector2 VaryVolume = new(0.95f, 1.0f);
 
         private RandomNumberGenerator rnd = new();
-        private SFXPlayer3D sfxPlayer3D;
+        private SFX sfx;
 
         public List<AudioStreamPlayer3D> AvailableSources = new();
         public List<AudioStreamPlayer3D> ActiveSources = new();
 
         public int TotalVariations => ActiveSources.Count + AvailableSources.Count;
 
-        public void Initialize(SFXPlayer3D _sfxPlayer3D)
+        public void Initialize(SFX _sfx)
         {
-            sfxPlayer3D = _sfxPlayer3D;
+            sfx = _sfx;
 
             foreach (Node child in GetChildren())
             {

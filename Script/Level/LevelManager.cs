@@ -1,6 +1,6 @@
 using Godot;
+using Godot.Collections;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Game
@@ -8,23 +8,30 @@ namespace Game
     public partial class LevelManager : Node
     {
         [Export] public float FadeSpeedScale = 1f;
-        [Export] public string LevelDir = "res://Data/Level/";
-        [Export] public string LevelInfoCollectionPath = "res://Data/LevelInfoCollection.tres";
         [Export] public Color FadeToColor = new("#000000");
+        [Export] public Dictionary<StringName, LevelInfo> LevelInfo = [];
 
         private AnimationPlayer animationPlayer;
         private ColorRect colorRect;
         private Label levelNameLabel;
         private readonly object levelChangeLock = new();
-        private readonly Dictionary<string, LevelInfo> levelInfo = new();
+
+        private Node3D levelAfterEpigraph;
+        private string spawnpointAfterEpigraph = "";
+        public string levelIDAfterEpigraph = "";
+
+        public string CurrentLevelName => CurrentLevelInfo.LevelName;
+        public string CurrentLevelID => CurrentLevelInfo.LevelID;
+
 
         public bool IsTransitioning { get; set; } = false;
-        public string PreviousLevelName { get; set; } = "";
-        
-        public Node CurrentLevel { get; set; }
+        //public string PreviousLevelName { get; set; } = "";
+
+        public LevelInfo CurrentLevelInfo;
+
+        public Node3D CurrentLevel { get; set; }
         public Node SceneTree { get; set; }
         public Node SceneTreeRoot { get; set; }
-        public string CurrentLevelID => CurrentLevelInfo.LevelID;
         public SaveManager SaveManager { get; set; }
 
         public event Action LevelLoaded;
@@ -32,29 +39,20 @@ namespace Game
         public event Action FadeInComplete;
         public event Action FadeOutComplete;
 
-        public LevelInfo CurrentLevelInfo
-        {
-            get
-            {
-                if (levelInfo.ContainsKey(CurrentLevel.Name))
-                {
-                    return levelInfo[CurrentLevel.Name];
-                }
-                else
-                {
-                    GD.PrintErr("[LevelManager] Level name does not exist in the level info key ring: ", CurrentLevel.Name);
-                    return null;
-                }
-            }
-        }
-
         public override void _Ready()
         {
             var SceneTree = GetTree();
             SceneTreeRoot = SceneTree.Root;
-            CurrentLevel = SceneTree.CurrentScene;
-
-            LoadLevelInformation();
+            CurrentLevel = SceneTree.CurrentScene as Node3D;
+            
+            if (LevelInfo.TryGetValue(CurrentLevel.Name, out LevelInfo _currentLevelInfo))
+            {
+                CurrentLevelInfo = _currentLevelInfo;
+            }
+            else
+            {
+                GD.PrintErr("[LevelManager] Unable to find first scene in the Level Info collection: ", CurrentLevelName);
+            }
 
             animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
             colorRect = GetNode<ColorRect>("CanvasLayer/ColorRect");
@@ -62,6 +60,7 @@ namespace Game
 
             levelNameLabel.Modulate = new Color(1, 1, 1, 0);
 
+            GD.Print("[LevelManager] Loaded information on ", LevelInfo.Count, " levels");
             GD.Print("[LevelManager] Ready");
         }
 
@@ -76,73 +75,86 @@ namespace Game
             ChangeLevel(levelID, "");
         }
 
-        private string levelPathAfterEpigraph = "";
-        public string levelIDAfterEpigraph = "";
-        private string spawnpointAfterEpigraph = "";
-        public void ChangeLevel(string levelID, string spawnpoint)
+        public void ChangeLevel(string nextLevelID, string nextSpawnpoint)
         {
-            LevelInfo _info = levelInfo[levelID];
-
-            string _path = _info.LevelPath;
-
-            if (_info.HasEpigraph && SaveManager != null && !SaveManager.GetBooleanValue("Epigraph_" + levelID))
+            if (LevelInfo.TryGetValue(nextLevelID, out LevelInfo nextLevelInfo))
             {
-                GD.Print("[LevelManager] Epigraph not yet shown.. diverting from requested level");
-                levelIDAfterEpigraph = levelID;
-                levelPathAfterEpigraph = _info.LevelPath;
-                spawnpointAfterEpigraph = spawnpoint;
+                if (nextLevelInfo.Level == null)
+                {
+                    GD.PrintErr("[LevelManager] Missing level in collection: ", nextLevelID);
+                    return;
+                }
 
-                levelID = "Epigraph";
-                spawnpoint = "";
-                _path = "res://Level/Epigraph.tscn";
+                Node3D nextLevel = nextLevelInfo.Level.Instantiate<Node3D>();
+                LevelInfo _nextLevelInfo = nextLevelInfo;
+
+                if (nextLevelInfo.HasEpigraph && SaveManager != null && !SaveManager.GetBooleanValue("Epigraph_" + nextLevelID))
+                {
+                    GD.Print("[LevelManager] Epigraph not yet shown.. diverting from requested level");
+                    levelIDAfterEpigraph = nextLevelID;
+                    levelAfterEpigraph = nextLevelInfo.Level.Instantiate<Node3D>();
+                    spawnpointAfterEpigraph = nextSpawnpoint;
+
+                    LevelInfo.TryGetValue("Epigraph", out _nextLevelInfo);
+                    nextLevelID = "Epigraph";
+                    nextSpawnpoint = "";
+
+                    if (LevelInfo.TryGetValue("Epigraph", out LevelInfo _epigraphInfo))
+                    {
+                        nextLevel = _epigraphInfo.Level.Instantiate<Node3D>();
+                    }
+                }
+
+                IsTransitioning = true;  // Must set this here since ChangeSceneNow is async
+                CallDeferred(nameof(ChangeLevelNow), _nextLevelInfo, nextSpawnpoint);
             }
-
-            IsTransitioning = true;  // Must set this here since ChangeSceneNow is async
-            CallDeferred(nameof(ChangeSceneNow), _path, levelID, spawnpoint);
+            else
+            {
+                GD.PrintErr("[LevelManager] Requested level not found: ", nextLevelID);
+            }
         }
 
-        public async void ChangeSceneNow(string path, string levelID, string spawnpoint)
+        public async void ChangeLevelNow(LevelInfo nextLevelInfo, string spawnpoint)
         {
-            GD.Print("[LevelManager] Chaning scene now:  ", levelID);
+            GD.Print("[LevelManager] Chaning scene now to: ", nextLevelInfo.LevelName);
 
-            if (path == "")
+            if (nextLevelInfo.Level == null)
             {
-                GD.PrintErr("[LevelManager] Scene path is null");
+                GD.PrintErr("[LevelManager] nextLevelPacked is null");
+                IsTransitioning = false;
+                return;
+            }
+
+            Node3D nextLevel = nextLevelInfo.Level.Instantiate<Node3D>();
+            if (nextLevel == null)
+            {
+                GD.PrintErr("[LevelManager] nextLevel is null");
                 IsTransitioning = false;
                 return;
             }
 
             lock (levelChangeLock)
             {
-                if (CurrentLevel != null && CurrentLevel.SceneFilePath == path)
+                if (CurrentLevel != null && CurrentLevel.Name == nextLevel.Name)
                 {
                     GD.PrintErr("[LevelManager] Blocking attempt to transition to the already loaded scene");
                     return;
                 }
-
                 IsTransitioning = true;  // Should already be true
             }
 
             GD.Print("[LevelManager] Unloading level: " + CurrentLevel.Name);
-            BeginUnloadingLevel?.Invoke(levelID, spawnpoint);
+            BeginUnloadingLevel?.Invoke(nextLevelInfo.LevelID, spawnpoint);
 
             await FadeOut();
 
-            PackedScene packedScene = (PackedScene)ResourceLoader.Load(path);
-
-            if (packedScene == null)
-            {
-                GD.PrintErr("[LevelManager] Null scene at path: " + path);
-                IsTransitioning = false;
-                await FadeIn();
-                return;
-            }
-
+            //PreviousLevelName = CurrentLevel.Name;
             CurrentLevel?.CallDeferred("queue_free");
             await ToSignal(CurrentLevel, "tree_exited");
 
-            PreviousLevelName = CurrentLevel.Name;
-            CurrentLevel = packedScene.Instantiate();
+            CurrentLevelInfo = nextLevelInfo;
+            CurrentLevel = CurrentLevelInfo.Level.Instantiate<Node3D>();
+
             SceneTreeRoot.AddChild(CurrentLevel);
             
             LevelLoaded?.Invoke();
@@ -150,7 +162,7 @@ namespace Game
 
             await FadeIn();
 
-            DisplayLevelName(levelID);
+            DisplayLevelName();
 
             IsTransitioning = false;
         }
@@ -171,26 +183,7 @@ namespace Game
             FadeInComplete?.Invoke();
         }
 
-        public void LoadLevelInformation(string path = null)
-        {
-            GD.Print("[LevelManager] Beginning to load level information");
-
-            List<LevelInfo> levels = Toolbox.FileSystem.LoadResourcesFromDirectory<LevelInfo>(path ?? LevelDir);
-            foreach (LevelInfo level in levels)
-            {
-                string levelInfoName = level.ResourcePath.GetFile().TrimSuffix(".tres");
-                levelInfo[levelInfoName] = level;
-            }
-
-            GD.Print("[LevelManager] Loaded information on ", levelInfo.Count, " levels");
-        }
-
-        public LevelInfo GetLevelInfo(string levelName)
-        {
-            return levelInfo[levelName];
-        }
-
-        private async void DisplayLevelName(string levelID)
+        private async void DisplayLevelName()
         {
             if (levelNameLabel == null || !CurrentLevelInfo.FadeLevelTitleInOut)
             {

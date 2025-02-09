@@ -9,12 +9,12 @@ namespace Game
         private CameraBridge cameraBridge;
         private LevelManager levelManager;
         private SaveManager saveManager;
-        private SFXPlayer3D sfxPlayer3D;
+        private SFX sfx;
 
         public override void _Ready()
         {
             saveManager = GetNode<SaveManager>("/root/SaveManager");
-            sfxPlayer3D = GetNode<SFXPlayer3D>("/root/SFXPlayer3D");
+            sfx = GetNode<SFX>("/root/SFX");
             cameraBridge = GetNode<CameraBridge>("/root/CameraBridge");
             levelManager = GetNode<LevelManager>("/root/LevelManager");
             BodyEntered += OnBodyEntered;
@@ -33,7 +33,7 @@ namespace Game
                 }
 
                 cameraBridge.Blink();
-                sfxPlayer3D.PlaySound(SfxToPlay, characterBody.GlobalPosition);
+                sfx.PlaySound(SfxToPlay, characterBody.GlobalPosition);
                 characterBody.GlobalTransform = new Transform3D(characterBody.GlobalTransform.Basis, sp.GlobalTransform.Origin);
             }
         }

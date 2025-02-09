@@ -5,7 +5,7 @@ namespace Game
 {
     public partial class GatewayHub : Node
     {
-        private List<Gateway> gateways = new();
+        private List<Gateway> gateways = [];
         private float timeoutDuration = 1.0f;
         private float t_current = 0.0f;
         private bool isTimeout = false;

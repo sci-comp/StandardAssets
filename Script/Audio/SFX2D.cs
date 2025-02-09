@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Game
 {
-    public partial class SFXPlayer : Node
+    public partial class SFX2D : Node
     {
         public Dictionary<string, AudioStreamPlayer> SoundGroups = new();
 
@@ -17,7 +17,7 @@ namespace Game
                 }
             }
 
-            GD.Print(string.Format("[SFXPlayer] Ready with {0} sound groups", SoundGroups.Count));
+            GD.Print(string.Format("[SFX2D] Ready with {0} sound groups", SoundGroups.Count));
         }
 
         public void PlaySound(string soundGroupName)
@@ -26,13 +26,13 @@ namespace Game
             {
                 if (player != null)
                 {
-                    GD.Print("[SFXPlayer] Playing: " + soundGroupName);
+                    GD.Print("[SFX2D] Playing: " + soundGroupName);
                     player.Play();
                 }
             }
             else
             {
-                GD.Print("[SFXPlayer] Requested a sound group that does not exist: " + soundGroupName);
+                GD.Print("[SFX2D] Requested a sound group that does not exist: " + soundGroupName);
             }
         }
 
