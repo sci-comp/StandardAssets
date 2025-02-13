@@ -6,26 +6,26 @@ namespace Game
     {
         private Resources resources;
         private TextureRect textureRect;
-        private Label textLabel;
+        private Label epigraphText;
         private LevelManager levelManager;
 
         public override void _Ready()
         {
             resources = GetNode<Resources>("/root/Resources");
             textureRect = GetNode<TextureRect>("TextureRect");
-            textLabel = GetNode<Label>("Panel/MarginContainer/Label");
+            epigraphText = GetNode<Label>("Panel/MarginContainer/Label");
             levelManager = GetNode<LevelManager>("/root/LevelManager");
            
-            if (levelManager.LevelInfo.TryGetValue(levelManager.levelIDAfterEpigraph, out LevelInfo levelInfo))
+            if (levelManager.LevelInfo.TryGetValue(levelManager.LevelIDAfterEpigraph, out LevelInfo levelInfo))
             {
-                if (textLabel != null && !string.IsNullOrEmpty(levelInfo.Epigraph))
+                if (epigraphText != null && !string.IsNullOrEmpty(levelInfo.Epigraph))
                 {
-                    textLabel.Text = levelInfo.Epigraph;
+                    epigraphText.Text = levelInfo.Epigraph;
                 }
 
                 if (textureRect != null && !string.IsNullOrEmpty(levelInfo.Epigraph))
                 {
-                    if (resources.EpigraphTexture.TryGetValue(levelManager.levelIDAfterEpigraph, out Texture2D tex))
+                    if (resources.EpigraphTexture.TryGetValue(levelManager.LevelIDAfterEpigraph, out Texture2D tex))
                     {
                         textureRect.Texture = tex;
                     }

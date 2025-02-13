@@ -7,7 +7,7 @@ namespace Toolbox
 {
     public static class FileSystem
     {
-        /* These seem to have problems in 4.4 beta2.. let's find an alternate approach
+        /*These seem to have problems in 4.4 beta2.. let's find an alternate approach
 
         public static List<string> GetPathsWithExtension(string dir_path, string extension)
         {
@@ -46,6 +46,7 @@ namespace Toolbox
                     fileName = dir.GetNext();
                 }
             }
+            dir.close
 
             return paths;
         }
