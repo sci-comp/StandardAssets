@@ -10,9 +10,9 @@ namespace Game
         private TextureRect south;
         private TextureRect west;
 
+        private bool isEnabled = true;
         private Camera3D mainCamera;
         private const int MaxPOIs = 32;
-
         private readonly List<PointOfInterest> listOfPointsOfInterest = [];
 
         private CameraBridge cameraBridge;
@@ -44,12 +44,9 @@ namespace Game
             south = GetNode<TextureRect>("South");
             west = GetNode<TextureRect>("West");
 
-            CharacterHub.Spawned += OnPlayerSpawned;
             PointOfInterest.POISpawned += OnPOISpawned;
             PointOfInterest.POIDestroyed += OnPOIDestroyed;
-
             levelManager.BeginUnloadingLevel += OnBeginUnloadingLevel;
-
 
             Visible = false;
             GD.Print("[Compass] Ready");
@@ -64,20 +61,18 @@ namespace Game
         {
             PointOfInterest.POISpawned -= OnPOISpawned;
             PointOfInterest.POIDestroyed -= OnPOIDestroyed;
-            CharacterHub.Spawned -= OnPlayerSpawned;
             levelManager.BeginUnloadingLevel -= OnBeginUnloadingLevel;
+        }
+
+        public void SetVisibility(bool visible)
+        {
+            Visible = visible;
         }
 
         private void OnBeginUnloadingLevel(string nextLevel, string nextSpawnpoint)
         {
             GD.Print("[Compass] On begin unloading level, setting visible to true");
             Visible = false;
-        }
-
-        private void OnPlayerSpawned(CharacterHub characterHub)
-        {
-            GD.Print("[Compass] On player spawned, setting visible to true");
-            Visible = true;
         }
         
         private void OnPOIDestroyed(PointOfInterest poi)
