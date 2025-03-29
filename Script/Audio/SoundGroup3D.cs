@@ -12,8 +12,8 @@ namespace Game
         private RandomNumberGenerator rnd = new();
         private SFX sfx;
 
-        public List<AudioStreamPlayer3D> AvailableSources = new();
-        public List<AudioStreamPlayer3D> ActiveSources = new();
+        public List<AudioStreamPlayer3D> AvailableSources = [];
+        public List<AudioStreamPlayer3D> ActiveSources = [];
 
         public int TotalVariations => ActiveSources.Count + AvailableSources.Count;
 

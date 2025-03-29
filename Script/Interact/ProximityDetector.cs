@@ -1,4 +1,5 @@
 using Godot;
+using Inventory;
 
 namespace Game
 {
@@ -11,6 +12,12 @@ namespace Game
         private InspectableArea currentlySelectedArea;
         private Label labelTitle;
         private Label labelDetails;
+        private PickupItem pickupItem;
+        private ProgressBar progressBar;
+        private Timer pickTimer;
+        
+        private bool actionInProgress = false;
+        private bool idle = false;
 
         public bool SelectionExists => (currentlySelectedStaticBody != null) || (currentlySelectedArea != null);
 
@@ -18,11 +25,17 @@ namespace Game
         {
             labelTitle = GetNode<Label>("Title");
             labelDetails = GetNode<Label>("Details");
+            progressBar = GetNode<ProgressBar>("ProgressBar");
 
-            if (labelTitle == null || labelDetails == null)
+            if (labelTitle == null || labelDetails == null || progressBar == null)
             {
                 GD.PrintErr("A label reference is null in ProximityDetector");
             }
+
+            pickTimer = new Timer();
+            AddChild(pickTimer);
+            pickTimer.OneShot = true;
+            pickTimer.Timeout += OnPickTimerTimeout;
 
             AreaEntered += OnAreaEntered;
             AreaExited += OnAreaExited;
@@ -38,7 +51,12 @@ namespace Game
             {
                 GetViewport().SetInputAsHandled();
 
-                if (currentlySelectedStaticBody is Interactable interactable)
+                pickupItem = currentlySelectedArea as PickupItem;
+                if (pickupItem != null && !actionInProgress)
+                {
+                    StartPick(pickupItem, PlayerID);
+                }
+                else if (currentlySelectedStaticBody is Interactable interactable)
                 {
                     interactable.Interact(PlayerID);
                 }
@@ -49,12 +67,70 @@ namespace Game
             }
         }
 
+        public override void _Process(double delta)
+        {
+            if (actionInProgress && pickTimer.TimeLeft > 0)
+            {
+                progressBar.Value = pickTimer.WaitTime - pickTimer.TimeLeft;
+            }
+        }
+
+        public void StartPick(PickupItem item, string playerID)
+        {
+            if (item.HasPickDuration && !idle)
+            {
+                actionInProgress = true;
+                progressBar.Visible = true;
+                progressBar.MaxValue = item.PickDuration;
+                progressBar.Value = 0;
+                pickTimer.WaitTime = item.PickDuration;
+                pickTimer.Start(item.PickDuration);
+            }
+            else
+            {
+                PickupNow(item, playerID);
+            }
+        }
+
+        private void OnPickTimerTimeout()
+        {
+            if (pickupItem != null)
+            {
+                PickupNow(pickupItem, PlayerID);
+                progressBar.Visible = false;
+                actionInProgress = false;
+                pickupItem = null;
+            }
+            else
+            {
+                GD.Print("[ProximityDetector] currentPickupItem is already null?");
+            }
+        }
+
+        private void PickupNow(PickupItem item, string playerID)
+        {
+            item.Pickup(playerID);
+        }
+
+        public void InterruptPick()
+        {
+            if (actionInProgress)
+            {
+                pickTimer.Stop();
+                progressBar.Value = 0;
+                progressBar.Visible = false;
+                actionInProgress = false;
+                pickupItem = null;
+            }
+        }
+
         private void DisableUI()
         {
             labelTitle.Text = "";
             labelDetails.Text = "";
             labelTitle.Visible = false;
             labelDetails.Visible = false;
+            progressBar.Visible = false;
         }
 
         private void EnableUI(string _name, string _details)
@@ -139,6 +215,19 @@ namespace Game
                     DisableUI();
                     SelectNext();
                 }
+            }
+        }
+
+        public void SetIdle(bool flag)
+        {
+            if (idle != flag)
+            {
+                idle = flag;
+            }
+
+            if (!idle && actionInProgress)
+            {
+                InterruptPick();
             }
         }
 
