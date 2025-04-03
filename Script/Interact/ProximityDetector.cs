@@ -1,5 +1,4 @@
 using Godot;
-using Inventory;
 
 namespace Game
 {
@@ -12,12 +11,12 @@ namespace Game
         private InspectableArea currentlySelectedArea;
         private Label labelTitle;
         private Label labelDetails;
-        private PickupItem pickupItem;
         private ProgressBar progressBar;
-        private Timer pickTimer;
+        private Timer interactionTimer;
         
         private bool actionInProgress = false;
         private bool idle = false;
+        private ITimedInteractable currentTimedInteractable;
 
         public bool SelectionExists => (currentlySelectedStaticBody != null) || (currentlySelectedArea != null);
 
@@ -32,10 +31,10 @@ namespace Game
                 GD.PrintErr("A label reference is null in ProximityDetector");
             }
 
-            pickTimer = new Timer();
-            AddChild(pickTimer);
-            pickTimer.OneShot = true;
-            pickTimer.Timeout += OnPickTimerTimeout;
+            interactionTimer = new Timer();
+            AddChild(interactionTimer);
+            interactionTimer.OneShot = true;
+            interactionTimer.Timeout += OnInteractionTimerTimeout;
 
             AreaEntered += OnAreaEntered;
             AreaExited += OnAreaExited;
@@ -51,10 +50,9 @@ namespace Game
             {
                 GetViewport().SetInputAsHandled();
 
-                pickupItem = currentlySelectedArea as PickupItem;
-                if (pickupItem != null && !actionInProgress)
+                if (currentlySelectedArea is ITimedInteractable timedInteractable && !actionInProgress)
                 {
-                    StartPick(pickupItem, PlayerID);
+                    StartTimedInteraction(timedInteractable);
                 }
                 else if (currentlySelectedStaticBody is Interactable interactable)
                 {
@@ -67,60 +65,56 @@ namespace Game
             }
         }
 
-        public override void _Process(double delta)
+        public override void _PhysicsProcess(double delta)
         {
-            if (actionInProgress && pickTimer.TimeLeft > 0)
+            if (actionInProgress && interactionTimer.TimeLeft > 0)
             {
-                progressBar.Value = pickTimer.WaitTime - pickTimer.TimeLeft;
+                progressBar.Value = interactionTimer.WaitTime - interactionTimer.TimeLeft;
             }
         }
 
-        public void StartPick(PickupItem item, string playerID)
+        public void StartTimedInteraction(ITimedInteractable interactable)
         {
-            if (item.HasPickDuration && !idle)
+            if (interactable.HasInteractionDuration && !idle)
             {
                 actionInProgress = true;
+                currentTimedInteractable = interactable;
                 progressBar.Visible = true;
-                progressBar.MaxValue = item.PickDuration;
+                progressBar.MaxValue = interactable.InteractionDuration;
                 progressBar.Value = 0;
-                pickTimer.WaitTime = item.PickDuration;
-                pickTimer.Start(item.PickDuration);
+                interactionTimer.WaitTime = interactable.InteractionDuration;
+                interactionTimer.Start();
             }
             else
             {
-                PickupNow(item, playerID);
+                interactable.CompleteInteraction(PlayerID);
             }
         }
 
-        private void OnPickTimerTimeout()
+        private void OnInteractionTimerTimeout()
         {
-            if (pickupItem != null)
+            if (currentTimedInteractable != null)
             {
-                PickupNow(pickupItem, PlayerID);
+                currentTimedInteractable.CompleteInteraction(PlayerID);
                 progressBar.Visible = false;
                 actionInProgress = false;
-                pickupItem = null;
+                currentTimedInteractable = null;
             }
             else
             {
-                GD.Print("[ProximityDetector] currentPickupItem is already null?");
+                GD.Print("[ProximityDetector] currentTimedInteractable is already null?");
             }
         }
 
-        private void PickupNow(PickupItem item, string playerID)
-        {
-            item.Pickup(playerID);
-        }
-
-        public void InterruptPick()
+        public void InterruptInteraction()
         {
             if (actionInProgress)
             {
-                pickTimer.Stop();
+                interactionTimer.Stop();
                 progressBar.Value = 0;
                 progressBar.Visible = false;
                 actionInProgress = false;
-                pickupItem = null;
+                currentTimedInteractable = null;
             }
         }
 
@@ -166,8 +160,6 @@ namespace Game
             }
         }
 
-        // Events
-
         private void OnAreaEntered(Area3D area)
         {
             if (area is InspectableArea inspectableArea)
@@ -211,7 +203,7 @@ namespace Game
                 if (inspectable == currentlySelectedStaticBody)
                 {
                     inspectable.Deselect();
-                    currentlySelectedArea = null;
+                    currentlySelectedStaticBody = null;
                     DisableUI();
                     SelectNext();
                 }
@@ -227,10 +219,9 @@ namespace Game
 
             if (!idle && actionInProgress)
             {
-                InterruptPick();
+                InterruptInteraction();
             }
         }
-
     }
 
 }
