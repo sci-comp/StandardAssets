@@ -26,7 +26,7 @@ namespace Game
 
             ApplyAudioPreferences();
             PreferencesUpdated?.Invoke();
-            GD.Print("[Preferences] Ready");
+            GD.PrintRich($"[Preferences] [color={ColorsHex.MediumSeaGreen}]Ready[/color]");
         }
 
         public void SavePreferences()
@@ -70,8 +70,6 @@ namespace Game
             AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("SFX"), Data.SFXVolume);
             AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("UI"), Data.UIVolume);
             AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("Voice"), Data.VoiceVolume);
-
-            GD.Print("[Preferences] Audio settings restored");
         }
 
     }

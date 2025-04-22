@@ -1,6 +1,6 @@
 public interface ISaveable
 {
-    public void ApplyData();
+    public abstract void ApplyData();
     public void RecordData();
 
 }

@@ -17,7 +17,7 @@ namespace Game
                 }
             }
 
-            GD.Print(string.Format("[SFX2D] Ready with {0} sound groups", SoundGroups.Count));
+            GD.PrintRich($"[SFX2D] [color={ColorsHex.MediumSeaGreen}]Ready[/color] with {SoundGroups.Count} sound groups");
         }
 
         public void PlaySound(string soundGroupName)

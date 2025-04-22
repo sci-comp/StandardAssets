@@ -35,6 +35,7 @@ namespace Game
                 cameraBridge.Blink();
                 sfx.PlaySound(SfxToPlay, characterBody.GlobalPosition);
                 characterBody.GlobalTransform = new Transform3D(characterBody.GlobalTransform.Basis, sp.GlobalTransform.Origin);
+                GD.Print("[OutOfBounds] Out of bounds, teleporting to: ", sp.Name);
             }
         }
 

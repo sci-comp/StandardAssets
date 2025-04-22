@@ -56,7 +56,7 @@ namespace Game
                 GD.PrintErr("[LevelManager] epigraphLevelInfo not found");
             }
 
-            GD.Print($"[LevelManager] Loaded information on {LevelInfo.Count} levels");
+            GD.Print($"[LevelManager] [color={ColorsHex.MediumSeaGreen}]Ready[/color] with {LevelInfo.Count} levels");
 
         }
 
@@ -134,8 +134,6 @@ namespace Game
 
             IsTransitioning = false;
         }
-
-
 
         public async Task FadeOut()
         {

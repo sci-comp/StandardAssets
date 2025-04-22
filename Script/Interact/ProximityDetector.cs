@@ -18,6 +18,10 @@ namespace Game
         private bool idle = false;
         private ITimedInteractable currentTimedInteractable;
 
+        private bool InformationIsDisplayed = false;
+        private float t_checkEvery = 1.0f;
+        private float t_current = 0.0f;
+
         public bool SelectionExists => (currentlySelectedStaticBody != null) || (currentlySelectedArea != null);
 
         public void Initialize()
@@ -65,6 +69,23 @@ namespace Game
             }
         }
 
+        public override void _Process(double delta)
+        {
+            if (t_current > t_checkEvery)
+            {
+                t_current = 0.0f;
+
+                if (!SelectionExists && InformationIsDisplayed)
+                {
+                    DisableUI();
+                    SelectNext();
+                    GD.Print("[ProximityDetector] Selected area was freed, selected next");
+                }
+            }
+
+            t_current += (float)delta;
+        }
+
         public override void _PhysicsProcess(double delta)
         {
             if (actionInProgress && interactionTimer.TimeLeft > 0)
@@ -75,15 +96,18 @@ namespace Game
 
         public void StartTimedInteraction(ITimedInteractable interactable)
         {
-            if (interactable.HasInteractionDuration && !idle)
+            if (interactable.HasInteractionDuration)
             {
-                actionInProgress = true;
-                currentTimedInteractable = interactable;
-                progressBar.Visible = true;
-                progressBar.MaxValue = interactable.InteractionDuration;
-                progressBar.Value = 0;
-                interactionTimer.WaitTime = interactable.InteractionDuration;
-                interactionTimer.Start();
+                if (idle)
+                {
+                    actionInProgress = true;
+                    currentTimedInteractable = interactable;
+                    progressBar.Visible = true;
+                    progressBar.MaxValue = interactable.InteractionDuration;
+                    progressBar.Value = 0;
+                    interactionTimer.WaitTime = interactable.InteractionDuration;
+                    interactionTimer.Start();
+                }
             }
             else
             {
@@ -125,6 +149,7 @@ namespace Game
             labelTitle.Visible = false;
             labelDetails.Visible = false;
             progressBar.Visible = false;
+            InformationIsDisplayed = false;
         }
 
         private void EnableUI(string _name, string _details)
@@ -133,6 +158,8 @@ namespace Game
             labelDetails.Text = _details;
             labelTitle.Visible = true;
             labelDetails.Visible = true;
+            InformationIsDisplayed = true;
+            t_current = 0.0f;  // Let the information linger for instant pickup items
         }
 
         private void SelectNext()
@@ -210,6 +237,7 @@ namespace Game
             }
         }
 
+        // This method is called by CharacterController every frame
         public void SetIdle(bool flag)
         {
             if (idle != flag)
@@ -219,6 +247,7 @@ namespace Game
 
             if (!idle && actionInProgress)
             {
+                GD.Print("[ProximityDetector] Interrupting interaction...");
                 InterruptInteraction();
             }
         }

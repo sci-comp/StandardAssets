@@ -24,7 +24,7 @@ namespace Game
                 soundGroup.Initialize(this);
             }
 
-            GD.Print(String.Format("[SFX] Ready with {0} sound groups", SoundGroups.Count));
+            GD.PrintRich($"[SFX] [color={ColorsHex.MediumSeaGreen}]Ready[/color] with {SoundGroups.Count} sound groups");
         }
 
         public void Play(string soundGroupName)

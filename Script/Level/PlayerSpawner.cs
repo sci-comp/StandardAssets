@@ -45,7 +45,7 @@ namespace Game
                 OnLevelLoaded();
             }
 
-            GD.Print("[PlayerSpawner] Ready");
+            GD.PrintRich($"[PlayerSpawner] [color={ColorsHex.MediumSeaGreen}]Ready[/color]");
         }
 
         private void OnBeginUnloadingLevel(string levelID, string spawnpoint)

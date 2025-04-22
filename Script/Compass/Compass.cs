@@ -49,7 +49,7 @@ namespace Game
             levelManager.BeginUnloadingLevel += OnBeginUnloadingLevel;
 
             Visible = false;
-            GD.Print("[Compass] Ready");
+            GD.PrintRich($"[Compass] [color={ColorsHex.MediumSeaGreen}]Ready[/color]");
         }
 
         public override void _Process(double delta)
