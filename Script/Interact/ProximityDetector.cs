@@ -48,6 +48,20 @@ namespace Game
             DisableUI();
         }
 
+        public override void _ExitTree()
+        {
+            if (interactionTimer != null)
+            {
+                interactionTimer.Timeout -= OnInteractionTimerTimeout;
+                interactionTimer.QueueFree();
+            }
+
+            AreaEntered -= OnAreaEntered;
+            AreaExited -= OnAreaExited;
+            BodyEntered -= OnBodyEntered;
+            BodyExited -= OnBodyExited;
+        }
+
         public override void _UnhandledInput(InputEvent inputEvent)
         {
             if (inputEvent.IsActionPressed(InteractButton))

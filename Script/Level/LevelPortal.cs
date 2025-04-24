@@ -20,11 +20,8 @@ namespace Game
 
         public void OnBodyEnter(Node body)
         {
-            if (!levelManager.IsTransitioning)
-            {
-                GD.Print($"[LevelPortal] Changing level to {LevelToLoad} with spawnpoint {Spawnpoint}");
-                levelManager.ChangeLevel(LevelToLoad, Spawnpoint);
-            }
+            GD.Print($"[LevelPortal] Changing level to {LevelToLoad} with spawnpoint {Spawnpoint}");
+            levelManager.ChangeLevel(LevelToLoad, Spawnpoint);
         }
 
     }

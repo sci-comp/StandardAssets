@@ -112,16 +112,19 @@ namespace Game
             UpdateIndicatorPosition(south, playerOrientation, Mathf.Pi);
             UpdateIndicatorPosition(east, playerOrientation, 3 * Mathf.Pi / 2);
 
-            int count = 0;
-            foreach (PointOfInterest poi in listOfPointsOfInterest)
+            if (Visible && listOfPointsOfInterest.Count > 0)
             {
-                if (count < MaxPOIs)
+                int count = 0;
+                foreach (PointOfInterest poi in listOfPointsOfInterest)
                 {
-                    Vector3 directionToPOI = (poi.GlobalTransform.Origin - mainCamera.GlobalTransform.Origin).Normalized();
-                    float poiDirectionAngle = Mathf.Atan2(directionToPOI.X, directionToPOI.Z) + Mathf.Pi;
-                    poiDirectionAngle = Mathf.PosMod(poiDirectionAngle, Mathf.Pi * 2);
-                    UpdateIndicatorPosition(poi.IconRepresentation, playerOrientation, poiDirectionAngle);
-                    count++;
+                    if (count < MaxPOIs)
+                    {
+                        Vector3 directionToPOI = (poi.GlobalTransform.Origin - mainCamera.GlobalTransform.Origin).Normalized();
+                        float poiDirectionAngle = Mathf.Atan2(directionToPOI.X, directionToPOI.Z) + Mathf.Pi;
+                        poiDirectionAngle = Mathf.PosMod(poiDirectionAngle, Mathf.Pi * 2);
+                        UpdateIndicatorPosition(poi.IconRepresentation, playerOrientation, poiDirectionAngle);
+                        count++;
+                    }
                 }
             }
         }

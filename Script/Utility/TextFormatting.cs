@@ -12,6 +12,8 @@ namespace Game
 
             return message + new string('-', length - message.Length);
         }
+
     }
 
 }
+

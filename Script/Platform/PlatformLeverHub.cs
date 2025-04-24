@@ -5,8 +5,8 @@ namespace Game
 {
     public partial class PlatformLeverHub : Node
     {
-        private readonly List<Lever> levers = new();
-        private readonly List<IActivatedPlatform> platforms = new();
+        private readonly List<Lever> levers = [];
+        private readonly List<IActivatedPlatform> platforms = [];
 
         public override void _Ready()
         {
@@ -21,6 +21,19 @@ namespace Game
             foreach (IActivatedPlatform platform in platforms)
             {
                 platform.OnCanBeActivated += OnCanBeActivated;
+            }
+        }
+
+        public override void _ExitTree()
+        {
+            foreach (Lever lever in levers)
+            {
+                lever.Interacted -= OnInteract;
+            }
+
+            foreach (IActivatedPlatform platform in platforms)
+            {
+                platform.OnCanBeActivated -= OnCanBeActivated;
             }
         }
 

@@ -8,18 +8,12 @@ namespace Game
     /// Maintains current and previous states, and provides event notifications on state changes.
     /// </summary>
     /// <typeparam name="T">The enum type representing possible states</typeparam>
-    public class StateMachine<T> where T : struct, Enum
+    public class StateMachine<T>(T initialState) where T : struct, Enum
     {
-        public T Current { get; private set; }
-        public T Previous { get; private set; }
+        public T Current { get; private set; } = initialState;
+        public T Previous { get; private set; } = initialState;
 
         public event Action OnStateChange;
-
-        public StateMachine(T initialState)
-        {
-            Current = initialState;
-            Previous = initialState;
-        }
 
         public void ChangeState(T newState)
         {
@@ -34,3 +28,4 @@ namespace Game
         }
     }
 }
+

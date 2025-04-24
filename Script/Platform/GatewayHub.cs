@@ -33,6 +33,11 @@ namespace Game
                 {
                     isTimeout = false;
                     t_current = 0.0f;
+
+                    foreach (var gateway in gateways)
+                    {
+                        gateway.WaitingOnPlayerToExitPlatform = false;
+                    }
                 }
                 return;
             }

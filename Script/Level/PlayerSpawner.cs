@@ -5,7 +5,7 @@ namespace Game
 {
     public partial class PlayerSpawner : Node
     {
-        [Export] public string PlayerPath = "res://Scene/Player.tscn";
+        [Export] public PackedScene Player;
         [Export] public string PlayerID = "Player1";
 
         public bool PlayerExists { get; set; } = false;
@@ -15,8 +15,6 @@ namespace Game
         private SaveManager saveManager;
         private PackedScene playerPackedScene;
 
-        //public static event Action<CharacterHub> PlayerSpawned;
-
         public override void _Ready()
         {
             levelManager = GetNode<LevelManager>("/root/LevelManager");
@@ -24,21 +22,13 @@ namespace Game
 
             levelManager.LevelLoaded += OnLevelLoaded;
             levelManager.BeginUnloadingLevel += OnBeginUnloadingLevel;
-            playerPackedScene = GD.Load<PackedScene>(PlayerPath);
-
-            #region Null checks
+            //playerPackedScene = GD.Load<PackedScene>(PlayerPath);
+            playerPackedScene = Player;
 
             if (playerPackedScene == null)
             {
                 GD.Print("[PlayerSpawner] Player is null");
             }
-
-            if (levelManager == null)
-            {
-                GD.Print("[PlayerSpawner] levelManager is null");
-            }
-
-            #endregion
 
             if (levelManager.CurrentLevelID != null && levelManager.CurrentLevelID != "")
             {
@@ -73,7 +63,6 @@ namespace Game
 
         private void SpawnPlayerAtEndOfFrame(Node3D _spawnpoint)
         {
-            // Instantiate player
             Node characterInstance = playerPackedScene.Instantiate();
             levelManager.CurrentLevel.AddChild(characterInstance);
             
@@ -81,7 +70,6 @@ namespace Game
             {
                 characterHub.SetCharacterPosition(_spawnpoint.Position);
                 characterHub.SetCharacterRotation(_spawnpoint.Rotation);
-                //PlayerSpawned?.Invoke(characterHub);
                 CharacterHub = characterHub;
             }
             else

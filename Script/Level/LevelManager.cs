@@ -18,7 +18,8 @@ namespace Game
         private Label levelNameLabel;
         private LevelInfo epigraphLevelInfo;
 
-        public bool IsTransitioning { get; set; } = false;
+        public bool AlreadyUnloadingLevel = false;
+
         public string CurrentLevelName => CurrentLevelInfo.LevelName;
         public string CurrentLevelID => CurrentLevelInfo.LevelID;
         public string LevelIDAfterEpigraph { get; set; } = "";
@@ -30,8 +31,7 @@ namespace Game
 
         public event Action LevelLoaded;
         public event Action<string, string> BeginUnloadingLevel;
-        public event Action FadeInComplete;
-        public event Action FadeOutComplete;
+        public event Action UnloadComplete;
 
         public override void _Ready()
         {
@@ -76,7 +76,7 @@ namespace Game
 
         public void ChangeLevel(string nextLevelID, string nextSpawnpoint)
         {
-            if (IsTransitioning)
+            if (AlreadyUnloadingLevel)
             {
                 GD.PrintErr("[LevelManager] Level transition already in progress");
                 return;
@@ -94,6 +94,7 @@ namespace Game
                 return;
             }
 
+            // Check for epigraph
             if (nextLevelInfo.HasEpigraph && SaveManager != null && !SaveManager.GetBooleanValue($"Epigraph_{nextLevelID}"))
             {
                 GD.Print("[LevelManager] Diverting to epigraph...");
@@ -103,52 +104,57 @@ namespace Game
                 nextSpawnpoint = "";
             }
 
-            IsTransitioning = true;
-            CallDeferred(nameof(ChangeLevelNow), nextLevelInfo, nextSpawnpoint);
+            ChangeLevelNow(nextLevelInfo, nextSpawnpoint);
         }
 
-        private async void ChangeLevelNow(LevelInfo nextLevelInfo, string spawnpoint)
+        private async void ChangeLevelNow(LevelInfo levelInfo, string spawnpoint)
         {
-            if (!IsTransitioning)
+            if (AlreadyUnloadingLevel)
             {
-                return;  // Safety check in case of multiple deferred calls
+                GD.PrintErr("[LevelManager] Level transition already in progress");
+                return;
             }
 
-            GD.Print($"[LevelManager] Changing to: {nextLevelInfo.LevelName}");
+            AlreadyUnloadingLevel = true;
 
-            BeginUnloadingLevel?.Invoke(nextLevelInfo.LevelID, spawnpoint);
+            string msg = TextFormatting.Bars("Begin Unloading Level");
+            GD.PrintRich($"[color={ColorsHex.Salmon}]{msg}[/color]");
+            BeginUnloadingLevel?.Invoke(levelInfo.LevelID, spawnpoint);
             await FadeOut();
 
-            var oldLevel = CurrentLevel;
+            Node3D oldLevel = CurrentLevel;
             oldLevel?.QueueFree();
             await ToSignal(oldLevel, "tree_exited");
 
-            CurrentLevelInfo = nextLevelInfo;
-            CurrentLevel = nextLevelInfo.Level.Instantiate<Node3D>();
+            AlreadyUnloadingLevel = false;
+            UnloadComplete?.Invoke();
+
+            // Allow at least one frame in buffer state
+            await ToSignal(GetTree(), "process_frame");
+
+            CurrentLevelInfo = levelInfo;
+            CurrentLevel = levelInfo.Level.Instantiate<Node3D>();
             GetTree().Root.AddChild(CurrentLevel);
 
             LevelLoaded?.Invoke();
+            GD.Print($"[LevelManager] Loaded level: {levelInfo.LevelName}");
+
             await FadeIn();
-
             DisplayLevelName();
-
-            IsTransitioning = false;
         }
 
-        public async Task FadeOut()
+        private async Task FadeOut()
         {
             animationPlayer.SpeedScale = FadeSpeedScale;
             animationPlayer.Play("FadeToBlack");
             await ToSignal(animationPlayer, "animation_finished");
-            FadeOutComplete?.Invoke();
         }
 
-        public async Task FadeIn()
+        private async Task FadeIn()
         {
             animationPlayer.SpeedScale = FadeSpeedScale;
             animationPlayer.PlayBackwards("FadeToBlack");
             await ToSignal(animationPlayer, "animation_finished");
-            FadeInComplete?.Invoke();
         }
 
         private async void DisplayLevelName()
