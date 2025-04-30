@@ -3,6 +3,9 @@ using System;
 
 namespace Game
 {
+    /// <summary>
+    /// Autoload singleton accessible at /root/PlayerSpawner
+    /// </summary>
     public partial class PlayerSpawner : Node
     {
         [Export] public PackedScene Player;

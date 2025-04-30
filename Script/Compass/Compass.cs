@@ -9,6 +9,7 @@ namespace Game
         private TextureRect east;
         private TextureRect south;
         private TextureRect west;
+        private Label label;
 
         private bool isEnabled = true;
         private Camera3D mainCamera;
@@ -18,6 +19,8 @@ namespace Game
         private CameraBridge cameraBridge;
         private LevelManager levelManager;
         private PlayerSpawner playerSpawner;
+
+        private const float HighlightThresholdDegrees = 5.0f;
 
         public override void _Ready()
         {
@@ -43,7 +46,8 @@ namespace Game
             east = GetNode<TextureRect>("East");
             south = GetNode<TextureRect>("South");
             west = GetNode<TextureRect>("West");
-
+            label = GetNode<Label>("Label");
+            label.Visible = false;
             PointOfInterest.POISpawned += OnPOISpawned;
             PointOfInterest.POIDestroyed += OnPOIDestroyed;
             levelManager.BeginUnloadingLevel += OnBeginUnloadingLevel;
@@ -77,6 +81,7 @@ namespace Game
         
         private void OnPOIDestroyed(PointOfInterest poi)
         {
+            GD.Print("[Compass] Removing PoI... ", poi.DisplayName);
             if (listOfPointsOfInterest.Contains(poi))
             {
                 listOfPointsOfInterest.Remove(poi);
@@ -96,6 +101,7 @@ namespace Game
             AddChild(poiIcon);
             poi.IconRepresentation = poiIcon;
             listOfPointsOfInterest.Add(poi);
+            GD.Print("[Compass] PoI added: ", poi.DisplayName);
         }
 
         private void UpdateCompass()
@@ -122,19 +128,19 @@ namespace Game
                         Vector3 directionToPOI = (poi.GlobalTransform.Origin - mainCamera.GlobalTransform.Origin).Normalized();
                         float poiDirectionAngle = Mathf.Atan2(directionToPOI.X, directionToPOI.Z) + Mathf.Pi;
                         poiDirectionAngle = Mathf.PosMod(poiDirectionAngle, Mathf.Pi * 2);
-                        UpdateIndicatorPosition(poi.IconRepresentation, playerOrientation, poiDirectionAngle);
+                        UpdateIndicatorPosition(poi.IconRepresentation, playerOrientation, poiDirectionAngle, poi);
                         count++;
                     }
                 }
             }
         }
 
-        private void UpdateIndicatorPosition(TextureRect indicator, float playerOrientation, float directionAngle)
+        private void UpdateIndicatorPosition(TextureRect indicator, float playerOrientation, float directionAngle, PointOfInterest poi = null)
         {
             playerOrientation = Mathf.PosMod(playerOrientation, Mathf.Pi * 2);
             float angleDifference = Mathf.Wrap(directionAngle - playerOrientation, -Mathf.Pi, Mathf.Pi);
-
             bool isInFrontOfPlayer = Mathf.Abs(angleDifference) <= Mathf.Pi / 2;
+            bool isHighlighted = Mathf.Abs(angleDifference) <= Mathf.DegToRad(HighlightThresholdDegrees);
 
             if (isInFrontOfPlayer)
             {
@@ -144,10 +150,24 @@ namespace Game
                 float offset = (Size.X / 2) - (indicator.Size.X / 2);
                 indicator.Position = new Vector2(scaledPosition + offset, indicator.Position.Y);
                 indicator.Visible = true;
+
+                if (poi != null)
+                {
+                    label.Visible = isHighlighted;
+                    if (isHighlighted)
+                    {
+                        label.Text = poi.DisplayName;
+                    }
+                }
             }
             else
             {
                 indicator.Visible = false;
+
+                if (poi != null)
+                {
+                    label.Visible = false;
+                }
             }
         }
 

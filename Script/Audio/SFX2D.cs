@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Game
 {
+    /// <summary>
+    /// Autoload singleton accessible at /root/SFX2D
+    /// </summary>
     public partial class SFX2D : Node
     {
         public Dictionary<string, AudioStreamPlayer> SoundGroups = new();

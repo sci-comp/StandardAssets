@@ -3,6 +3,9 @@ using System;
 
 namespace Game
 {
+    /// <summary>
+    /// Autoload singleton accessible at /root/Preferences
+    /// </summary>
     public partial class Preferences : Node
     {
         private readonly string savePath = "user://preferences.tres";

@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace Game
 {
+    /// <summary>
+    /// Autoload singleton accessible at /root/LevelManager
+    /// </summary>
     public partial class LevelManager : Node
     {
         [Export] public float FadeSpeedScale = 1f;

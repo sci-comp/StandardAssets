@@ -1,9 +1,11 @@
 using Godot;
-using System;
 using System.Collections.Generic;
 
 namespace Game
 {
+    /// <summary>
+    /// Autoload singleton accessible at /root/SFX
+    /// </summary>
     public partial class SFX : Node
     {
         public float MasterVolume { get; set; } = 0.7f;

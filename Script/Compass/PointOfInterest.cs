@@ -7,7 +7,7 @@ namespace Game
     public partial class PointOfInterest : Node3D
     {
         [Export] public Texture2D IconTexture;
-        //[Export] public bool DestroyWhenFound = false;
+        [Export] public string DisplayName = "";
 
         public TextureRect IconRepresentation { get; set; }
 
@@ -18,17 +18,15 @@ namespace Game
         {
             AddToGroup("POI");
             POISpawned?.Invoke(this);
-            //BodyEntered += OnBodyEntered;
+            GD.Print("[PointOfInterest] Ready: ", Name);
+            GetTree().ProcessFrame += OnFirstProcess;
         }
 
-        /*private void OnBodyEntered(Node3D other)
+        private void OnFirstProcess()
         {
-            if (DestroyWhenFound)
-            {
-                POIDestroyed?.Invoke(this);
-                QueueFree();
-            }
-        }*/
+            GetTree().ProcessFrame -= OnFirstProcess;
+            POISpawned?.Invoke(this);
+        }
 
     }
 
