@@ -42,7 +42,6 @@ namespace Game
             destBasis = initialBasis.Rotated(rotateAroundAxis, Mathf.DegToRad(DegreesRotation));
         }
 
-
         public void ResetLever()
         {
             if (canInteract)
