@@ -13,7 +13,7 @@ namespace Game
         private Label labelDistance;
 
         public bool UseMetricUnits = false;
-        private const float VerticalThreshold = 2.0f;
+        private const float VerticalThreshold = 4.0f;
 
         private bool isEnabled = true;
         private Camera3D mainCamera;
@@ -24,7 +24,7 @@ namespace Game
         private LevelManager levelManager;
         private PlayerSpawner playerSpawner;
 
-        private const float fadePercentage = 0.20f;
+        private const float fadePercentage = 0.30f;
         private const float HighlightThresholdDegrees = 5.0f;
 
         public override void _Ready()
