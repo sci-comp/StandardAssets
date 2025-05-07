@@ -1,0 +1,44 @@
+[gd_resource type="ShaderMaterial" load_steps=6 format=3 uid="uid://ruyae48fxvml"]
+
+[ext_resource type="Shader" uid="uid://cxawvewo8n5tm" path="res://addons/StandardAssets/Shader/water.gdshader" id="1_ihxse"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_m3msm"]
+noise_type = 3
+seed = 1
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_d40k6"]
+width = 1024
+height = 1024
+seamless = true
+as_normal_map = true
+bump_strength = 1.0
+noise = SubResource("FastNoiseLite_m3msm")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_bafo8"]
+noise_type = 3
+frequency = 0.1
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_wga72"]
+width = 1024
+height = 1024
+seamless = true
+seamless_blend_skirt = 0.2
+as_normal_map = true
+bump_strength = 2.0
+noise = SubResource("FastNoiseLite_bafo8")
+
+[resource]
+render_priority = -1
+shader = ExtResource("1_ihxse")
+shader_parameter/shallow_color = Color(0.22, 0.66, 1, 1)
+shader_parameter/deep_color = Color(0, 0.25, 0.45, 1)
+shader_parameter/foam_color = Color(1, 1, 1, 1)
+shader_parameter/absorbance = 10.0
+shader_parameter/depth_fade_distance = 0.5
+shader_parameter/foam_amount = 0.2
+shader_parameter/roughness = 0.05
+shader_parameter/wave_speed = 0.001
+shader_parameter/wave_dir1 = Vector2(1, 0)
+shader_parameter/wave_dir2 = Vector2(0, 1)
+shader_parameter/normal1 = SubResource("NoiseTexture2D_d40k6")
+shader_parameter/normal2 = SubResource("NoiseTexture2D_wga72")

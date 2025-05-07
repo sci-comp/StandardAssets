@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://8tl1ghmq6i1w"]
 
-[ext_resource type="Material" uid="uid://ruyae48fxvml" path="res://addons/Base/Material/MI_Ocean.tres" id="1_bp2gu"]
+[ext_resource type="Material" uid="uid://ruyae48fxvml" path="res://addons/StandardAssets/Material/MI_Ocean.tres" id="1_bp2gu"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_uviji"]
 material = ExtResource("1_bp2gu")
