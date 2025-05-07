@@ -3,8 +3,10 @@ using System.Collections.Generic;
 
 namespace Game
 {
-    public partial class Compass : Control
+    public partial class Compass : Panel
     {
+        [Export] public bool BeginVisible = false;
+
         private TextureRect north;
         private TextureRect east;
         private TextureRect south;
@@ -61,7 +63,8 @@ namespace Game
             PointOfInterest.POIDestroyed += OnPOIDestroyed;
             levelManager.BeginUnloadingLevel += OnBeginUnloadingLevel;
 
-            Visible = false;
+            Visible = BeginVisible;
+            SetVisibility(true);
             GD.PrintRich($"[Compass] [color={ColorsHex.MediumSeaGreen}]Ready[/color]");
         }
 
