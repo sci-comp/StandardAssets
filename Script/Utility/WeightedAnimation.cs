@@ -12,5 +12,10 @@ public partial class WeightedAnimation : Resource
         Weight = weight;
     }
 
+    public WeightedAnimation()
+    {
+        // This parameterless constructor must exist
+    }
+
 }
 
