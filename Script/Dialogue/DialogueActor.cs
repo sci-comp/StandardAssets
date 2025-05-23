@@ -1,6 +1,7 @@
 using DialogueManagerRuntime;
 using Godot;
 using System;
+using System.Collections.Generic;
 
 namespace Game
 {
@@ -18,6 +19,8 @@ namespace Game
         [ExportCategory("Animation")]
         [Export] public ActorAnimationController AnimationController;
 
+        private Dictionary<string, Node3D> pcams = [];
+
         public override string Title => _Title;
         public override string Details => _Details;
 
@@ -34,6 +37,12 @@ namespace Game
         {
             sfx = GetNode<SFX>("/root/SFX");
             poi = GetNode<PointOfInterest>("PointOfInterest");
+
+            Node camAngles = GetNode<Node>("CameraAngles");
+            foreach (Node camAngle in camAngles.GetChildren())
+            {
+                // cast?
+            }
 
             pcam ??= GetNodeOrNull<Node3D>("PhantomCamera3D");
             if (pcam == null)

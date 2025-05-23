@@ -1,0 +1,141 @@
+[gd_scene load_steps=5 format=3 uid="uid://b7yhmtlq0pv2p"]
+
+[ext_resource type="Script" uid="uid://cv6lmtmyabh3g" path="res://addons/StandardAssets/Script/Dialogue/CameraAngles.cs" id="1_371gr"]
+[ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="2_371gr"]
+[ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="3_a7whd"]
+
+[sub_resource type="Resource" id="Resource_ujvtr"]
+script = ExtResource("3_a7whd")
+duration = 1.0
+transition = 0
+ease = 2
+
+[node name="CameraAngles" type="Node3D" node_paths=PackedStringArray("Angles")]
+script = ExtResource("1_371gr")
+Angles = [NodePath("Closeup"), NodePath("CloseupLeft"), NodePath("CloseupRight"), NodePath("ExtremeCloseUp"), NodePath("Full"), NodePath("FullLeft"), NodePath("FullRight"), NodePath("HighAngle"), NodePath("HighAngleLeft"), NodePath("HighAngleRight"), NodePath("LowAngle"), NodePath("LowAngleLeft"), NodePath("LowAngleRight"), NodePath("Medium"), NodePath("MediumLeft"), NodePath("MediumRight"), NodePath("OverLeft"), NodePath("OverRight"), NodePath("ProfileLeft"), NodePath("ProfileRight"), NodePath("Reverse")]
+
+[node name="Closeup" type="Node3D" parent="."]
+transform = Transform3D(0.999048, -0.00925506, 0.0426262, 0, 0.977231, 0.212178, -0.0436194, -0.211976, 0.976301, 0.109575, 1.76759, 0.806068)
+script = ExtResource("2_371gr")
+tween_resource = SubResource("Resource_ujvtr")
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
+[node name="CloseupLeft" type="Node3D" parent="."]
+transform = Transform3D(0.904455, -0.138877, 0.403329, 0, 0.945519, 0.325568, -0.426569, -0.294461, 0.855179, 0.432291, 1.78426, 0.725963)
+script = ExtResource("2_371gr")
+tween_resource = SubResource("Resource_ujvtr")
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
+[node name="CloseupRight" type="Node3D" parent="."]
+transform = Transform3D(0.941176, 0.0630293, -0.331986, 0, 0.982451, 0.186523, 0.337916, -0.175551, 0.924659, -0.166389, 1.7216, 0.777105)
+script = ExtResource("2_371gr")
+tween_resource = SubResource("Resource_ujvtr")
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
+[node name="ExtremeCloseUp" type="Node3D" parent="."]
+transform = Transform3D(0.945519, 0.0354436, -0.323633, 0, 0.994056, 0.108867, 0.325568, -0.102936, 0.939899, -0.0323508, 1.70262, 0.392038)
+script = ExtResource("2_371gr")
+tween_resource = SubResource("Resource_ujvtr")
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
+[node name="Full" type="Node3D" parent="."]
+transform = Transform3D(0.999391, 0.00545949, -0.0344699, 0, 0.987688, 0.156434, 0.0348995, -0.156339, 0.987087, -0.00610968, 1.68536, 1.18328)
+script = ExtResource("2_371gr")
+tween_resource = SubResource("Resource_ujvtr")
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
+[node name="FullLeft" type="Node3D" parent="."]
+transform = Transform3D(0.913545, -0.0949506, 0.395499, 0, 0.97237, 0.233445, -0.406737, -0.213262, 0.888304, 0.608913, 1.72858, 1.09663)
+script = ExtResource("2_371gr")
+tween_resource = SubResource("Resource_ujvtr")
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
+[node name="FullRight" type="Node3D" parent="."]
+transform = Transform3D(0.854912, 0.0945385, -0.510086, 0, 0.983255, 0.182235, 0.518773, -0.155795, 0.840597, -0.445723, 1.74791, 1.0169)
+script = ExtResource("2_371gr")
+tween_resource = SubResource("Resource_ujvtr")
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
+[node name="HighAngle" type="Node3D" parent="."]
+transform = Transform3D(0.999914, 0.00863049, -0.0098412, 0, 0.75184, 0.659346, 0.0130895, -0.659289, 0.751776, -0.00210711, 2.3029, 1.09066)
+script = ExtResource("2_371gr")
+tween_resource = SubResource("Resource_ujvtr")
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
+[node name="HighAngleLeft" type="Node3D" parent="."]
+transform = Transform3D(0.838672, -0.304556, 0.451524, 0, 0.829038, 0.559192, -0.544636, -0.468979, 0.695291, 0.732265, 2.30662, 0.97381)
+script = ExtResource("2_371gr")
+tween_resource = SubResource("Resource_ujvtr")
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
+[node name="HighAngleRight" type="Node3D" parent="."]
+transform = Transform3D(0.824124, 0.346765, -0.447854, 0, 0.79069, 0.612217, 0.566409, -0.504543, 0.651627, -0.584281, 2.32966, 1.008)
+script = ExtResource("2_371gr")
+tween_resource = SubResource("Resource_ujvtr")
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
+[node name="LowAngle" type="Node3D" parent="."]
+transform = Transform3D(0.99863, -0.0108813, -0.0511922, 0, 0.978147, -0.207912, 0.0523358, 0.207627, 0.976807, -0.00803212, 1.1843, 1.32241)
+script = ExtResource("2_371gr")
+tween_resource = SubResource("Resource_ujvtr")
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
+[node name="LowAngleLeft" type="Node3D" parent="."]
+transform = Transform3D(0.956306, 0.0607871, 0.28598, 0, 0.978147, -0.207912, -0.292369, 0.198828, 0.935408, 0.540732, 1.20894, 1.2447)
+script = ExtResource("2_371gr")
+tween_resource = SubResource("Resource_ujvtr")
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
+[node name="LowAngleRight" type="Node3D" parent="."]
+transform = Transform3D(0.91879, -0.0736299, -0.387819, 0, 0.98245, -0.186525, 0.394747, 0.171377, 0.902665, -0.322856, 1.28708, 1.28263)
+script = ExtResource("2_371gr")
+tween_resource = SubResource("Resource_ujvtr")
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
+[node name="Medium" type="Node3D" parent="."]
+transform = Transform3D(0.999391, 0.00545949, -0.0344699, 0, 0.987688, 0.156434, 0.0348995, -0.156339, 0.987087, -0.00610968, 1.68536, 1.18328)
+script = ExtResource("2_371gr")
+tween_resource = SubResource("Resource_ujvtr")
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
+[node name="MediumLeft" type="Node3D" parent="."]
+transform = Transform3D(0.913545, -0.0949506, 0.395499, 0, 0.97237, 0.233445, -0.406737, -0.213262, 0.888304, 0.608913, 1.72858, 1.09663)
+script = ExtResource("2_371gr")
+tween_resource = SubResource("Resource_ujvtr")
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
+[node name="MediumRight" type="Node3D" parent="."]
+transform = Transform3D(0.854912, 0.0945385, -0.510086, 0, 0.983255, 0.182235, 0.518773, -0.155795, 0.840597, -0.445723, 1.74791, 1.0169)
+script = ExtResource("2_371gr")
+tween_resource = SubResource("Resource_ujvtr")
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
+[node name="OverLeft" type="Node3D" parent="."]
+transform = Transform3D(-0.992546, -0.0299985, 0.118119, 0, 0.969231, 0.246153, -0.121869, 0.244319, -0.962006, 0.394683, 1.8226, -0.388225)
+script = ExtResource("2_371gr")
+tween_resource = SubResource("Resource_ujvtr")
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
+[node name="OverRight" type="Node3D" parent="."]
+transform = Transform3D(-0.996195, 0.019235, -0.0850063, 0, 0.975342, 0.220697, 0.0871553, 0.219858, -0.971631, -0.297949, 1.78861, -0.509573)
+script = ExtResource("2_371gr")
+tween_resource = SubResource("Resource_ujvtr")
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
+[node name="ProfileLeft" type="Node3D" parent="."]
+transform = Transform3D(0.199368, 0.10243, 0.974557, 0, 0.994522, -0.104528, -0.979925, 0.0208396, 0.198276, 0.46303, 1.64069, 0.0952665)
+script = ExtResource("2_371gr")
+tween_resource = SubResource("Resource_ujvtr")
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
+[node name="ProfileRight" type="Node3D" parent="."]
+transform = Transform3D(0.0130897, 0.139161, -0.990183, 0, 0.990268, 0.139173, 0.999914, -0.00182174, 0.0129623, -0.598449, 1.69286, 0.0737363)
+script = ExtResource("2_371gr")
+tween_resource = SubResource("Resource_ujvtr")
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
+[node name="Reverse" type="Node3D" parent="."]
+transform = Transform3D(-0.999914, -0.00360892, 0.0125858, 0, 0.961262, 0.275637, -0.013093, 0.275613, -0.961179, 0.0481542, 2.07995, -0.634094)
+script = ExtResource("2_371gr")
+tween_resource = SubResource("Resource_ujvtr")
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
