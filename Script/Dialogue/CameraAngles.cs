@@ -2,9 +2,36 @@ using Godot;
 
 namespace Game
 {
+    public enum CameraAngle
+    {
+        Bird,
+        Closeup,
+        CloseupLeft,
+        CloseupRight,
+        ExtremeCloseup,
+        Full,
+        FullLeft,
+        FullRight,
+        HighAngle,
+        HighAngleLeft,
+        HighAngleRight,
+        LowAngle,
+        LowAngleLeft,
+        LowAngleRight,
+        Medium,
+        MediumLeft,
+        MediumRight,
+        OverLeft,
+        OverRight,
+        ProfileLeft,
+        ProfileRight,
+        Reverse
+    }
+
     public partial class CameraAngles : Node
     {
         [Export] public Node3D[] Angles { get; set; } = [];
+        [Export] public CameraAngle DefaultAngle { get; set; } = CameraAngle.Closeup;
 
         public override void _Ready()
         {
@@ -23,8 +50,31 @@ namespace Game
                     return Angles[i];
                 }
             }
+            GD.Print("[CameraAngle] Angle not found: ", name);
             return null;
         }
+
+        public Node3D GetAngle(CameraAngle angle)
+        {
+            string angleName = angle.ToString();
+            return GetAngle(angleName);
+        }
+
+        public void SetCameraPriority(CameraAngle angle, int priority = 10)
+        {
+            Node3D camera = GetAngle(angle);
+            camera?.Set("priority", priority);
+        }
+
+        public void ResetCameraPriorities()
+        {
+            foreach (Node3D camera in Angles)
+            {
+                camera.Set("priority", 0);
+            }
+        }
+
+
     }
 
 }

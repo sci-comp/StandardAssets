@@ -14,6 +14,12 @@ ease = 2
 script = ExtResource("1_371gr")
 Angles = [NodePath("Closeup"), NodePath("CloseupLeft"), NodePath("CloseupRight"), NodePath("ExtremeCloseUp"), NodePath("Full"), NodePath("FullLeft"), NodePath("FullRight"), NodePath("HighAngle"), NodePath("HighAngleLeft"), NodePath("HighAngleRight"), NodePath("LowAngle"), NodePath("LowAngleLeft"), NodePath("LowAngleRight"), NodePath("Medium"), NodePath("MediumLeft"), NodePath("MediumRight"), NodePath("OverLeft"), NodePath("OverRight"), NodePath("ProfileLeft"), NodePath("ProfileRight"), NodePath("Reverse")]
 
+[node name="Bird" type="Node3D" parent="."]
+transform = Transform3D(0.999229, -0.0389419, 0.00498559, 0, 0.12699, 0.991904, -0.0392597, -0.991139, 0.126892, 0.102375, 4.45948, 0.34718)
+script = ExtResource("2_371gr")
+tween_resource = SubResource("Resource_ujvtr")
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
 [node name="Closeup" type="Node3D" parent="."]
 transform = Transform3D(0.999048, -0.00925506, 0.0426262, 0, 0.977231, 0.212178, -0.0436194, -0.211976, 0.976301, 0.109575, 1.76759, 0.806068)
 script = ExtResource("2_371gr")
@@ -136,6 +142,12 @@ metadata/_custom_type_script = "uid://csjccrhj5wnx7"
 
 [node name="Reverse" type="Node3D" parent="."]
 transform = Transform3D(-0.999914, -0.00360892, 0.0125858, 0, 0.961262, 0.275637, -0.013093, 0.275613, -0.961179, 0.0481542, 2.07995, -0.634094)
+script = ExtResource("2_371gr")
+tween_resource = SubResource("Resource_ujvtr")
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
+[node name="Worm" type="Node3D" parent="."]
+transform = Transform3D(0.992005, 0.06262, 0.109562, 0, 0.868199, -0.496217, -0.126195, 0.49225, 0.861258, 0.232927, 0.496504, 1.28933)
 script = ExtResource("2_371gr")
 tween_resource = SubResource("Resource_ujvtr")
 metadata/_custom_type_script = "uid://csjccrhj5wnx7"

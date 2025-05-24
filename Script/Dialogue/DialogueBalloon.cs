@@ -222,9 +222,10 @@ namespace DialogueManagerRuntime
 
         private string ActorNameToID(string actorName)
         {
+            // This could be expanded to include all actors in the game, though,
+            // maybe there is a better options for implementation
             switch (actorName)
             {
-                case "Otterholm Guard": return "Otterholm_Guard";
                 case "Skeleton Guard": return "Skeleton_Guard";
             }
             return "actorName";

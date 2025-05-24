@@ -19,16 +19,17 @@ namespace Game
         [ExportCategory("Animation")]
         [Export] public ActorAnimationController AnimationController;
 
-        private Dictionary<string, Node3D> pcams = [];
+        //private Dictionary<string, Node3D> pcams = [];
 
         public override string Title => _Title;
         public override string Details => _Details;
 
         private float interactCooldown = 1.2f;
         private float interactTimer = 0.0f;
-        private Node3D pcam;
+        private CameraAngles cameraAngles;
         protected PointOfInterest poi;
         private SFX sfx;
+        private CameraAngle currentCameraAngle;
 
         public static event Action<string, DialogueActor> ActorSpawned;
         public static event Action<string> ActorDestroyed;
@@ -38,16 +39,10 @@ namespace Game
             sfx = GetNode<SFX>("/root/SFX");
             poi = GetNode<PointOfInterest>("PointOfInterest");
 
-            Node camAngles = GetNode<Node>("CameraAngles");
-            foreach (Node camAngle in camAngles.GetChildren())
+            cameraAngles = GetNodeOrNull<CameraAngles>("CameraAngles");
+            if (cameraAngles == null)
             {
-                // cast?
-            }
-
-            pcam ??= GetNodeOrNull<Node3D>("PhantomCamera3D");
-            if (pcam == null)
-            {
-                GD.PushWarning("[DialogueActor] Missing local camera, typically we want one of those: ", Name);
+                GD.PushWarning("[DialogueActor] Missing CameraAngles node: ", Name);
             }
 
             AnimationController = GetNodeOrNull<ActorAnimationController>("ActorAnimationController");
@@ -95,13 +90,16 @@ namespace Game
                 DialogueManager.ShowDialogueBalloon(DialogueResource);
             }
 
-            pcam.Set("priority", 10);
+            currentCameraAngle = cameraAngles.DefaultAngle;
+            cameraAngles?.SetCameraPriority(currentCameraAngle);
+
             AnimationController?.Pause();
             base.Interact();
         }
 
         protected void OnDialogueEnded(Resource dialogueResource)
         {
+            cameraAngles.SetCameraPriority(currentCameraAngle, 0);
             AnimationController?.Resume();
         }
 
@@ -111,6 +109,14 @@ namespace Game
             {
                 sfx.PlaySound(sfxName, Position);
             }
+        }
+
+        public void SetCameraAngle(CameraAngle angle)
+        {
+            cameraAngles.SetCameraPriority(currentCameraAngle, 0);
+
+            cameraAngles.SetCameraPriority(angle);
+            currentCameraAngle = angle;
         }
 
     }
