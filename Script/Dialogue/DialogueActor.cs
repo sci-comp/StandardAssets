@@ -19,8 +19,6 @@ namespace Game
         [ExportCategory("Animation")]
         [Export] public ActorAnimationController AnimationController;
 
-        //private Dictionary<string, Node3D> pcams = [];
-
         public override string Title => _Title;
         public override string Details => _Details;
 
@@ -91,7 +89,7 @@ namespace Game
             }
 
             currentCameraAngle = cameraAngles.DefaultAngle;
-            cameraAngles?.SetCameraPriority(currentCameraAngle);
+            cameraAngles.SetCameraPriority(currentCameraAngle);
 
             AnimationController?.Pause();
             base.Interact();
@@ -114,7 +112,6 @@ namespace Game
         public void SetCameraAngle(CameraAngle angle)
         {
             cameraAngles.SetCameraPriority(currentCameraAngle, 0);
-
             cameraAngles.SetCameraPriority(angle);
             currentCameraAngle = angle;
         }

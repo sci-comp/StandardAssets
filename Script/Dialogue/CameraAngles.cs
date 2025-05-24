@@ -25,10 +25,11 @@ namespace Game
         OverRight,
         ProfileLeft,
         ProfileRight,
-        Reverse
+        Reverse,
+        Worm
     }
 
-    public partial class CameraAngles : Node
+    public partial class CameraAngles : Node3D
     {
         [Export] public Node3D[] Angles { get; set; } = [];
         [Export] public CameraAngle DefaultAngle { get; set; } = CameraAngle.Closeup;
