@@ -45,19 +45,19 @@ tween_resource = SubResource("Resource_ujvtr")
 metadata/_custom_type_script = "uid://csjccrhj5wnx7"
 
 [node name="Full" type="Node3D" parent="."]
-transform = Transform3D(0.999391, 0.00545949, -0.0344699, 0, 0.987688, 0.156434, 0.0348995, -0.156339, 0.987087, -0.00653414, 1.60857, 1.19543)
+transform = Transform3D(0.999657, -0.00798383, 0.0249415, 0, 0.952395, 0.304864, -0.0261882, -0.30476, 0.952069, -0.0190304, 1.64172, 1.98302)
 script = ExtResource("2_371gr")
 tween_resource = SubResource("Resource_ujvtr")
 metadata/_custom_type_script = "uid://csjccrhj5wnx7"
 
 [node name="FullLeft" type="Node3D" parent="."]
-transform = Transform3D(0.913545, -0.0949506, 0.395499, 0, 0.97237, 0.233445, -0.406737, -0.213262, 0.888304, 0.616295, 1.65298, 1.11321)
+transform = Transform3D(0.850346, -0.169149, 0.498297, 0, 0.94693, 0.321439, -0.526224, -0.273335, 0.805219, 1.01529, 1.70726, 1.90725)
 script = ExtResource("2_371gr")
 tween_resource = SubResource("Resource_ujvtr")
 metadata/_custom_type_script = "uid://csjccrhj5wnx7"
 
 [node name="FullRight" type="Node3D" parent="."]
-transform = Transform3D(0.854912, 0.0945385, -0.510086, 0, 0.983255, 0.182235, 0.518773, -0.155795, 0.840597, -0.453073, 1.67146, 1.02901)
+transform = Transform3D(0.933584, 0.0897255, -0.346943, 0, 0.968148, 0.25038, 0.358358, -0.233751, 0.903848, -0.932211, 1.65965, 1.90829)
 script = ExtResource("2_371gr")
 tween_resource = SubResource("Resource_ujvtr")
 metadata/_custom_type_script = "uid://csjccrhj5wnx7"
@@ -81,19 +81,19 @@ tween_resource = SubResource("Resource_ujvtr")
 metadata/_custom_type_script = "uid://csjccrhj5wnx7"
 
 [node name="LowAngle" type="Node3D" parent="."]
-transform = Transform3D(0.99863, -0.0108813, -0.0511922, 0, 0.978147, -0.207912, 0.0523358, 0.207627, 0.976807, -0.00718613, 1.10825, 1.30627)
+transform = Transform3D(0.99863, -0.0108813, -0.0511922, 0, 0.978147, -0.207912, 0.0523358, 0.207627, 0.976807, -0.00812138, 1.19232, 1.32412)
 script = ExtResource("2_371gr")
 tween_resource = SubResource("Resource_ujvtr")
 metadata/_custom_type_script = "uid://csjccrhj5wnx7"
 
 [node name="LowAngleLeft" type="Node3D" parent="."]
-transform = Transform3D(0.956306, 0.0607871, 0.28598, 0, 0.978147, -0.207912, -0.292369, 0.198828, 0.935408, 0.536006, 1.13289, 1.22924)
+transform = Transform3D(0.956306, 0.0607871, 0.28598, 0, 0.978147, -0.207912, -0.292369, 0.198828, 0.935408, 0.541231, 1.21696, 1.24633)
 script = ExtResource("2_371gr")
 tween_resource = SubResource("Resource_ujvtr")
 metadata/_custom_type_script = "uid://csjccrhj5wnx7"
 
 [node name="LowAngleRight" type="Node3D" parent="."]
-transform = Transform3D(0.91879, -0.0736299, -0.387819, 0, 0.98245, -0.186525, 0.394747, 0.171377, 0.902665, -0.317131, 1.2107, 1.26931)
+transform = Transform3D(0.91879, -0.0736299, -0.387819, 0, 0.98245, -0.186525, 0.394747, 0.171377, 0.902665, -0.32346, 1.29514, 1.28404)
 script = ExtResource("2_371gr")
 tween_resource = SubResource("Resource_ujvtr")
 metadata/_custom_type_script = "uid://csjccrhj5wnx7"
@@ -129,7 +129,7 @@ tween_resource = SubResource("Resource_ujvtr")
 metadata/_custom_type_script = "uid://csjccrhj5wnx7"
 
 [node name="ProfileLeft" type="Node3D" parent="."]
-transform = Transform3D(0.199368, 0.10243, 0.974557, 0, 0.994522, -0.104528, -0.979925, 0.0208396, 0.198276, 0.455066, 1.56337, 0.0936463)
+transform = Transform3D(0.199368, 0.10243, 0.974557, 0, 0.994522, -0.104528, -0.979925, 0.0208396, 0.198276, 0.60557, 1.56337, 0.0936463)
 script = ExtResource("2_371gr")
 tween_resource = SubResource("Resource_ujvtr")
 metadata/_custom_type_script = "uid://csjccrhj5wnx7"
