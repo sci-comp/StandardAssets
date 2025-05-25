@@ -15,30 +15,34 @@ namespace Game
         [Export] public string ActorID = "";
         [Export] public string StartTitle = "";
         [Export] public Resource DialogueResource;
+        [Export] public Marker3D PlayerLocation;
 
         [ExportCategory("Animation")]
         [Export] public ActorAnimationController AnimationController;
+
+        public CameraAngles CameraAngles;
 
         public override string Title => _Title;
         public override string Details => _Details;
 
         private float interactCooldown = 1.2f;
         private float interactTimer = 0.0f;
-        private CameraAngles cameraAngles;
+        
         protected PointOfInterest poi;
         private SFX sfx;
         private CameraAngle currentCameraAngle;
 
         public static event Action<string, DialogueActor> ActorSpawned;
         public static event Action<string> ActorDestroyed;
+        public static event Action<Vector3, float> DialogueStarted;
 
         public override void _Ready()
         {
             sfx = GetNode<SFX>("/root/SFX");
             poi = GetNode<PointOfInterest>("PointOfInterest");
 
-            cameraAngles = GetNodeOrNull<CameraAngles>("CameraAngles");
-            if (cameraAngles == null)
+            CameraAngles = GetNodeOrNull<CameraAngles>("CameraAngles");
+            if (CameraAngles == null)
             {
                 GD.PushWarning("[DialogueActor] Missing CameraAngles node: ", Name);
             }
@@ -71,6 +75,7 @@ namespace Game
             }
             interactTimer = 0.0f;
 
+
             if (DialogueResource == null)
             {
                 GD.PrintErr("[DialogueActor] DialogueResource == null");
@@ -78,6 +83,25 @@ namespace Game
             }
 
             GD.Print($"[DialogueActor] Requesting a conversation with {ActorID}");
+
+            Vector3 playerPosition;
+            float playerYaw;
+
+            if (PlayerLocation != null)
+            {
+                playerPosition = PlayerLocation.GlobalPosition;
+                playerYaw = PlayerLocation.GlobalRotation.Y;
+            }
+            else
+            {
+                Vector3 forward = -GlobalTransform.Basis.Z;
+                playerPosition = GlobalPosition - forward;
+
+                Vector3 directionToNPC = (GlobalPosition - playerPosition).Normalized();
+                playerYaw = Mathf.Atan2(directionToNPC.X, -directionToNPC.Z);
+            }
+
+            DialogueStarted?.Invoke(playerPosition, playerYaw);
 
             if (StartTitle != "")
             {
@@ -88,8 +112,8 @@ namespace Game
                 DialogueManager.ShowDialogueBalloon(DialogueResource);
             }
 
-            currentCameraAngle = cameraAngles.DefaultAngle;
-            cameraAngles.SetCameraPriority(currentCameraAngle);
+            currentCameraAngle = CameraAngles.DefaultAngle;
+            CameraAngles.SetCameraPriority(currentCameraAngle);
 
             AnimationController?.Pause();
             base.Interact();
@@ -97,7 +121,7 @@ namespace Game
 
         protected void OnDialogueEnded(Resource dialogueResource)
         {
-            cameraAngles.SetCameraPriority(currentCameraAngle, 0);
+            CameraAngles.SetCameraPriority(currentCameraAngle, 0);
             AnimationController?.Resume();
         }
 
@@ -111,8 +135,8 @@ namespace Game
 
         public void SetCameraAngle(CameraAngle angle)
         {
-            cameraAngles.SetCameraPriority(currentCameraAngle, 0);
-            cameraAngles.SetCameraPriority(angle);
+            CameraAngles.SetCameraPriority(currentCameraAngle, 0);
+            CameraAngles.SetCameraPriority(angle);
             currentCameraAngle = angle;
         }
 
