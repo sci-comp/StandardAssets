@@ -1,7 +1,6 @@
 using DialogueManagerRuntime;
 using Godot;
 using System;
-using System.Collections.Generic;
 
 namespace Game
 {
@@ -131,13 +130,6 @@ namespace Game
             {
                 sfx.PlaySound(sfxName, Position);
             }
-        }
-
-        public void SetCameraAngle(CameraAngle angle)
-        {
-            CameraAngles.SetCameraPriority(currentCameraAngle, 0);
-            CameraAngles.SetCameraPriority(angle);
-            currentCameraAngle = angle;
         }
 
     }
