@@ -94,7 +94,7 @@ namespace Game
             else
             {
                 Vector3 forward = -GlobalTransform.Basis.Z;
-                playerPosition = GlobalPosition - forward;
+                playerPosition = GlobalPosition - (2 * forward);
 
                 Vector3 directionToNPC = (GlobalPosition - playerPosition).Normalized();
                 playerYaw = Mathf.Atan2(directionToNPC.X, -directionToNPC.Z);
