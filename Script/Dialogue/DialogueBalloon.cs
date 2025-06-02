@@ -2,6 +2,8 @@ using Game;
 using Godot;
 using Godot.Collections;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DialogueManagerRuntime
 {
@@ -9,6 +11,8 @@ namespace DialogueManagerRuntime
     {
         [Export] public string NextAction = "x";
         [Export] public string SkipAction = "b";
+        [Export] public AudioStreamPlayer audioStreamPlayer;
+        [Export] public string voicePath = "res://Audio/Dialogue";
 
         private bool willHideBalloon = false;
         private Array<Variant> temporaryGameStates = [];
@@ -69,6 +73,12 @@ namespace DialogueManagerRuntime
             DialogueManager.Mutated -= OnMutated;
         }
 
+        private async void DisplayLineAndNext(DialogueResponse response)
+        {
+            await DisplayLine("Player", response.Text, response.TranslationKey);
+            Next(response.NextId);
+        }
+
         public async void Start(Resource dialogueResource, string title, Array<Variant> extraGameStates = null)
         {
             GD.Print("[DialogueBalloon] Starting...");
@@ -124,7 +134,9 @@ namespace DialogueManagerRuntime
                 responsesMenu.Set("next_action", NextAction);
             }
 
-            responsesMenu.Connect("response_selected", Callable.From((DialogueResponse response) => { Next(response.NextId); }));
+            responsesMenu.Connect("response_selected", Callable.From((DialogueResponse response) => {
+                DisplayLineAndNext(response);
+            }));
 
             DialogueManager.Mutated += OnMutated;
 
@@ -151,36 +163,22 @@ namespace DialogueManagerRuntime
                 await ToSignal(this, SignalName.Ready);
             }
 
-            // Process tags
+            GD.Print("dialogueLine.Type: ", dialogueLine.Type);
+
             foreach (string tag in dialogueLine.Tags)
             {
                 GD.Print("[DialogueBalloon] Requesting a gesture, dialogueLine.Character, tag: ", dialogueLine.Character, tag);
-                ActorGestureRequested?.Invoke(ActorNameToID(dialogueLine.Character), tag);
             }
 
-            // Set up the character name
-            characterLabel.Visible = !string.IsNullOrEmpty(dialogueLine.Character);
-            characterLabel.Text = Tr(dialogueLine.Character, "dialogue");
-
-            // Set up the dialogue
-            dialogueLabel.Hide();
-            dialogueLabel.Set("dialogue_line", dialogueLine);
-
-            // Set up the responses
             responsesMenu.Hide();
             responsesMenu.Set("responses", dialogueLine.Responses);
 
-            // Type out the text
             balloon.Show();
             willHideBalloon = false;
             dialogueLabel.Show();
-            if (!string.IsNullOrEmpty(dialogueLine.Text))
-            {
-                dialogueLabel.Call("type_out");
-                await ToSignal(dialogueLabel, "finished_typing");
-            }
 
-            // Wait for input
+            await DisplayLine(dialogueLine.Character, dialogueLine.Text, dialogueLine.TranslationKey);
+
             if (dialogueLine.Responses.Count > 0)
             {
                 balloon.FocusMode = Control.FocusModeEnum.None;
@@ -230,6 +228,80 @@ namespace DialogueManagerRuntime
             }
             return "actorName";
         }
+
+        private void PlayVoice(string actorId, string translationId, bool isNarrator=false)
+        {
+            if (translationId == "")
+            {
+                GD.Print($"[DialogueBalloon] Empty translationId: {translationId}");
+                return;
+            }
+
+            string locale = TranslationServer.GetLocale().Split('_')[0];
+            string path;
+            if (actorId == "")
+            {
+                if (isNarrator)
+                {
+                    path = $"{voicePath}/Narrator/{locale}/{translationId}.mp3";
+                }
+                else
+                {
+                    path = $"{voicePath}/Player/{locale}/{translationId}.mp3";
+                }
+            }
+            else
+            {
+                path = $"{voicePath}/{locale}/{actorId}/{translationId}.mp3";
+            }
+            
+            if (ResourceLoader.Exists(path))
+            {
+                var stream = GD.Load<AudioStream>(path);
+                audioStreamPlayer.Stream = stream;
+                audioStreamPlayer.Play();
+            }
+            else
+            {
+                GD.Print("[DialogueBalloon] Voice file path does not exist: ", path);
+            }
+
+        }
+
+        private async Task DisplayLine(string character, string text, string translationKey)
+        {
+            characterLabel.Visible = !string.IsNullOrEmpty(character);
+            characterLabel.Text = Tr(character, "dialogue");
+
+            // Temporarily modify dialogueLine for the label
+            var originalCharacter = dialogueLine.Character;
+            var originalText = dialogueLine.Text;
+            var originalTranslationKey = dialogueLine.TranslationKey;
+
+            dialogueLine.Character = character;
+            dialogueLine.Text = text;
+            dialogueLine.TranslationKey = translationKey;
+
+            dialogueLabel.Set("dialogue_line", dialogueLine);
+            dialogueLabel.Call("type_out");
+
+            PlayVoice(character, translationKey);
+
+            if (audioStreamPlayer.Playing)
+            {
+                await ToSignal(audioStreamPlayer, AudioStreamPlayer.SignalName.Finished);
+            }
+            else if (!string.IsNullOrEmpty(text))
+            {
+                await ToSignal(dialogueLabel, "finished_typing");
+            }
+
+            // Restore original values
+            dialogueLine.Character = originalCharacter;
+            dialogueLine.Text = originalText;
+            dialogueLine.TranslationKey = originalTranslationKey;
+        }
+
     }
 
 }
