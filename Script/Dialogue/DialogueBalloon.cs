@@ -3,6 +3,7 @@ using Godot;
 using Godot.Collections;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DialogueManagerRuntime
@@ -13,6 +14,9 @@ namespace DialogueManagerRuntime
         [Export] public string SkipAction = "b";
         [Export] public AudioStreamPlayer audioStreamPlayer;
         [Export] public string voicePath = "res://Audio/Dialogue";
+        [Export] public bool showPlayerLines = false;
+
+        private string currentDialogueTitle = "default";
 
         private bool willHideBalloon = false;
         private Array<Variant> temporaryGameStates = [];
@@ -75,13 +79,18 @@ namespace DialogueManagerRuntime
 
         private async void DisplayLineAndNext(DialogueResponse response)
         {
-            await DisplayLine("Player", response.Text, response.TranslationKey);
+            if (showPlayerLines)
+            {
+                await DisplayLine("Player", response.Text, response.TranslationKey);
+            }
             Next(response.NextId);
         }
 
         public async void Start(Resource dialogueResource, string title, Array<Variant> extraGameStates = null)
         {
-            GD.Print("[DialogueBalloon] Starting...");
+            GD.Print("[DialogueBalloon] Starting, title: ", title);
+
+            currentDialogueTitle = string.IsNullOrEmpty(title) ? "default" : title;
 
             balloon = GetNode<Control>("%Balloon");
             characterLabel = GetNode<RichTextLabel>("%CharacterLabel");
@@ -243,16 +252,16 @@ namespace DialogueManagerRuntime
             {
                 if (isNarrator)
                 {
-                    path = $"{voicePath}/Narrator/{locale}/{translationId}.mp3";
+                    path = $"{voicePath}/Narrator/{locale}/{currentDialogueTitle}/{translationId}.ogg";
                 }
                 else
                 {
-                    path = $"{voicePath}/Player/{locale}/{translationId}.mp3";
+                    path = $"{voicePath}/Player/{locale}/{currentDialogueTitle}/{translationId}.ogg";
                 }
             }
             else
             {
-                path = $"{voicePath}/{locale}/{actorId}/{translationId}.mp3";
+                path = $"{voicePath}/{locale}/{actorId}/{currentDialogueTitle}/{translationId}.ogg";
             }
             
             if (ResourceLoader.Exists(path))
@@ -265,7 +274,6 @@ namespace DialogueManagerRuntime
             {
                 GD.Print("[DialogueBalloon] Voice file path does not exist: ", path);
             }
-
         }
 
         private async Task DisplayLine(string character, string text, string translationKey)
@@ -274,12 +282,14 @@ namespace DialogueManagerRuntime
             characterLabel.Text = Tr(character, "dialogue");
 
             // Temporarily modify dialogueLine for the label
-            var originalCharacter = dialogueLine.Character;
-            var originalText = dialogueLine.Text;
-            var originalTranslationKey = dialogueLine.TranslationKey;
+            string originalCharacter = dialogueLine.Character;
+            string originalText = dialogueLine.Text;
+            string originalTranslationKey = dialogueLine.TranslationKey;
+
+            string processedText = BB.ProcessItemReplacements(text);
 
             dialogueLine.Character = character;
-            dialogueLine.Text = text;
+            dialogueLine.Text = processedText;
             dialogueLine.TranslationKey = translationKey;
 
             dialogueLabel.Set("dialogue_line", dialogueLine);
@@ -291,7 +301,7 @@ namespace DialogueManagerRuntime
             {
                 await ToSignal(audioStreamPlayer, AudioStreamPlayer.SignalName.Finished);
             }
-            else if (!string.IsNullOrEmpty(text))
+            else if (!string.IsNullOrEmpty(processedText))
             {
                 await ToSignal(dialogueLabel, "finished_typing");
             }

@@ -4,10 +4,13 @@ namespace Game
 {
     public partial class Epigraph : Panel
     {
-        private Resources resources;
-        private TextureRect textureRect;
+        [Export] public string voicePath = "res://Audio/Dialogue";
+
+        private AudioStreamPlayer audioPlayer;
         private Label epigraphText;
         private LevelManager levelManager;
+        private Resources resources;
+        private TextureRect textureRect;
 
         public override void _Ready()
         {
@@ -15,7 +18,8 @@ namespace Game
             textureRect = GetNode<TextureRect>("TextureRect");
             epigraphText = GetNode<Label>("Panel/MarginContainer/Label");
             levelManager = GetNode<LevelManager>("/root/LevelManager");
-           
+            audioPlayer = GetNode<AudioStreamPlayer>("AudioStreamPlayer");
+
             if (levelManager.LevelInfo.TryGetValue(levelManager.LevelIDAfterEpigraph, out LevelInfo levelInfo))
             {
                 if (epigraphText != null && !string.IsNullOrEmpty(levelInfo.Epigraph))
@@ -30,6 +34,9 @@ namespace Game
                         textureRect.Texture = tex;
                     }
                 }
+
+                PlayVoice();
+
             }
 
             Mouse.SetConfinedHidden();
@@ -44,6 +51,25 @@ namespace Game
             {
                 levelManager.ReturningFromEpigraph();
                 GetViewport().SetInputAsHandled();
+            }
+        }
+
+        private void PlayVoice()
+        {
+            string locale = TranslationServer.GetLocale().Split('_')[0];
+            string path;
+            
+            path = $"{voicePath}/{locale}/Epigraph/{levelManager.LevelIDAfterEpigraph}.ogg";
+
+            if (ResourceLoader.Exists(path))
+            {
+                AudioStream stream = GD.Load<AudioStream>(path);
+                audioPlayer.Stream = stream;
+                audioPlayer.Play();
+            }
+            else
+            {
+                GD.Print("[Epigraph] Path does not exist: ", path);
             }
         }
 
