@@ -17,9 +17,7 @@ namespace Game
         {
             cameraBridge = GetNode<CameraBridge>("/root/CameraBridge");
 
-            PossibleSFX3D possibleSFX3D = new();
-            possibleSFX3D.Initialize(this);
-            SoundGroups = possibleSFX3D.GetSoundGroups();
+            FindSoundGroups(this);
 
             foreach (SoundGroup3D soundGroup in SoundGroups.Values)
             {
@@ -27,6 +25,21 @@ namespace Game
             }
 
             GD.PrintRich($"[SFX] [color={ColorsHex.MediumSeaGreen}]Ready[/color] with {SoundGroups.Count} sound groups");
+        }
+
+        private void FindSoundGroups(Node node)
+        {
+            foreach (Node child in node.GetChildren())
+            {
+                if (child is SoundGroup3D soundGroup)
+                {
+                    SoundGroups[child.Name] = soundGroup;
+                }
+                else
+                {
+                    FindSoundGroups(child);
+                }
+            }
         }
 
         public void Play(string soundGroupName)
