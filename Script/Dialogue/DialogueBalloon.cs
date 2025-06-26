@@ -2,16 +2,14 @@ using Game;
 using Godot;
 using Godot.Collections;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace DialogueManagerRuntime
 {
     public partial class DialogueBalloon : CanvasLayer
     {
-        [Export] public string NextAction = "x";
-        [Export] public string SkipAction = "b";
+        [Export] public string NextAction = "a";
+        [Export] public string SkipAction = "x";
         [Export] public AudioStreamPlayer audioStreamPlayer;
         [Export] public string voicePath = "res://Audio/Dialogue";
         [Export] public bool showPlayerLines = false;
@@ -66,6 +64,8 @@ namespace DialogueManagerRuntime
         public static event Action<string, string> ActorGestureRequested;
         public static event Action<Resource> DialogueStarted;
 
+        private Control.GuiInputEventHandler inputHandler;
+
         public override void _UnhandledInput(InputEvent @event)
         {
             // Only the balloon is allowed to handle input while it's showing
@@ -75,6 +75,11 @@ namespace DialogueManagerRuntime
         public override void _ExitTree()
         {
             DialogueManager.Mutated -= OnMutated;
+
+            if (balloon != null && inputHandler != null)
+            {
+                balloon.GuiInput -= inputHandler;
+            }
         }
 
         private async void DisplayLineAndNext(DialogueResponse response)
@@ -101,7 +106,7 @@ namespace DialogueManagerRuntime
             balloon.Hide();
             indicator.Hide();
 
-            balloon.GuiInput += (@event) =>
+            inputHandler = (@event) =>
             {
                 if ((bool)dialogueLabel.Get("is_typing"))
                 {
@@ -112,6 +117,11 @@ namespace DialogueManagerRuntime
                     {
                         GetViewport().SetInputAsHandled();
                         dialogueLabel.Call("skip_typing");
+                        if (audioStreamPlayer.Playing)
+                        {
+                            audioStreamPlayer.Stop();
+                            audioStreamPlayer.EmitSignal(AudioStreamPlayer.SignalName.Finished);
+                        }
                         return;
                     }
                 }
@@ -121,14 +131,10 @@ namespace DialogueManagerRuntime
                     return;
                 }
 
-                if (dialogueLine.Responses.Count > 0)
-                {
-                    return;
-                }
-
                 GetViewport().SetInputAsHandled();
 
-                if (@event is InputEventMouseButton && @event.IsPressed() && (@event as InputEventMouseButton).ButtonIndex == MouseButton.Left)
+                if (@event is InputEventMouseButton && @event.IsPressed()
+                && (@event as InputEventMouseButton).ButtonIndex == MouseButton.Left)
                 {
                     Next(dialogueLine.NextId);
                 }
@@ -137,6 +143,8 @@ namespace DialogueManagerRuntime
                     Next(dialogueLine.NextId);
                 }
             };
+
+            balloon.GuiInput += inputHandler;
 
             if (string.IsNullOrEmpty((string)responsesMenu.Get("next_action")))
             {
@@ -238,7 +246,7 @@ namespace DialogueManagerRuntime
             return "actorName";
         }
 
-        private void PlayVoice(string actorId, string translationId, bool isNarrator=false)
+        private void PlayVoice(string actorId, string translationId, bool isNarrator = false)
         {
             if (translationId == "")
             {
@@ -263,7 +271,7 @@ namespace DialogueManagerRuntime
             {
                 path = $"{voicePath}/{locale}/{actorId}/{currentDialogueTitle}/{translationId}.ogg";
             }
-            
+
             if (ResourceLoader.Exists(path))
             {
                 var stream = GD.Load<AudioStream>(path);
@@ -315,4 +323,3 @@ namespace DialogueManagerRuntime
     }
 
 }
-
