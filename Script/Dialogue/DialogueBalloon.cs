@@ -248,6 +248,11 @@ namespace DialogueManagerRuntime
 
         private void PlayVoice(string actorId, string translationId, bool isNarrator = false)
         {
+            if (actorId == null) 
+            { 
+                return; 
+            }
+
             if (translationId == "")
             {
                 GD.Print($"[DialogueBalloon] Empty translationId: {translationId}");
@@ -256,21 +261,9 @@ namespace DialogueManagerRuntime
 
             string locale = TranslationServer.GetLocale().Split('_')[0];
             string path;
-            if (actorId == "")
-            {
-                if (isNarrator)
-                {
-                    path = $"{voicePath}/Narrator/{locale}/{currentDialogueTitle}/{translationId}.ogg";
-                }
-                else
-                {
-                    path = $"{voicePath}/Player/{locale}/{currentDialogueTitle}/{translationId}.ogg";
-                }
-            }
-            else
-            {
-                path = $"{voicePath}/{locale}/{actorId}/{currentDialogueTitle}/{translationId}.ogg";
-            }
+            
+            path = $"{voicePath}/{locale}/{actorId}/{currentDialogueTitle}/{translationId}.ogg";
+            
 
             if (ResourceLoader.Exists(path))
             {
@@ -284,10 +277,10 @@ namespace DialogueManagerRuntime
             }
         }
 
-        private async Task DisplayLine(string character, string text, string translationKey)
+        private async Task DisplayLine(string actorID, string text, string translationKey)
         {
-            characterLabel.Visible = !string.IsNullOrEmpty(character);
-            characterLabel.Text = Tr(character, "dialogue");
+            characterLabel.Visible = !string.IsNullOrEmpty(actorID);
+            characterLabel.Text = Tr(actorID, "dialogue");
 
             // Temporarily modify dialogueLine for the label
             string originalCharacter = dialogueLine.Character;
@@ -296,14 +289,14 @@ namespace DialogueManagerRuntime
 
             string processedText = BB.ProcessItemReplacements(text);
 
-            dialogueLine.Character = character;
+            dialogueLine.Character = actorID;
             dialogueLine.Text = processedText;
             dialogueLine.TranslationKey = translationKey;
 
             dialogueLabel.Set("dialogue_line", dialogueLine);
             dialogueLabel.Call("type_out");
 
-            PlayVoice(character, translationKey);
+            PlayVoice(actorID, translationKey);
 
             if (audioStreamPlayer.Playing)
             {
