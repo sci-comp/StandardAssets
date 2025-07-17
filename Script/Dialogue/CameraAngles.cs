@@ -31,12 +31,26 @@ namespace Game
 
     public partial class CameraAngles : Node3D
     {
-        [Export] public Node3D[] Angles { get; set; } = [];
+        [Export] public NodePath[] AnglePaths { get; set; } = [];
         [Export] public CameraAngle DefaultAngle { get; set; } = CameraAngle.Closeup;
+
+        private Node3D[] _angles;
 
         public override void _Ready()
         {
-            if (Angles.Length == 0)
+            if (Engine.IsEditorHint())
+            {
+                return;
+            }
+
+            // Resolve paths to actual nodes at runtime only
+            _angles = new Node3D[AnglePaths.Length];
+            for (int i = 0; i < AnglePaths.Length; i++)
+            {
+                _angles[i] = GetNode<Node3D>(AnglePaths[i]);
+            }
+
+            if (_angles.Length == 0)
             {
                 GD.PushWarning($"[CameraAngles] No camera angles found");
             }
@@ -44,12 +58,15 @@ namespace Game
 
         public Node3D GetAngle(string name)
         {
-            for (int i = 0; i < Angles.Length; i++)
+            if (Engine.IsEditorHint())
             {
-                if (Angles[i].Name == name)
-                {
-                    return Angles[i];
-                }
+                return null;
+            }
+
+            for (int i = 0; i < _angles.Length; i++)
+            {
+                if (_angles[i].Name == name)
+                    return _angles[i];
             }
             GD.Print("[CameraAngle] Angle not found: ", name);
             return null;
@@ -57,19 +74,34 @@ namespace Game
 
         public Node3D GetAngle(CameraAngle angle)
         {
+            if (Engine.IsEditorHint())
+            {
+                return null;
+            }
+
             string angleName = angle.ToString();
             return GetAngle(angleName);
         }
 
         public void SetCameraPriority(CameraAngle angle, int priority = 10)
         {
+            if (Engine.IsEditorHint())
+            {
+                return;
+            }
+
             Node3D camera = GetAngle(angle);
             camera?.Set("priority", priority);
         }
 
         public void ResetCameraPriorities()
         {
-            foreach (Node3D camera in Angles)
+            if (Engine.IsEditorHint())
+            {
+                return;
+            }
+
+            foreach (Node3D camera in _angles)
             {
                 camera.Set("priority", 0);
             }

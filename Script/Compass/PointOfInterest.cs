@@ -3,6 +3,7 @@ using System;
 
 namespace Game
 {
+    [GlobalClass]
     public partial class PointOfInterest : Marker3D
     {
         [Export] public Texture2D IconTexture;

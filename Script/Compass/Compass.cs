@@ -63,8 +63,7 @@ namespace Game
             PointOfInterest.POIDestroyed += OnPOIDestroyed;
             levelManager.BeginUnloadingLevel += OnBeginUnloadingLevel;
 
-            Visible = BeginVisible;
-            SetVisibility(true);
+            SetVisibility(BeginVisible);
             GD.PrintRich($"[Compass] [color={ColorsHex.MediumSeaGreen}]Ready[/color]");
         }
 
