@@ -14,7 +14,8 @@ namespace DialogueManagerRuntime
         [Export] public string voicePath = "res://Audio/Dialogue";
         [Export] public bool showPlayerLines = false;
 
-        private string currentDialogueTitle = "default";
+        private string currentConversation = "";
+        private string dialogueFileName = "";
 
         private bool willHideBalloon = false;
         private Array<Variant> temporaryGameStates = [];
@@ -93,9 +94,9 @@ namespace DialogueManagerRuntime
 
         public async void Start(Resource dialogueResource, string title, Array<Variant> extraGameStates = null)
         {
-            GD.Print("[DialogueBalloon] Starting, title: ", title);
+            currentConversation = dialogueResource.ResourcePath.GetFile().GetBaseName();
 
-            currentDialogueTitle = string.IsNullOrEmpty(title) ? "default" : title;
+            GD.Print($"[DialogueBalloon] Starting, conversation: {dialogueFileName}, title: {title}");
 
             balloon = GetNode<Control>("%Balloon");
             characterLabel = GetNode<RichTextLabel>("%CharacterLabel");
@@ -248,22 +249,39 @@ namespace DialogueManagerRuntime
 
         private void PlayVoice(string actorId, string translationId, bool isNarrator = false)
         {
-            if (actorId == null) 
-            { 
-                return; 
-            }
-
             if (translationId == "")
             {
                 GD.Print($"[DialogueBalloon] Empty translationId: {translationId}");
                 return;
             }
 
+            if (actorId == null || actorId == "")
+            {
+                actorId = "Narrator";
+            }
+
             string locale = TranslationServer.GetLocale().Split('_')[0];
             string path;
-            
-            path = $"{voicePath}/{locale}/{actorId}/{currentDialogueTitle}/{translationId}.ogg";
-            
+
+            if (actorId == "Narrator")
+            {
+                GD.Print("[DialogueBalloon] Playing a narrator dialogue line...");
+                path = $"{voicePath}/{locale}/{actorId}/{translationId}.ogg";
+            }
+            else
+            {
+                if (actorId == currentConversation)
+                {
+                    GD.Print("[DialogueBalloon] actorId == currentConversation");
+                    path = $"{voicePath}/{locale}/{actorId}/{translationId}.ogg";
+                }
+                else
+                {
+                    path = $"{voicePath}/{locale}/{actorId}/{currentConversation}/{translationId}.ogg";
+                }
+            }
+
+            GD.Print($"[DialogueBalloon] Playing voice for actorID: {actorId}, currentConversation: {currentConversation}");
 
             if (ResourceLoader.Exists(path))
             {
@@ -273,7 +291,7 @@ namespace DialogueManagerRuntime
             }
             else
             {
-                GD.Print("[DialogueBalloon] Voice file path does not exist: ", path);
+                GD.Print($"[DialogueBalloon] Voice file path does not exist: {path}");
             }
         }
 

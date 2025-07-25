@@ -12,6 +12,7 @@ namespace Game
 
         [ExportCategory("Dialogue")]
         [Export] public string ActorID = "";
+        [Export] public string ActorInstanceID = "";
         [Export] public string StartTitle = "";
         [Export] public Resource DialogueResource;
         [Export] public Marker3D PlayerLocation;
@@ -19,6 +20,7 @@ namespace Game
         [ExportCategory("Animation")]
         [Export] public ActorAnimationController AnimationController;
 
+        public bool Active = false;
         public CameraAngles CameraAngles;
 
         public override string Title => _Title;
@@ -45,12 +47,15 @@ namespace Game
             {
                 GD.PushWarning("[DialogueActor] Missing CameraAngles node: ", Name);
             }
-
+            
             AnimationController = GetNodeOrNull<ActorAnimationController>("ActorAnimationController");
 
             DialogueBalloon.ActorSFXRequested += OnSFXRequested;
             DialogueManager.DialogueEnded += OnDialogueEnded;
-            ActorSpawned?.Invoke(ActorID, this);
+            BodyEntered += OnAreaEntered;
+            BodyExited += OnAreaExited;
+
+            ActorSpawned?.Invoke(string.IsNullOrEmpty(ActorInstanceID) ? ActorID : ActorInstanceID, this);
         }
 
         public override void _Process(double delta)
@@ -61,11 +66,10 @@ namespace Game
 
         public override void _ExitTree()
         {
-            ActorDestroyed?.Invoke(ActorID);
+            ActorDestroyed?.Invoke(string.IsNullOrEmpty(ActorInstanceID) ? ActorID : ActorInstanceID);
             DialogueBalloon.ActorSFXRequested -= OnSFXRequested;
             DialogueManager.DialogueEnded -= OnDialogueEnded;
         }
-
         public override void Interact(string playerID)
         {
             if (interactTimer < interactCooldown)
@@ -132,6 +136,15 @@ namespace Game
             }
         }
 
+        private void OnAreaEntered(Node3D area)
+        {
+            Active = true;  // Collision layers filter out all but the player's proximity
+        }
+
+        private void OnAreaExited(Node3D area)
+        {
+            Active = false;
+        }
     }
 
 }

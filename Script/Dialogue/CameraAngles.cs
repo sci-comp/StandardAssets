@@ -36,22 +36,57 @@ namespace Game
 
         public override void _Ready()
         {
+            if (Angles == null)
+            {
+                GD.PrintErr("[CameraAngles] Angles array is null in _Ready");
+                return;
+            }
+
+            for (int i = 0; i < Angles.Length; i++)
+            {
+                if (Angles[i] == null)
+                {
+                    GD.PrintErr($"[CameraAngles] Angles[{i}] is null in _Ready");
+                }
+            }
+
             if (Angles.Length == 0)
             {
-                GD.PushWarning($"[CameraAngles] No camera angles found");
+                GD.PrintErr($"[CameraAngles] No camera angles found");
             }
         }
 
         public Node3D GetAngle(string name)
         {
+            GD.Print("[CameraAngles] GetAngle for name: ", name);
+            GD.Print("[CameraAngles] Angles array length: ", Angles?.Length ?? -1);
+
+            if (Angles == null)
+            {
+                GD.PrintErr("[CameraAngles] Angles array is null");
+                return null;
+            }
+
             for (int i = 0; i < Angles.Length; i++)
             {
+                GD.Print($"[CameraAngles] Checking index {i}");
+
+                if (Angles[i] == null)
+                {
+                    GD.PrintErr($"[CameraAngles] Angles[{i}] is null");
+                    continue;
+                }
+
+                GD.Print($"[CameraAngles] Angles[{i}].Name = '{Angles[i].Name}'");
+
                 if (Angles[i].Name == name)
                 {
+                    GD.Print($"[CameraAngles] Found match at index {i}");
                     return Angles[i];
                 }
             }
-            GD.Print("[CameraAngle] Angle not found: ", name);
+
+            GD.Print("[CameraAngles] Angle not found: ", name);
             return null;
         }
 
