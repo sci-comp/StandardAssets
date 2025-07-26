@@ -58,9 +58,6 @@ namespace Game
 
         public Node3D GetAngle(string name)
         {
-            GD.Print("[CameraAngles] GetAngle for name: ", name);
-            GD.Print("[CameraAngles] Angles array length: ", Angles?.Length ?? -1);
-
             if (Angles == null)
             {
                 GD.PrintErr("[CameraAngles] Angles array is null");
@@ -69,8 +66,6 @@ namespace Game
 
             for (int i = 0; i < Angles.Length; i++)
             {
-                GD.Print($"[CameraAngles] Checking index {i}");
-
                 if (Angles[i] == null)
                 {
                     GD.PrintErr($"[CameraAngles] Angles[{i}] is null");
@@ -81,12 +76,11 @@ namespace Game
 
                 if (Angles[i].Name == name)
                 {
-                    GD.Print($"[CameraAngles] Found match at index {i}");
                     return Angles[i];
                 }
             }
 
-            GD.Print("[CameraAngles] Angle not found: ", name);
+            GD.PrintErr("[CameraAngles] Angle not found: ", name);
             return null;
         }
 
