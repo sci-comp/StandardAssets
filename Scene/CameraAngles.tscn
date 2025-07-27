@@ -13,7 +13,7 @@ metadata/_custom_type_script = "uid://8umksf8e80fw"
 
 [node name="CameraAngles" type="Node3D" node_paths=PackedStringArray("Angles")]
 script = ExtResource("1_371gr")
-Angles = [NodePath("Bird"), NodePath("Closeup"), NodePath("CloseupRight"), NodePath("ExtremeCloseup"), NodePath("Full"), NodePath("FullLeft"), NodePath("FullRight"), NodePath("HighAngle"), NodePath("HighAngleLeft"), NodePath("HighAngleRight"), NodePath("LowAngle"), NodePath("LowAngleLeft"), NodePath("LowAngleRight"), NodePath("Medium"), NodePath("MediumLeft"), NodePath("MediumRight"), NodePath("OverLeft"), NodePath("OverRight"), NodePath("ProfileLeft"), NodePath("ProfileRight"), NodePath("Reverse"), NodePath("Worm")]
+Angles = [NodePath("Bird"), NodePath("Closeup"), NodePath("CloseupLeft"), NodePath("CloseupRight"), NodePath("ExtremeCloseup"), NodePath("Full"), NodePath("FullLeft"), NodePath("FullRight"), NodePath("HighAngle"), NodePath("HighAngleLeft"), NodePath("HighAngleRight"), NodePath("LowAngle"), NodePath("LowAngleLeft"), NodePath("LowAngleRight"), NodePath("Medium"), NodePath("MediumLeft"), NodePath("MediumRight"), NodePath("OverLeft"), NodePath("OverRight"), NodePath("ProfileLeft"), NodePath("ProfileRight"), NodePath("Reverse"), NodePath("Worm")]
 
 [node name="Bird" type="Node3D" parent="."]
 transform = Transform3D(0.999229, -0.0389419, 0.00498559, 0, 0.12699, 0.991904, -0.0392597, -0.991139, 0.126892, 0.105403, 4.44961, 0.424238)
