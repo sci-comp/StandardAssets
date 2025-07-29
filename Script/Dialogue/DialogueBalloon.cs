@@ -61,7 +61,6 @@ namespace DialogueManagerRuntime
             }
         }
 
-        public static event Action<string, string> ActorSFXRequested;
         public static event Action<string, string> ActorGestureRequested;
         public static event Action<Resource> DialogueStarted;
 

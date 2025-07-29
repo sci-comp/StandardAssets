@@ -2,8 +2,8 @@ using Godot;
 
 public abstract partial class InspectableArea : Area3D
 {
-    public virtual string Title => "Default Title";
-    public virtual string Details => "Default Details";
+    public virtual string Title => "";
+    public virtual string Details => "";
 
     public virtual void Inspect()
     {

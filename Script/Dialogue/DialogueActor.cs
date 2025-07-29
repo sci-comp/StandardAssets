@@ -5,7 +5,7 @@ using System;
 namespace Game
 {
     public partial class DialogueActor : InteractableArea
-    { 
+    {
         [ExportCategory("Interactable")]
         [Export] public string _Title = "";
         [Export] public string _Details = "";
@@ -20,18 +20,27 @@ namespace Game
         [ExportCategory("Animation")]
         [Export] public ActorAnimationController AnimationController;
 
+        [ExportCategory("Quest Visibility")]
+        [Export] public bool DisableForQuest = false;
+        [Export] public bool EnableForQuest = false;
+        [Export] public bool SpecificQuestStateOnly = false;
+        [Export] public string QuestID = "";
+        [Export] public QuestProgress RequiredProgress = QuestProgress.Unknown;
+
         public bool Active = false;
         public CameraAngles CameraAngles;
 
         public override string Title => _Title;
         public override string Details => _Details;
 
+        private bool useQuestVisibility = false;
         private float interactCooldown = 1.2f;
         private float interactTimer = 0.0f;
-        
+
         protected PointOfInterest poi;
         private SFX sfx;
         private CameraAngle currentCameraAngle;
+        private Journal journal;
 
         public static event Action<string, DialogueActor> ActorSpawned;
         public static event Action<string> ActorDestroyed;
@@ -47,10 +56,23 @@ namespace Game
             {
                 GD.PushWarning("[DialogueActor] Missing CameraAngles node: ", Name);
             }
-            
+
             AnimationController = GetNodeOrNull<ActorAnimationController>("ActorAnimationController");
 
-            DialogueBalloon.ActorSFXRequested += OnSFXRequested;
+            useQuestVisibility = EnableForQuest || DisableForQuest ? true : false;
+
+            if (useQuestVisibility)
+            {
+                journal = GetNode<Journal>("/root/Journal");
+
+                if (EnableForQuest && DisableForQuest)
+                {
+                    GD.PrintErr("[DialogueActor] Invalid settings: (EnableForQuest && DisableForQuest) == true");
+                }
+
+                journal.QuestProgressUpdated += QuestProgressUpdated;
+                CallDeferred(nameof(UpdateActorVisibility));
+            }
             DialogueManager.DialogueEnded += OnDialogueEnded;
             BodyEntered += OnAreaEntered;
             BodyExited += OnAreaExited;
@@ -67,9 +89,14 @@ namespace Game
         public override void _ExitTree()
         {
             ActorDestroyed?.Invoke(string.IsNullOrEmpty(ActorInstanceID) ? ActorID : ActorInstanceID);
-            DialogueBalloon.ActorSFXRequested -= OnSFXRequested;
             DialogueManager.DialogueEnded -= OnDialogueEnded;
+
+            if (useQuestVisibility && journal != null)
+            {
+                journal.QuestProgressUpdated -= QuestProgressUpdated;
+            }
         }
+
         public override void Interact(string playerID)
         {
             if (interactTimer < interactCooldown)
@@ -77,7 +104,6 @@ namespace Game
                 return;
             }
             interactTimer = 0.0f;
-
 
             if (DialogueResource == null)
             {
@@ -122,29 +148,81 @@ namespace Game
             base.Interact();
         }
 
+        private void QuestProgressUpdated(string questID, QuestProgress newProgress)
+        {
+            if (questID == QuestID)
+            {
+                UpdateActorVisibility();
+            }
+        }
+
+        private void UpdateActorVisibility()
+        {
+            if (!useQuestVisibility)
+            {
+                return;
+            }
+
+            bool shouldBeVisible = true;
+
+            if (EnableForQuest)
+            {
+                if (SpecificQuestStateOnly)
+                {
+                    shouldBeVisible = journal.GetQuestProgress(QuestID) == RequiredProgress;
+                }
+                else
+                {
+                    shouldBeVisible = journal.GetQuestProgress(QuestID) >= RequiredProgress;
+                }
+            }
+            else if (DisableForQuest)
+            {
+                if (SpecificQuestStateOnly)
+                {
+                    shouldBeVisible = journal.GetQuestProgress(QuestID) != RequiredProgress;
+                }
+                else
+                {
+                    shouldBeVisible = journal.GetQuestProgress(QuestID) < RequiredProgress;
+                }
+            }
+
+            SetActorVisibility(shouldBeVisible);
+        }
+
+        private void SetActorVisibility(bool visible)
+        {
+            Visible = visible;
+            Monitoring = visible;
+            Monitorable = visible;
+
+            if (visible)
+            {
+                poi?.ShowOnCompass();
+            }
+            else
+            {
+                poi?.HideFromCompass();
+            }
+        }
+
         protected void OnDialogueEnded(Resource dialogueResource)
         {
             CameraAngles.SetCameraPriority(currentCameraAngle, 0);
             AnimationController?.Resume();
         }
 
-        protected void OnSFXRequested(string actorName, string sfxName)
-        {
-            if (ActorID == actorName)
-            {
-                sfx.PlaySound(sfxName, Position);
-            }
-        }
-
         private void OnAreaEntered(Node3D area)
         {
-            Active = true;  // Collision layers filter out all but the player's proximity
+            Active = true;
         }
 
         private void OnAreaExited(Node3D area)
         {
             Active = false;
         }
+
     }
 
 }
